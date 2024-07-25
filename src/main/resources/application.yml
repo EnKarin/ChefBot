@@ -1,0 +1,18 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+#    todo database-platform:
+    properties:
+      hibernate:
+#       todo default_schema:
+        enable_lazy_load_no_trans: false
+# todo datasource:
+#  todo     url:
+#  todo     username:
+#  todo     password:
+#  todo     driver-class-name:
+# todo telegram-bot:
+#  todo name:
+#  todo token:

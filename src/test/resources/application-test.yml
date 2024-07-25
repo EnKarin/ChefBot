@@ -1,0 +1,8 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+logging:
+  level:
+    org.testcontainers: INFO
+    org.springframework.orm.jpa.JpaTransactionManager: DEBUG
