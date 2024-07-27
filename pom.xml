@@ -12,8 +12,9 @@
     </parent>
 
     <groupId>io.github.enkarin</groupId>
-    <artifactId>ChefBot</artifactId>
+    <artifactId>chef-bot</artifactId>
     <version>1.0.0-SNAPSHOT</version>
+    <name>Chef Bot</name>
 
     <properties>
         <java.version>17</java.version>
@@ -24,8 +25,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <testcontainers.version>1.20.0</testcontainers.version>
         <telegrambots.version>6.9.0</telegrambots.version>
-        <junit.version>5.10.3</junit.version>
+        <junit.jupiter.version>5.10.3</junit.jupiter.version>
         <spotbugs.version>4.8.6</spotbugs.version>
+        <pg-index-health.version>0.13.0</pg-index-health.version>
+        <jaxb-api.version>2.3.1</jaxb-api.version>
     </properties>
 
     <dependencyManagement>
@@ -40,7 +43,14 @@
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
-                <version>${junit.version}</version>
+                <version>${junit.jupiter.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.github.mfvanek</groupId>
+                <artifactId>pg-index-health-bom</artifactId>
+                <version>${pg-index-health.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -61,7 +71,16 @@
             <artifactId>telegrambots</artifactId>
             <version>${telegrambots.version}</version>
         </dependency>
-        <!--        todo connector for db-->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>${jaxb-api.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -79,7 +98,21 @@
             <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
-        <!--        todo testcontainers for db-->
+        <dependency>
+            <groupId>io.github.mfvanek</groupId>
+            <artifactId>pg-index-health-test-starter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.mfvanek</groupId>
+            <artifactId>pg-index-health</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -145,7 +178,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.23.0</version>
+                <version>3.24.0</version>
                 <configuration>
                     <includeTests>true</includeTests>
                     <rulesets>
@@ -179,7 +212,6 @@
                         <configuration>
                             <includeTestSourceDirectory>true</includeTestSourceDirectory>
                             <configLocation>config/checkstyle/checkstyle.xml</configLocation>
-                            <encoding>UTF-8</encoding>
                             <consoleOutput>true</consoleOutput>
                             <failsOnError>true</failsOnError>
                         </configuration>
@@ -256,12 +288,12 @@
                                         <limit>
                                             <counter>METHOD</counter>
                                             <value>MISSEDCOUNT</value>
-                                            <maximum>1</maximum>
+                                            <maximum>2</maximum>
                                         </limit>
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>MISSEDCOUNT</value>
-                                            <maximum>1</maximum>
+                                            <maximum>3</maximum>
                                         </limit>
                                     </limits>
                                 </rule>

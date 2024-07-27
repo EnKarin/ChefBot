@@ -1,4 +1,4 @@
-package io.enkarin.chefbot.config;
+package io.github.enkarin.chefbot.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
