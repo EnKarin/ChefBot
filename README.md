@@ -17,4 +17,4 @@ cd ChefBot
 ```
 
 ## Issue Tracking
-Found a bug? Have an idea for an improvement? Feel free to [file an issue](../../issues).
+Found a bug? Have an idea for an improvement? Feel free to [file an issue](https://github.com/EnKarin/ChefBot/issues).
