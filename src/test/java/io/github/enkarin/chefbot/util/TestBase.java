@@ -1,6 +1,8 @@
 package io.github.enkarin.chefbot.util;
 
+import io.github.enkarin.chefbot.repository.DishRepository;
 import io.github.enkarin.chefbot.repository.UserRepository;
+import io.github.enkarin.chefbot.service.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +22,12 @@ public class TestBase {
     @MockBean
     protected TelegramBotsApi telegramBotApi;
     @Autowired
+    protected UserService userService;
+    @Autowired
     protected UserRepository userRepository;
+    @Autowired
+    protected DishRepository dishRepository;
+
 
     @AfterEach
     void clear() {

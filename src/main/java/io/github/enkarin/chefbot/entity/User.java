@@ -1,9 +1,14 @@
 package io.github.enkarin.chefbot.entity;
 
+import io.github.enkarin.chefbot.enums.ChatStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +39,13 @@ public class User implements Serializable {
     @Column(name = "moderator")
     private boolean moderator;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToOne(orphanRemoval = true)
+    @JoinColumn(name = "editable_dish_id", referencedColumnName = "id")
+    private Dish editabledDish;
+
+    @OneToMany(mappedBy = "owner", orphanRemoval = true)
     private Set<Dish> dishes;
+
+    @Enumerated(EnumType.STRING)
+    private ChatStatus chatStatus;
 }
