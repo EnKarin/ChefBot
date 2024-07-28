@@ -24,7 +24,7 @@
         <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <testcontainers.version>1.20.0</testcontainers.version>
-        <telegrambots.version>6.9.0</telegrambots.version>
+        <telegrambots.version>6.9.7.1</telegrambots.version>
         <junit.jupiter.version>5.10.3</junit.jupiter.version>
         <spotbugs.version>4.8.6</spotbugs.version>
         <pg-index-health.version>0.13.0</pg-index-health.version>
