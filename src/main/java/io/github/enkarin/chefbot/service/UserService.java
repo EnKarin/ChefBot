@@ -27,8 +27,7 @@ public class UserService {
 
     @Transactional
     public void changeModeratorStatus(final Long chatId) {
-        userRepository.findById(chatId)
-                .ifPresent(u -> u.setModerator(!u.isModerator()));
+        userRepository.findById(chatId).ifPresent(u -> u.setModerator(!u.isModerator()));
     }
 
     public Set<Long> getAllModerators() {
