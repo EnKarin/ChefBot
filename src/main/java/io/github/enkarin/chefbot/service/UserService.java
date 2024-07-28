@@ -30,8 +30,7 @@ public class UserService {
 
     @Transactional
     public void changeModeratorStatus(final Long chatId) {
-        userRepository.findById(chatId)
-                .ifPresent(u -> u.setModerator(!u.isModerator()));
+        userRepository.findById(chatId).ifPresent(u -> u.setModerator(!u.isModerator()));
     }
 
     public Set<Long> getAllModerators() {
@@ -51,8 +50,6 @@ public class UserService {
     public ChatStatus getChatStatus(final long chatId) {
         final Optional<User> user = userRepository.findById(chatId);
 
-        return user.isPresent() ?
-                user.get().getChatStatus() :
-                createUser(chatId).getChatStatus();
+        return user.isPresent() ? user.get().getChatStatus() : createUser(chatId).getChatStatus();
     }
 }

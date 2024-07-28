@@ -1,9 +1,12 @@
 spring:
-    main:
-      banner-mode: off
-    jpa:
-      show-sql: true
+  main:
+    banner-mode: off
+  jpa:
+    show-sql: true
 logging:
   level:
     org.testcontainers: INFO
     org.springframework.orm.jpa.JpaTransactionManager: DEBUG
+telegram-bot:
+  name: mockname
+  token: mocktoken
