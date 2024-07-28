@@ -39,7 +39,7 @@ class UserServiceTest extends TestBase {
     }
 
     @Test
-    void allModeratorsShouldWork() {
+    void getAllModeratorsShouldWork() {
         final long noModeratorId = CHAT_ID - 5;
         createModerator(CHAT_ID);
         createModerator(CHAT_ID - 1);
