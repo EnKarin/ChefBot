@@ -1,8 +1,8 @@
 package io.github.enkarin.chefbot.entity;
 
-import io.github.enkarin.chefbot.entity.base.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -22,15 +22,16 @@ import java.util.Set;
 @NoArgsConstructor
 @ToString(callSuper = true)
 @Table(name = "t_user")
-public class User extends BaseEntity implements Serializable {
+public class User implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -224945856393620757L;
 
-    @Column(name = "chat_id", nullable = false)
+    @Id
+    @Column(name = "chat_id")
     private long chatId;
 
-    @Column(name = "moderator", nullable = false)
+    @Column(name = "moderator")
     private boolean moderator;
 
     @OneToMany(mappedBy = "owner")

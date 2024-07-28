@@ -29,6 +29,7 @@
     </rule>
     <rule ref="category/java/codestyle.xml/LinguisticNaming">
         <properties>
+            <property name="ignoredAnnotations" value="org.junit.jupiter.api.Test" />
             <property name="checkSetters" value="false"/>
             <property name="violationSuppressXPath" value="//ClassOrInterfaceBodyDeclaration/Annotation/MarkerAnnotation//Name[@Image='Test']"/>
         </properties>
