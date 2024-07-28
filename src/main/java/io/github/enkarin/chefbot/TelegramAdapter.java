@@ -2,7 +2,7 @@ package io.github.enkarin.chefbot;
 
 import io.github.enkarin.chefbot.service.UserService;
 import lombok.Getter;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -12,15 +12,16 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-@Log
+@Slf4j
 @Component
-public class TelegramAdapter extends TelegramLongPollingBot {
+public final class TelegramAdapter extends TelegramLongPollingBot {
     @Getter
     private final String botUsername;
     @Getter
     private final String botToken;
     private final UserService userService;
 
+    @SuppressWarnings("PMD.CallSuperInConstructor")
     public TelegramAdapter(final TelegramBotsApi telegramBotsApi,
                            @Value("${telegram-bot.name}") final String botUsername,
                            @Value("${telegram-bot.token}") final String botToken,
@@ -55,7 +56,7 @@ public class TelegramAdapter extends TelegramLongPollingBot {
         try {
             execute(sendMessage);
         } catch (Exception e) {
-            log.severe(e.getMessage());
+            log.error(e.getMessage());
         }
     }
 }

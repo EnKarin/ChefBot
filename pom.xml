@@ -293,7 +293,7 @@
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>MISSEDCOUNT</value>
-                                            <maximum>3</maximum>
+                                            <maximum>5</maximum>
                                         </limit>
                                     </limits>
                                 </rule>

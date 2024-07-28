@@ -10,6 +10,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.objects.Chat;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.MessageEntity;
+import org.telegram.telegrambots.meta.api.objects.Update;
+
+import java.util.List;
 
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
 @SpringBootTest
@@ -32,5 +38,15 @@ public class TestBase {
     @AfterEach
     void clear() {
         userRepository.deleteAll();
+    }
+
+    protected Update createTelegramCommand(final long chatId, final String text) {
+        final Message message = new Message();
+        message.setChat(new Chat(chatId, "test"));
+        message.setText(text);
+        message.setEntities(List.of(new MessageEntity("bot_command", 0, 0)));
+        final Update update = new Update();
+        update.setMessage(message);
+        return update;
     }
 }

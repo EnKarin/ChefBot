@@ -50,8 +50,6 @@ public class UserService {
     public ChatStatus getChatStatus(final long chatId) {
         final Optional<User> user = userRepository.findById(chatId);
 
-        return user.isPresent() ?
-                user.get().getChatStatus() :
-                createUser(chatId).getChatStatus();
+        return user.isPresent() ? user.get().getChatStatus() : createUser(chatId).getChatStatus();
     }
 }
