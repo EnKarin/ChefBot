@@ -21,7 +21,7 @@ import java.util.Set;
 @SuperBuilder
 @NoArgsConstructor
 @ToString(callSuper = true)
-@Table(name = "t_dish")
+@Table(name = "t_user")
 public class User extends BaseEntity implements Serializable {
 
     @Serial
