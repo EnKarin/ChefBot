@@ -10,9 +10,9 @@ spring:
         enable_lazy_load_no_trans: false
   datasource:
     driver-class-name: org.postgresql.Driver
-#  todo     url:
-#  todo     username:
-#  todo     password:
+    url: jdbc:postgresql://localhost:5432/chefdata
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASS}
 # todo telegram-bot:
 #  todo name:
 #  todo token:
