@@ -2,11 +2,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
     properties:
       hibernate:
-        default_schema: chefbot
         enable_lazy_load_no_trans: false
   datasource:
     driver-class-name: org.postgresql.Driver
