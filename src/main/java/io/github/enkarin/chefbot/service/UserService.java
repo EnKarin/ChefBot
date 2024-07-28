@@ -10,12 +10,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
 
+    @Transactional
     public void createUser(final Long chatId) {
         userRepository.save(
                 User.builder()
@@ -24,6 +25,7 @@ public class UserService {
         );
     }
 
+    @Transactional
     public void changeModeratorStatus(final Long chatId) {
         userRepository.findById(chatId)
                 .ifPresent(u -> u.setModerator(!u.isModerator()));
