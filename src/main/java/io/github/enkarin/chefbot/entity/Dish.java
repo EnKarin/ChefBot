@@ -36,10 +36,10 @@ public class Dish extends BaseEntity implements Serializable {
     @Column(name = "dish_name")
     private String dishName;
 
-    @Column(name = "spicy", nullable = false)
+    @Column(name = "spicy")
     private boolean spicy;
 
-    @Column(name = "soup", nullable = false)
+    @Column(name = "soup")
     private boolean soup;
 
     @Enumerated(EnumType.STRING)
