@@ -20,12 +20,11 @@ public class UserService {
 
     @Transactional
     public User createUser(final Long chatId) {
-        return userRepository.save(
-                User.builder()
-                        .chatId(chatId)
-                        .chatStatus(ChatStatus.MAIN_MENU)
-                        .build()
-        );
+        return userRepository.findById(chatId).orElseGet(() -> userRepository.save(User.builder()
+                .chatId(chatId)
+                .chatStatus(ChatStatus.MAIN_MENU)
+                .build()));
+
     }
 
     @Transactional
@@ -41,9 +40,7 @@ public class UserService {
 
     @Transactional
     public User getUser(final Long chatId) {
-        final Optional<User> user = userRepository.findById(chatId);
-
-        return user.orElseGet(() -> createUser(chatId));
+        return userRepository.findById(chatId).orElseGet(() -> createUser(chatId));
     }
 
     @Transactional

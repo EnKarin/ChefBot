@@ -23,6 +23,18 @@ class UserServiceTest extends TestBase {
     }
 
     @Test
+    void createUserShouldWorkForSecondCall() {
+        userService.createUser(CHAT_ID);
+        userService.createUser(CHAT_ID);
+
+        assertThat(userRepository.findAll())
+                .hasSize(1)
+                .first()
+                .extracting(User::getChatId)
+                .isEqualTo(CHAT_ID);
+    }
+
+    @Test
     void changeModeratorStatusSetTrueShouldWork() {
         createModerator(CHAT_ID);
 
