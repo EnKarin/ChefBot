@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,13 +18,12 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public User createUser(final Long chatId) {
-        return userRepository.save(
-                User.builder()
-                        .chatId(chatId)
-                        .chatStatus(ChatStatus.MAIN_MENU)
-                        .build()
-        );
+    public User findOrSaveUser(final Long chatId) {
+        return userRepository.findById(chatId).orElseGet(() -> userRepository.save(User.builder()
+                .chatId(chatId)
+                 .chatStatus(ChatStatus.MAIN_MENU)
+                .build()));
+
     }
 
     @Transactional
@@ -40,16 +38,7 @@ public class UserService {
     }
 
     @Transactional
-    public User getUser(final Long chatId) {
-        final Optional<User> user = userRepository.findById(chatId);
-
-        return user.orElseGet(() -> createUser(chatId));
-    }
-
-    @Transactional
     public ChatStatus getChatStatus(final long chatId) {
-        final Optional<User> user = userRepository.findById(chatId);
-
-        return user.isPresent() ? user.get().getChatStatus() : createUser(chatId).getChatStatus();
+        return findOrSaveUser(chatId).getChatStatus();
     }
 }

@@ -39,7 +39,7 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
         if (message.isCommand()) {
             switch (message.getText()) {
                 case "/start" -> {
-                    userService.createUser(chatId);
+                    userService.findOrSaveUser(chatId);
                     send(chatId, "Приветствую! Здесь вы можете найти блюдо по вашим предпочтениям " +
                             "и поделиться своими рецептами с другими пользователями");
                 }
