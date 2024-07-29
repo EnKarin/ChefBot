@@ -15,17 +15,29 @@ class UserServiceTest extends TestBase {
     private UserService userService;
 
     @Test
-    void createUserShouldWork() {
-        userService.createUser(CHAT_ID);
+    void findOrSaveShouldWork() {
+        userService.findOrSaveUser(CHAT_ID);
 
         assertThat(userRepository.findById(CHAT_ID))
                 .isPresent();
     }
 
     @Test
-    void createUserShouldWorkForSecondCall() {
-        userService.createUser(CHAT_ID);
-        userService.createUser(CHAT_ID);
+    void findOrSaveUserShouldWorkForSecondCall() {
+        userService.findOrSaveUser(CHAT_ID);
+        userService.findOrSaveUser(CHAT_ID);
+
+        assertThat(userRepository.findAll())
+                .hasSize(1)
+                .first()
+                .extracting(User::getChatId)
+                .isEqualTo(CHAT_ID);
+    }
+
+
+    @Test
+    void findOrSaveShouldWorkIfUserNotPresent() {
+        userService.findOrSaveUser(CHAT_ID);
 
         assertThat(userRepository.findAll())
                 .hasSize(1)
@@ -57,7 +69,7 @@ class UserServiceTest extends TestBase {
         createModerator(CHAT_ID);
         createModerator(CHAT_ID - 1);
         createModerator(CHAT_ID - 2);
-        userService.createUser(noModeratorId);
+        userService.findOrSaveUser(noModeratorId);
 
         assertThat(userService.getAllModerators())
                 .hasSize(3)
@@ -66,21 +78,10 @@ class UserServiceTest extends TestBase {
 
     @Test
     void getChatStatusShouldWork() {
-        userService.createUser(CHAT_ID);
+        userService.findOrSaveUser(CHAT_ID);
 
         assertThat(userService.getChatStatus(CHAT_ID))
                 .isEqualTo(ChatStatus.MAIN_MENU);
-    }
-
-    @Test
-    void getUserShouldWorkIfUserNotPresent() {
-        userService.getUser(CHAT_ID);
-
-        assertThat(userRepository.findAll())
-                .hasSize(1)
-                .first()
-                .extracting(User::getChatId)
-                .isEqualTo(CHAT_ID);
     }
 
     @Test
@@ -95,7 +96,7 @@ class UserServiceTest extends TestBase {
     }
 
     private void createModerator(final long chatId) {
-        userService.createUser(chatId);
+        userService.findOrSaveUser(chatId);
         userService.changeModeratorStatus(chatId);
     }
 }

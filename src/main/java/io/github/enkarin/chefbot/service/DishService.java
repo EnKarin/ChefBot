@@ -18,7 +18,7 @@ public class DishService {
 
     @Transactional
     public void initDishName(final Long chatId, final String name) {
-        final User user = userService.getUser(chatId);
+        final User user = userService.findOrSaveUser(chatId);
         final Dish dish = dishRepository.save(
                 Dish.builder()
                         .dishName(name)
@@ -31,7 +31,7 @@ public class DishService {
 
     @Transactional
     public void deleteDish(final Long chatId) {
-        final User user = userService.getUser(chatId);
+        final User user = userService.findOrSaveUser(chatId);
         final long deletedDishId = user.getEditabledDish().getId();
 
         user.setEditabledDish(null);

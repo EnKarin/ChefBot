@@ -17,7 +17,7 @@ class DishServiceTest extends TestBase {
     @Test
     void initDishShouldWork() {
         final String dishName = "Рагу";
-        userService.createUser(CHAT_ID);
+        userService.findOrSaveUser(CHAT_ID);
         dishService.initDishName(CHAT_ID, dishName);
 
         assertThat(userRepository.findById(CHAT_ID))
@@ -38,7 +38,7 @@ class DishServiceTest extends TestBase {
 
     @Test
     void deleteDishShouldWork() {
-        userService.createUser(CHAT_ID);
+        userService.findOrSaveUser(CHAT_ID);
         dishService.initDishName(CHAT_ID, "Рагу");
 
         dishService.deleteDish(CHAT_ID);
