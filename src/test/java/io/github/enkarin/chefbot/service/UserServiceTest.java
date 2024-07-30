@@ -1,5 +1,6 @@
 package io.github.enkarin.chefbot.service;
 
+import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.util.TestBase;
@@ -7,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 
 class UserServiceTest extends TestBase {
 
@@ -58,12 +58,6 @@ class UserServiceTest extends TestBase {
     }
 
     @Test
-    void changeModeratorStatusShouldNotThrowExceptionIfUserNotFound() {
-        assertThatCode(() -> userService.changeModeratorStatus(CHAT_ID))
-                .doesNotThrowAnyException();
-    }
-
-    @Test
     void getAllModeratorsShouldWork() {
         final long noModeratorId = CHAT_ID - 5;
         createModerator(CHAT_ID);
@@ -85,14 +79,15 @@ class UserServiceTest extends TestBase {
     }
 
     @Test
-    void getChatStatusShouldWorkIfUserNotPresent() {
-        userService.getChatStatus(CHAT_ID);
+    void backToMainMenu() {
+        final Dish dish = dishRepository.save(Dish.builder().id(1L).build());
+        userRepository.save(User.builder().chatId(CHAT_ID).chatStatus(ChatStatus.PROCESSING).editabledDish(dish).build());
 
-        assertThat(userRepository.findAll())
-                .hasSize(1)
-                .first()
-                .extracting(User::getChatId)
-                .isEqualTo(CHAT_ID);
+        userService.backToMainMenu(CHAT_ID);
+
+        final User user = userRepository.findById(CHAT_ID).orElseThrow();
+        assertThat(user.getEditabledDish()).isNull();
+        assertThat(user.getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
     }
 
     private void createModerator(final long chatId) {

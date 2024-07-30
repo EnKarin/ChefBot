@@ -1,6 +1,5 @@
 package io.github.enkarin.chefbot;
 
-import io.github.enkarin.chefbot.service.UserService;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,16 +18,16 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
     private final String botUsername;
     @Getter
     private final String botToken;
-    private final UserService userService;
+    private final TelegramController telegramController;
 
     @SuppressWarnings("PMD.CallSuperInConstructor")
     public TelegramAdapter(final TelegramBotsApi telegramBotsApi,
                            @Value("${telegram-bot.name}") final String botUsername,
                            @Value("${telegram-bot.token}") final String botToken,
-                           final UserService userService) throws TelegramApiException {
+                           final TelegramController telegramController) throws TelegramApiException {
         this.botUsername = botUsername;
         this.botToken = botToken;
-        this.userService = userService;
+        this.telegramController = telegramController;
         telegramBotsApi.registerBot(this);
     }
 
@@ -37,15 +36,7 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
         final Message message = update.getMessage();
         final long chatId = message.getChatId();
         if (message.isCommand()) {
-            switch (message.getText()) {
-                case "/start" -> {
-                    userService.findOrSaveUser(chatId);
-                    send(chatId, "Приветствую! Здесь вы можете найти блюдо по вашим предпочтениям " +
-                            "и поделиться своими рецептами с другими пользователями");
-                }
-                case "/change_moderator_status" -> userService.changeModeratorStatus(chatId);
-                default -> send(chatId, "Указанной команды не существует");
-            }
+            send(chatId, telegramController.executeCommand(chatId, message.getText()));
         }
     }
 
