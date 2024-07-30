@@ -25,7 +25,7 @@ class DishServiceTest extends TestBase {
                 .get()
                 .satisfies(u -> {
                     assertThat(u.getChatStatus())
-                            .isEqualTo(ChatStatus.PROCESSING);
+                            .isEqualTo(ChatStatus.NEW_DISH_NAME);
                     assertThat(u.getEditabledDish())
                             .isNotNull();
                     assertThat(dishRepository.findById(u.getEditabledDish().getId()))

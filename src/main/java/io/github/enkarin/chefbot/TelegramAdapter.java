@@ -1,5 +1,8 @@
 package io.github.enkarin.chefbot;
 
+import io.github.enkarin.chefbot.dto.BotAnswer;
+import io.github.enkarin.chefbot.enums.UserAnswerOption;
+import io.github.enkarin.chefbot.uicomponents.FormatedReplyKeyboardMarkup;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +12,7 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Slf4j
@@ -20,7 +24,6 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
     private final String botToken;
     private final TelegramController telegramController;
 
-    @SuppressWarnings("PMD.CallSuperInConstructor")
     public TelegramAdapter(final TelegramBotsApi telegramBotsApi,
                            @Value("${telegram-bot.name}") final String botUsername,
                            @Value("${telegram-bot.token}") final String botToken,
@@ -40,9 +43,10 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
         }
     }
 
-    private void send(final long chatId, final String message) {
+    private void send(final long chatId, final BotAnswer botAnswer) {
         final SendMessage sendMessage = new SendMessage();
-        sendMessage.setText(message);
+        sendMessage.setText(botAnswer.messageText());
+        sendMessage.setReplyMarkup(botAnswer.userAnswerOption() == UserAnswerOption.NONE ? new ReplyKeyboardRemove() : new FormatedReplyKeyboardMarkup(botAnswer.userAnswerOption()));
         sendMessage.setChatId(Long.toString(chatId));
         try {
             execute(sendMessage);

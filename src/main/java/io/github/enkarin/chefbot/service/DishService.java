@@ -26,7 +26,7 @@ public class DishService {
                         .build()
         );
         user.setEditabledDish(dish);
-        user.setChatStatus(ChatStatus.PROCESSING);
+        user.setChatStatus(ChatStatus.NEW_DISH_NAME);
     }
 
     @Transactional
