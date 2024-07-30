@@ -21,14 +21,14 @@ public class UserService {
     public void findOrSaveUser(final long chatId) {
         userRepository.findById(chatId).orElseGet(() -> userRepository.save(User.builder()
                 .chatId(chatId)
-                 .chatStatus(ChatStatus.MAIN_MENU)
+                .chatStatus(ChatStatus.MAIN_MENU)
                 .build()));
 
     }
 
     @Transactional
     public boolean changeModeratorStatus(final long chatId) {
-        final User user = userRepository.findById(chatId).orElseThrow();
+        final User user = findUser(chatId);
         user.setModerator(!user.isModerator());
         return user.isModerator();
     }
@@ -41,7 +41,7 @@ public class UserService {
 
     @Transactional
     public ChatStatus getChatStatus(final long chatId) {
-        return userRepository.findById(chatId).orElseThrow().getChatStatus();
+        return findUser(chatId).getChatStatus();
     }
 
     @Transactional
