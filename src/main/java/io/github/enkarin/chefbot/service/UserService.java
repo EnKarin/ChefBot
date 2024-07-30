@@ -18,17 +18,19 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public User findOrSaveUser(final Long chatId) {
-        return userRepository.findById(chatId).orElseGet(() -> userRepository.save(User.builder()
+    public void findOrSaveUser(final long chatId) {
+        userRepository.findById(chatId).orElseGet(() -> userRepository.save(User.builder()
                 .chatId(chatId)
-                 .chatStatus(ChatStatus.MAIN_MENU)
+                .chatStatus(ChatStatus.MAIN_MENU)
                 .build()));
 
     }
 
     @Transactional
-    public void changeModeratorStatus(final Long chatId) {
-        userRepository.findById(chatId).ifPresent(u -> u.setModerator(!u.isModerator()));
+    public boolean changeModeratorStatus(final long chatId) {
+        final User user = findUser(chatId);
+        user.setModerator(!user.isModerator());
+        return user.isModerator();
     }
 
     public Set<Long> getAllModerators() {
@@ -39,6 +41,17 @@ public class UserService {
 
     @Transactional
     public ChatStatus getChatStatus(final long chatId) {
-        return findOrSaveUser(chatId).getChatStatus();
+        return findUser(chatId).getChatStatus();
+    }
+
+    @Transactional
+    public void backToMainMenu(final long chatId) {
+        final User user = userRepository.findById(chatId).orElseThrow();
+        user.setEditabledDish(null);
+        user.setChatStatus(ChatStatus.MAIN_MENU);
+    }
+
+    User findUser(final long chatId) {
+        return userRepository.findById(chatId).orElseThrow();
     }
 }
