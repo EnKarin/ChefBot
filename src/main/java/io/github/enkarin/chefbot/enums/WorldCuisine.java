@@ -9,7 +9,7 @@ public enum WorldCuisine {
     INTERNATIONAL("Международная"),
     MIDDLE_EASTERN("Ближневосточная"),
     MEXICAN("Мексиканская"),
-    RUSSIAN("Славянская"),
+    SLAVIC("Славянская"),
     OTHER("Что-то необычное");
 
     private final String localizedValue;

@@ -29,7 +29,6 @@ import java.util.Set;
 @ToString(callSuper = true)
 @Table(name = "t_dish")
 public class Dish extends BaseEntity implements Serializable {
-
     @Serial
     private static final long serialVersionUID = -653331779227835564L;
 
