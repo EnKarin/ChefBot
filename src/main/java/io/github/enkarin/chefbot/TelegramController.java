@@ -42,7 +42,7 @@ public class TelegramController {
         }
     }
 
-    public BotAnswer executeNonCommandInput(final long chatId, final String text) {
+    public BotAnswer processingNonCommandInput(final long chatId, final String text) {
         return processingFacade.execute(chatId, userService.getChatStatus(chatId), text);
     }
 }

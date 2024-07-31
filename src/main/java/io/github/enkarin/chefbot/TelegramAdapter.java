@@ -40,6 +40,8 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
         final long chatId = message.getChatId();
         if (message.isCommand()) {
             send(chatId, telegramController.executeCommand(chatId, message.getText()));
+        } else {
+            send(chatId, telegramController.processingNonCommandInput(chatId, message.getText()));
         }
     }
 

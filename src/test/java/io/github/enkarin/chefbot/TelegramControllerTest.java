@@ -5,13 +5,19 @@ import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.UserAnswerOption;
+import io.github.enkarin.chefbot.service.ProcessingFacade;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TelegramControllerTest extends TestBase {
+    @MockBean
+    private ProcessingFacade processingFacade;
+
     @Autowired
     private TelegramController telegramController;
 
@@ -92,5 +98,14 @@ class TelegramControllerTest extends TestBase {
 
         assertThat(botAnswer.messageText()).isEqualTo("Произошла непредвиденная ошибка");
         assertThat(botAnswer.userAnswerOption()).isEqualTo(UserAnswerOption.NONE);
+    }
+
+    @Test
+    void processingNotCommandInput() {
+        userRepository.save(User.builder().chatId(CHAT_ID).chatStatus(ChatStatus.NEW_DISH_NAME).build());
+
+        telegramController.processingNonCommandInput(CHAT_ID, "test text");
+
+        Mockito.verify(processingFacade).execute(CHAT_ID, ChatStatus.NEW_DISH_NAME, "test text");
     }
 }

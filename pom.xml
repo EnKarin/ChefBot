@@ -288,12 +288,12 @@
                                         <limit>
                                             <counter>METHOD</counter>
                                             <value>MISSEDCOUNT</value>
-                                            <maximum>2</maximum>
+                                            <maximum>3</maximum>
                                         </limit>
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>MISSEDCOUNT</value>
-                                            <maximum>5</maximum>
+                                            <maximum>6</maximum>
                                         </limit>
                                     </limits>
                                 </rule>

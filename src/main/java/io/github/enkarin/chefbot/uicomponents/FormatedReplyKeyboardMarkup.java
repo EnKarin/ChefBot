@@ -20,7 +20,7 @@ public final class FormatedReplyKeyboardMarkup extends ReplyKeyboardMarkup {
         final List<KeyboardRow> keyboardRowList = new LinkedList<>();
         final String[] answers = answerOptions.getAnswers();
         final List<KeyboardButton> keyboardButtons = new LinkedList<>();
-        for (int i = 0; i < answers.length; i++) {
+        for (int i = 0; i < answers.length;) {
             for (int j = 0; j < 2 && i < answers.length; j++, i++) {
                 keyboardButtons.add(new KeyboardButton(answers[i]));
             }
