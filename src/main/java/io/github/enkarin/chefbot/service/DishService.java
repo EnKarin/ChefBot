@@ -40,39 +40,39 @@ public class DishService {
 
         user.setEditabledDish(null);
         user.setChatStatus(ChatStatus.MAIN_MENU);
-        dishRepository.findById(deletedDishId).ifPresent(dish -> dishRepository.deleteById(dish.getId()));
+        dishRepository.deleteById(deletedDishId);
     }
 
     @Transactional
     void putDishIsSpicy(final long chatId) {
-        final Dish dish = userService.findUser(chatId).getEditabledDish();
+        final Dish dish = findEditableDish(chatId);
         dish.setSpicy(true);
-        dishRepository.save(dish);
     }
 
 
     @Transactional
     void putDishIsSoup(final long chatId) {
-        final Dish dish = userService.findUser(chatId).getEditabledDish();
+        final Dish dish = findEditableDish(chatId);
         dish.setSoup(true);
-        dishRepository.save(dish);
     }
 
     @Transactional
     void putDishCuisine(final long chatId, final WorldCuisine cuisine) {
-        final Dish dish = userService.findUser(chatId).getEditabledDish();
+        final Dish dish = findEditableDish(chatId);
         dish.setCuisine(cuisine);
-        dishRepository.save(dish);
     }
 
     @Transactional
     void putDishFoodstuff(final long chatId, final String... foodstuffNames) {
-        final Dish dish = userService.findUser(chatId).getEditabledDish();
+        final Dish dish = findEditableDish(chatId);
         final Set<Product> products = new HashSet<>();
         for (final String foodstuffName : foodstuffNames) {
             products.add(productRepository.findById(foodstuffName).orElseGet(() -> productRepository.save(Product.builder().productName(foodstuffName).build())));
         }
         dish.setProducts(products);
-        dishRepository.save(dish);
+    }
+
+    private Dish findEditableDish(final long chatId) {
+        return userService.findUser(chatId).getEditabledDish();
     }
 }
