@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 @Service
 @Transactional(readOnly = true)
@@ -69,10 +66,10 @@ public class DishService {
     }
 
     @Transactional
-    void putDishFoodstuff(final long chatId, final String[] foodstuffNames) {
+    void putDishFoodstuff(final long chatId, final String... foodstuffNames) {
         final Dish dish = userService.findUser(chatId).getEditabledDish();
         final Set<Product> products = new HashSet<>();
-        for (String foodstuffName : foodstuffNames) {
+        for (final String foodstuffName : foodstuffNames) {
             products.add(productRepository.findById(foodstuffName).orElseGet(() -> productRepository.save(Product.builder().productName(foodstuffName).build())));
         }
         dish.setProducts(products);
