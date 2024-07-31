@@ -21,6 +21,7 @@
         <exclude name="LongVariable"/>
         <exclude name="ShortClassName"/>
         <exclude name="PrematureDeclaration"/>
+        <exclude name="CallSuperInConstructor"/>
     </rule>
     <rule ref="category/java/codestyle.xml/ClassNamingConventions">
         <properties>

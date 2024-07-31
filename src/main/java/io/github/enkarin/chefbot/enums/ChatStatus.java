@@ -1,6 +1,15 @@
 package io.github.enkarin.chefbot.enums;
 
 public enum ChatStatus {
-    PROCESSING,
-    MAIN_MENU
+    NEW_DISH_NAME,
+    MAIN_MENU,
+    NEW_DISH_SPICY,
+    NEW_DISH_KITCHEN,
+    NEW_DISH_FOODSTUFF,
+    NEW_DISH_NEED_PUBLISH,
+    SELECT_DISH_SPICY,
+    SELECT_DISH_KITCHEN,
+    SELECT_DISH_PRICE,
+    REMOVE_DISH,
+    SELECT_FOODSTUFF
 }
