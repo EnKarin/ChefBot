@@ -16,8 +16,9 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 @ActiveProfiles("test")
 @ContextConfiguration(initializers = PostgreSQLInitializer.class)
 public class TestBase {
-
-    protected static final Long CHAT_ID = Long.MAX_VALUE;
+    protected static final Long USER_ID = Long.MAX_VALUE;
+    protected static final Long CHAT_ID = Long.MAX_VALUE - 1;
+    protected static final String USERNAME = "Pupa";
 
     @MockBean
     protected TelegramBotsApi telegramBotApi;

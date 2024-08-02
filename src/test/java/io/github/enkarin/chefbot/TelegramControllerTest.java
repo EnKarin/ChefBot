@@ -22,39 +22,29 @@ class TelegramControllerTest extends TestBase {
     private TelegramController telegramController;
 
     @Test
-    void executeCommandStart() {
-        final BotAnswer botAnswer = telegramController.executeCommand(CHAT_ID, "/start");
+    void executeWorkerCommandStart() {
+        final BotAnswer botAnswer = telegramController.executeStartCommand(USER_ID, CHAT_ID, USERNAME);
 
         assertThat(botAnswer.messageText()).isEqualTo("Приветствую! Здесь вы можете найти блюдо по вашим предпочтениям и поделиться своими рецептами с другими пользователями");
         assertThat(botAnswer.userAnswerOption()).isEqualTo(UserAnswerOption.NONE);
-        assertThat(userRepository.existsById(CHAT_ID)).isTrue();
+        assertThat(userRepository.existsById(USER_ID)).isTrue();
     }
 
     @Test
-    void becomingModerator() {
-        userRepository.save(User.builder().chatId(CHAT_ID).chatStatus(ChatStatus.MAIN_MENU).build());
+    void callUndetectableCommand() {
+        userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.MAIN_MENU).build());
 
-        final BotAnswer botAnswer = telegramController.executeCommand(CHAT_ID, "/change_moderator_status");
+        final BotAnswer botAnswer = telegramController.executeWorkerCommand(USER_ID, "/change_moderator_status");
 
-        assertThat(botAnswer.messageText()).isEqualTo("Вы стали модератором!");
-        assertThat(botAnswer.userAnswerOption()).isEqualTo(UserAnswerOption.NONE);
-    }
-
-    @Test
-    void leaveModerator() {
-        userRepository.save(User.builder().chatId(CHAT_ID).chatStatus(ChatStatus.MAIN_MENU).moderator(true).build());
-
-        final BotAnswer botAnswer = telegramController.executeCommand(CHAT_ID, "/change_moderator_status");
-
-        assertThat(botAnswer.messageText()).isEqualTo("Вы больше не модератор");
+        assertThat(botAnswer.messageText()).isEqualTo("Указанной команды не существует");
         assertThat(botAnswer.userAnswerOption()).isEqualTo(UserAnswerOption.NONE);
     }
 
     @Test
     void executeBackMainMenuFromMainMenu() {
-        userRepository.save(User.builder().chatId(CHAT_ID).chatStatus(ChatStatus.MAIN_MENU).build());
+        userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.MAIN_MENU).build());
 
-        final BotAnswer botAnswer = telegramController.executeCommand(CHAT_ID, "/back_to_main_menu");
+        final BotAnswer botAnswer = telegramController.executeWorkerCommand(USER_ID, "/back_to_main_menu");
 
         assertThat(botAnswer.messageText()).isEqualTo("Вы уже в главном меню");
         assertThat(botAnswer.userAnswerOption()).isEqualTo(UserAnswerOption.NONE);
@@ -63,29 +53,19 @@ class TelegramControllerTest extends TestBase {
     @Test
     void executeBackMainMenuNotFromMainMenu() {
         final Dish dish = dishRepository.save(Dish.builder().dishName("Рагу").build());
-        userRepository.save(User.builder().chatId(CHAT_ID).chatStatus(ChatStatus.NEW_DISH_NAME).editabledDish(dish).build());
+        userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.NEW_DISH_NAME).editabledDish(dish).build());
 
-        final BotAnswer botAnswer = telegramController.executeCommand(CHAT_ID, "/back_to_main_menu");
+        final BotAnswer botAnswer = telegramController.executeWorkerCommand(USER_ID, "/back_to_main_menu");
 
-        assertThat(botAnswer.messageText()).isEqualTo("Вы возвращены в главное меню");
-        assertThat(botAnswer.userAnswerOption()).isEqualTo(UserAnswerOption.NONE);
-    }
-
-    @Test
-    void executeUndetectableCommand() {
-        userRepository.save(User.builder().chatId(CHAT_ID).chatStatus(ChatStatus.MAIN_MENU).build());
-
-        final BotAnswer botAnswer = telegramController.executeCommand(CHAT_ID, "/aboba");
-
-        assertThat(botAnswer.messageText()).isEqualTo("Указанной команды не существует");
-        assertThat(botAnswer.userAnswerOption()).isEqualTo(UserAnswerOption.NONE);
+        assertThat(botAnswer.messageText()).isEqualTo("Вы хотите вернуться в главное меню? Весь прогресс текущей операции будет утерян.");
+        assertThat(botAnswer.userAnswerOption()).isEqualTo(UserAnswerOption.YES_OR_NO);
     }
 
     @Test
     void callCommandNotFromMainMenu() {
-        userRepository.save(User.builder().chatId(CHAT_ID).chatStatus(ChatStatus.NEW_DISH_NAME).build());
+        userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.NEW_DISH_NAME).build());
 
-        final BotAnswer botAnswer = telegramController.executeCommand(CHAT_ID, "/change_moderator_status");
+        final BotAnswer botAnswer = telegramController.executeWorkerCommand(USER_ID, "/change_moderator_status");
 
         assertThat(botAnswer.messageText())
                 .isEqualTo("Эта команда доступна только в главном меню. Вам необходимо продолжить ввод или вернуться в главное меню c помощью команды /back_to_main_menu");
@@ -94,7 +74,7 @@ class TelegramControllerTest extends TestBase {
 
     @Test
     void callCommandThrowException() {
-        final BotAnswer botAnswer = telegramController.executeCommand(CHAT_ID, "/change_moderator_status");
+        final BotAnswer botAnswer = telegramController.executeWorkerCommand(USER_ID, "/change_moderator_status");
 
         assertThat(botAnswer.messageText()).isEqualTo("Произошла непредвиденная ошибка");
         assertThat(botAnswer.userAnswerOption()).isEqualTo(UserAnswerOption.NONE);
@@ -102,10 +82,10 @@ class TelegramControllerTest extends TestBase {
 
     @Test
     void processingNotCommandInput() {
-        userRepository.save(User.builder().chatId(CHAT_ID).chatStatus(ChatStatus.NEW_DISH_NAME).build());
+        userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.NEW_DISH_NAME).build());
 
-        telegramController.processingNonCommandInput(CHAT_ID, "test text");
+        telegramController.processingNonCommandInput(USER_ID, "test text");
 
-        Mockito.verify(processingFacade).execute(CHAT_ID, ChatStatus.NEW_DISH_NAME, "test text");
+        Mockito.verify(processingFacade).execute(USER_ID, ChatStatus.NEW_DISH_NAME, "test text");
     }
 }

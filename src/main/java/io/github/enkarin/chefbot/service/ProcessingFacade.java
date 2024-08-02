@@ -17,7 +17,7 @@ public class ProcessingFacade {
         processingServiceMap = processingServiceList.stream().collect(Collectors.toMap(ProcessingService::getCurrentStatus, Function.identity()));
     }
 
-    public BotAnswer execute(final long chatId, final ChatStatus chatStatus, final String text) {
-        return processingServiceMap.get(chatStatus).execute(chatId, text);
+    public BotAnswer execute(final long userId, final ChatStatus chatStatus, final String text) {
+        return processingServiceMap.get(chatStatus).execute(userId, text);
     }
 }

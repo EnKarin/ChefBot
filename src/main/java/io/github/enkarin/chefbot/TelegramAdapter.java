@@ -38,10 +38,17 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
     public void onUpdateReceived(final Update update) {
         final Message message = update.getMessage();
         final long chatId = message.getChatId();
-        if (message.isCommand()) {
-            send(chatId, telegramController.executeCommand(chatId, message.getText()));
+        final String text = message.getText();
+        final long userId = message.getFrom().getId();
+        final String username = message.getFrom().getUserName();
+        if ("/start".equals(text)) {
+            send(chatId, telegramController.executeStartCommand(userId, chatId, username));
         } else {
-            send(chatId, telegramController.processingNonCommandInput(chatId, message.getText()));
+            if (message.isCommand()) {
+                send(chatId, telegramController.executeWorkerCommand(userId, text));
+            } else {
+                send(chatId, telegramController.processingNonCommandInput(userId, text));
+            }
         }
     }
 

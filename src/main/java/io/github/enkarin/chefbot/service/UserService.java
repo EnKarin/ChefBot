@@ -18,19 +18,11 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void findOrSaveUser(final long chatId) {
-        userRepository.findById(chatId).orElseGet(() -> userRepository.save(User.builder()
-                .chatId(chatId)
-                .chatStatus(ChatStatus.MAIN_MENU)
-                .build()));
-
-    }
-
-    @Transactional
-    public boolean changeModeratorStatus(final long chatId) {
-        final User user = findUser(chatId);
-        user.setModerator(!user.isModerator());
-        return user.isModerator();
+    public void createOfUpdateUser(final long userId, final long chatId, final String username) {
+        final User user = userRepository.findById(userId).orElseGet(() -> User.builder().id(userId).chatStatus(ChatStatus.MAIN_MENU).build());
+        user.setChatId(chatId);
+        user.setUsername(username);
+        userRepository.save(user);
     }
 
     public Set<Long> getAllModerators() {
@@ -39,19 +31,23 @@ public class UserService {
                 .collect(Collectors.toSet());
     }
 
-    @Transactional
-    public ChatStatus getChatStatus(final long chatId) {
-        return findUser(chatId).getChatStatus();
+    public ChatStatus getChatStatus(final long userId) {
+        return findUser(userId).getChatStatus();
     }
 
     @Transactional
-    public void backToMainMenu(final long chatId) {
-        final User user = userRepository.findById(chatId).orElseThrow();
+    public void setChatStatus(final long userId, final ChatStatus chatStatus) {
+        findUser(userId).setChatStatus(chatStatus);
+    }
+
+    @Transactional
+    public void backToMainMenu(final long userId) {
+        final User user = findUser(userId);
         user.setEditabledDish(null);
         user.setChatStatus(ChatStatus.MAIN_MENU);
     }
 
-    User findUser(final long chatId) {
-        return userRepository.findById(chatId).orElseThrow();
+    User findUser(final long userId) {
+        return userRepository.findById(userId).orElseThrow();
     }
 }

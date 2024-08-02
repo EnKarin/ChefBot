@@ -7,6 +7,8 @@
         <exclude name="JUnitTestContainsTooManyAsserts"/>
         <exclude name="JUnitAssertionsShouldIncludeMessage"/>
         <exclude name="GuardLogStatement"/>
+        <exclude name="LooseCoupling"/>
+        <exclude name="AvoidReassigningLoopVariables"/>
     </rule>
     <rule ref="category/java/bestpractices.xml/AbstractClassWithoutAbstractMethod">
         <properties>
@@ -89,7 +91,6 @@
         <exclude name="AvoidDuplicateLiterals"/>
         <exclude name="AvoidAccessibilityAlteration"/>
         <exclude name="NullAssignment"/>
+        <exclude name="JumbledIncrementer"/>
     </rule>
 </ruleset>
-
-

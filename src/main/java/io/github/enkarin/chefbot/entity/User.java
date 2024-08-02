@@ -28,13 +28,17 @@ import java.util.Set;
 @ToString(callSuper = true)
 @Table(name = "t_user")
 public class User implements Serializable {
-
     @Serial
     private static final long serialVersionUID = -224945856393620757L;
 
     @Id
-    @Column(name = "chat_id")
+    private long id;
+
+    @Column(name = "chat_id", unique = true)
     private long chatId;
+
+    @Column(name = "username", unique = true)
+    private String username;
 
     @Column(name = "moderator")
     private boolean moderator;
