@@ -1,6 +1,5 @@
 package io.github.enkarin.chefbot.service;
 
-import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
@@ -36,11 +35,7 @@ class DishServiceTest extends TestBase {
                 .satisfies(u -> {
                     assertThat(u.getChatStatus()).isEqualTo(ChatStatus.NEW_DISH_NAME);
                     assertThat(u.getEditabledDish()).isNotNull();
-                    assertThat(dishRepository.findById(u.getEditabledDish().getId()))
-                            .isPresent()
-                            .get()
-                            .extracting(Dish::getDishName)
-                            .isEqualTo("Рагу");
+                    assertThat(u.getEditabledDish().getDishName()).isEqualTo("Рагу");
                     assertThat(u.getEditabledDish().isSoup()).isFalse();
                     assertThat(u.getEditabledDish().isSpicy()).isFalse();
                 });
@@ -83,9 +78,11 @@ class DishServiceTest extends TestBase {
     void putDishFoodstuff() {
         dishService.putDishFoodstuff(USER_ID, "Овсянка", "Три ведра укропа");
 
-        final long dishId = userService.findUser(USER_ID).getEditabledDish().getId();
+        final long dishId = userService.findUser(USER_ID).getEditabledDish().getDishName();
         assertThat(jdbcTemplate.queryForList(
-                "select p.product_name from t_dish d inner join t_dish_product dp on d.id=dp.dish_id inner join t_product p on dp.product_id=p.product_name where d.id=?",
+                "select p.product_name from t_dish d " +
+                        "inner join t_dish_product dp on d.dish_name=dp.dish_id " +
+                        "inner join t_product p on dp.product_id=p.product_name where d.dish_name=?",
                 String.class,
                 dishId)).containsOnly("Овсянка", "Три ведра укропа");
         assertThat(productRepository.findAll()).hasSize(2);

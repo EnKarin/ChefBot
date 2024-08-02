@@ -77,7 +77,7 @@ class UserServiceTest extends TestBase {
 
     @Test
     void backToMainMenu() {
-        final Dish dish = dishRepository.save(Dish.builder().id(1L).build());
+        final Dish dish = dishRepository.save(Dish.builder().dishName("Рагу").build());
         userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.NEW_DISH_NAME).editabledDish(dish).build());
 
         userService.backToMainMenu(USER_ID);

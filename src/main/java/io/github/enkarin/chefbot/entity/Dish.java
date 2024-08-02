@@ -1,11 +1,11 @@
 package io.github.enkarin.chefbot.entity;
 
-import io.github.enkarin.chefbot.entity.base.BaseEntity;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
@@ -28,10 +28,11 @@ import java.util.Set;
 @NoArgsConstructor
 @ToString(callSuper = true)
 @Table(name = "t_dish")
-public class Dish extends BaseEntity implements Serializable {
+public class Dish implements Serializable {
     @Serial
     private static final long serialVersionUID = -653331779227835564L;
 
+    @Id
     @Column(name = "dish_name")
     private String dishName;
 
