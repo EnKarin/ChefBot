@@ -78,7 +78,7 @@ class DishServiceTest extends TestBase {
     void putDishFoodstuff() {
         dishService.putDishFoodstuff(USER_ID, "Овсянка", "Три ведра укропа");
 
-        final long dishId = userService.findUser(USER_ID).getEditabledDish().getDishName();
+        final String dishId = userService.findUser(USER_ID).getEditabledDish().getDishName();
         assertThat(jdbcTemplate.queryForList(
                 "select p.product_name from t_dish d " +
                         "inner join t_dish_product dp on d.dish_name=dp.dish_id " +
