@@ -22,6 +22,9 @@
         <exclude name="ShortClassName"/>
         <exclude name="PrematureDeclaration"/>
         <exclude name="CallSuperInConstructor"/>
+        <exclude name="LooseCoupling"/>
+        <exclude name="JumbledIncrementer"/>
+        <exclude name="AvoidReassigningLoopVariables"/>
     </rule>
     <rule ref="category/java/codestyle.xml/ClassNamingConventions">
         <properties>

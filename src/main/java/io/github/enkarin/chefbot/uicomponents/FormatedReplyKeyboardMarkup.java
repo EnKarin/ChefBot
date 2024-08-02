@@ -13,7 +13,6 @@ public final class FormatedReplyKeyboardMarkup extends ReplyKeyboardMarkup {
     @Serial
     private static final long serialVersionUID = 3790890795798913977L;
 
-    @SuppressWarnings({"PMD.LooseCoupling", "PMD.JumbledIncrementer", "PMD.AvoidReassigningLoopVariables"})
     public FormatedReplyKeyboardMarkup(final UserAnswerOption answerOptions) {
         setOneTimeKeyboard(true);
         setResizeKeyboard(true);

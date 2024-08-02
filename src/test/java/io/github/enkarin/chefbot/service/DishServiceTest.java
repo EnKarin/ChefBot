@@ -24,13 +24,13 @@ class DishServiceTest extends TestBase {
 
     @BeforeEach
     void init() {
-        userService.findOrSaveUser(CHAT_ID);
-        dishService.initDishName(CHAT_ID, "Рагу");
+        userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        dishService.initDishName(USER_ID, "Рагу");
     }
 
     @Test
     void initDishShouldWork() {
-        assertThat(userRepository.findById(CHAT_ID))
+        assertThat(userRepository.findById(USER_ID))
                 .isPresent()
                 .get()
                 .satisfies(u -> {
@@ -48,9 +48,9 @@ class DishServiceTest extends TestBase {
 
     @Test
     void deleteDishShouldWork() {
-        dishService.deleteDish(CHAT_ID);
+        dishService.deleteDish(USER_ID);
 
-        assertThat(userRepository.findById(CHAT_ID))
+        assertThat(userRepository.findById(USER_ID))
                 .isPresent()
                 .get()
                 .extracting(User::getEditabledDish, User::getChatStatus)
@@ -60,30 +60,30 @@ class DishServiceTest extends TestBase {
 
     @Test
     void putDishSpicy() {
-        dishService.putDishIsSpicy(CHAT_ID);
+        dishService.putDishIsSpicy(USER_ID);
 
-        assertThat(userRepository.findById(CHAT_ID).orElseThrow().getEditabledDish().isSpicy()).isTrue();
+        assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish().isSpicy()).isTrue();
     }
 
     @Test
     void putDishSoup() {
-        dishService.putDishIsSoup(CHAT_ID);
+        dishService.putDishIsSoup(USER_ID);
 
-        assertThat(userRepository.findById(CHAT_ID).orElseThrow().getEditabledDish().isSoup()).isTrue();
+        assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish().isSoup()).isTrue();
     }
 
     @Test
     void putDishCuisine() {
-        dishService.putDishCuisine(CHAT_ID, WorldCuisine.SLAVIC);
+        dishService.putDishCuisine(USER_ID, WorldCuisine.SLAVIC);
 
-        assertThat(userRepository.findById(CHAT_ID).orElseThrow().getEditabledDish().getCuisine()).isEqualTo(WorldCuisine.SLAVIC);
+        assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish().getCuisine()).isEqualTo(WorldCuisine.SLAVIC);
     }
 
     @Test
     void putDishFoodstuff() {
-        dishService.putDishFoodstuff(CHAT_ID, "Овсянка", "Три ведра укропа");
+        dishService.putDishFoodstuff(USER_ID, "Овсянка", "Три ведра укропа");
 
-        final long dishId = userService.findUser(CHAT_ID).getEditabledDish().getId();
+        final long dishId = userService.findUser(USER_ID).getEditabledDish().getId();
         assertThat(jdbcTemplate.queryForList(
                 "select p.product_name from t_dish d inner join t_dish_product dp on d.id=dp.dish_id inner join t_product p on dp.product_id=p.product_name where d.id=?",
                 String.class,

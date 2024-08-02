@@ -23,8 +23,8 @@ public class DishService {
     private final UserService userService;
 
     @Transactional
-    void initDishName(final long chatId, final String name) {
-        final User user = userService.findUser(chatId);
+    void initDishName(final long userId, final String name) {
+        final User user = userService.findUser(userId);
         user.setEditabledDish(dishRepository.save(Dish.builder()
                 .dishName(name)
                 .owner(user)
@@ -34,8 +34,8 @@ public class DishService {
     }
 
     @Transactional
-    void deleteDish(final long chatId) {
-        final User user = userService.findUser(chatId);
+    void deleteDish(final long userId) {
+        final User user = userService.findUser(userId);
         final long deletedDishId = user.getEditabledDish().getId();
 
         user.setEditabledDish(null);
@@ -44,27 +44,27 @@ public class DishService {
     }
 
     @Transactional
-    void putDishIsSpicy(final long chatId) {
-        final Dish dish = findEditableDish(chatId);
+    void putDishIsSpicy(final long userId) {
+        final Dish dish = findEditableDish(userId);
         dish.setSpicy(true);
     }
 
 
     @Transactional
-    void putDishIsSoup(final long chatId) {
-        final Dish dish = findEditableDish(chatId);
+    void putDishIsSoup(final long userId) {
+        final Dish dish = findEditableDish(userId);
         dish.setSoup(true);
     }
 
     @Transactional
-    void putDishCuisine(final long chatId, final WorldCuisine cuisine) {
-        final Dish dish = findEditableDish(chatId);
+    void putDishCuisine(final long userId, final WorldCuisine cuisine) {
+        final Dish dish = findEditableDish(userId);
         dish.setCuisine(cuisine);
     }
 
     @Transactional
-    void putDishFoodstuff(final long chatId, final String... foodstuffNames) {
-        final Dish dish = findEditableDish(chatId);
+    void putDishFoodstuff(final long userId, final String... foodstuffNames) {
+        final Dish dish = findEditableDish(userId);
         final Set<Product> products = new HashSet<>();
         for (final String foodstuffName : foodstuffNames) {
             products.add(productRepository.findById(foodstuffName).orElseGet(() -> productRepository.save(Product.builder().productName(foodstuffName).build())));
@@ -72,7 +72,7 @@ public class DishService {
         dish.setProducts(products);
     }
 
-    private Dish findEditableDish(final long chatId) {
-        return userService.findUser(chatId).getEditabledDish();
+    private Dish findEditableDish(final long userId) {
+        return userService.findUser(userId).getEditabledDish();
     }
 }

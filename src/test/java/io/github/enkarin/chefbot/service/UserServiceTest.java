@@ -16,54 +16,43 @@ class UserServiceTest extends TestBase {
 
     @Test
     void findOrSaveShouldWork() {
-        userService.findOrSaveUser(CHAT_ID);
+        userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
-        assertThat(userRepository.findById(CHAT_ID))
+        assertThat(userRepository.findById(USER_ID))
                 .isPresent();
     }
 
     @Test
-    void findOrSaveUserShouldWorkForSecondCall() {
-        userService.findOrSaveUser(CHAT_ID);
-        userService.findOrSaveUser(CHAT_ID);
+    void createOfUpdateUserShouldWorkForSecondCall() {
+        userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
         assertThat(userRepository.findAll())
                 .hasSize(1)
                 .first()
                 .extracting(User::getChatId)
-                .isEqualTo(CHAT_ID);
+                .isEqualTo(USER_ID);
     }
 
 
     @Test
     void findOrSaveShouldWorkIfUserNotPresent() {
-        userService.findOrSaveUser(CHAT_ID);
+        userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
         assertThat(userRepository.findAll())
                 .hasSize(1)
                 .first()
                 .extracting(User::getChatId)
-                .isEqualTo(CHAT_ID);
-    }
-
-    @Test
-    void changeModeratorStatusSetTrueShouldWork() {
-        createModerator(CHAT_ID);
-
-        assertThat(userRepository.findById(CHAT_ID))
-                .isPresent()
-                .get()
-                .extracting(User::isModerator)
-                .isEqualTo(true);
+                .isEqualTo(USER_ID);
     }
 
     @Test
     void getAllModeratorsShouldWork() {
-        final long noModeratorId = CHAT_ID - 5;
-        createModerator(CHAT_ID);
-        createModerator(CHAT_ID - 1);
-        createModerator(CHAT_ID - 2);
-        userService.findOrSaveUser(noModeratorId);
+        final long noModeratorId = USER_ID - 5;
+        userRepository.save(User.builder().chatId(USER_ID).moderator(true).build());
+        userRepository.save(User.builder().chatId(USER_ID - 1).moderator(true).build());
+        userRepository.save(User.builder().chatId(USER_ID - 2).moderator(true).build());
+        userService.createOfUpdateUser(noModeratorId, CHAT_ID, USERNAME);
 
         assertThat(userService.getAllModerators())
                 .hasSize(3)
@@ -72,26 +61,21 @@ class UserServiceTest extends TestBase {
 
     @Test
     void getChatStatusShouldWork() {
-        userService.findOrSaveUser(CHAT_ID);
+        userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
-        assertThat(userService.getChatStatus(CHAT_ID))
+        assertThat(userService.getChatStatus(USER_ID))
                 .isEqualTo(ChatStatus.MAIN_MENU);
     }
 
     @Test
     void backToMainMenu() {
         final Dish dish = dishRepository.save(Dish.builder().id(1L).build());
-        userRepository.save(User.builder().chatId(CHAT_ID).chatStatus(ChatStatus.NEW_DISH_NAME).editabledDish(dish).build());
+        userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.NEW_DISH_NAME).editabledDish(dish).build());
 
-        userService.backToMainMenu(CHAT_ID);
+        userService.backToMainMenu(USER_ID);
 
-        final User user = userRepository.findById(CHAT_ID).orElseThrow();
+        final User user = userRepository.findById(USER_ID).orElseThrow();
         assertThat(user.getEditabledDish()).isNull();
         assertThat(user.getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
-    }
-
-    private void createModerator(final long chatId) {
-        userService.findOrSaveUser(chatId);
-        userService.changeModeratorStatus(chatId);
     }
 }

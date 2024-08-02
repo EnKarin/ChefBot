@@ -15,21 +15,21 @@ public class TelegramController {
     private final UserService userService;
     private final ProcessingFacade processingFacade;
 
-    public BotAnswer executeCommand(final long chatId, final String text) {
+    public BotAnswer executeStartCommand(final long userId, final long chatId, final String username) {
+        userService.createOfUpdateUser(userId, chatId, username);
+        return new BotAnswer("Приветствую! Здесь вы можете найти блюдо по вашим предпочтениям и поделиться своими рецептами с другими пользователями");
+    }
+
+    public BotAnswer executeWorkerCommand(final long userId, final String text) {
         try {
-            if ("/start".equals(text)) {
-                userService.findOrSaveUser(chatId);
-                return new BotAnswer("Приветствую! Здесь вы можете найти блюдо по вашим предпочтениям и поделиться своими рецептами с другими пользователями");
-            }
-            if (userService.getChatStatus(chatId) == ChatStatus.MAIN_MENU) {
+            if (userService.getChatStatus(userId) == ChatStatus.MAIN_MENU) {
                 return switch (text) {
-                    case "/change_moderator_status" -> new BotAnswer(userService.changeModeratorStatus(chatId) ? "Вы стали модератором!" : "Вы больше не модератор");
                     case "/back_to_main_menu" -> new BotAnswer("Вы уже в главном меню");
                     default -> new BotAnswer("Указанной команды не существует");
                 };
             } else {
                 if ("/back_to_main_menu".equals(text)) {
-                    userService.backToMainMenu(chatId);
+                    userService.backToMainMenu(userId);
                     return new BotAnswer("Вы возвращены в главное меню");
                 } else {
                     return new BotAnswer("Эта команда доступна только в главном меню. " +
@@ -42,7 +42,7 @@ public class TelegramController {
         }
     }
 
-    public BotAnswer processingNonCommandInput(final long chatId, final String text) {
-        return processingFacade.execute(chatId, userService.getChatStatus(chatId), text);
+    public BotAnswer processingNonCommandInput(final long userId, final String text) {
+        return processingFacade.execute(userId, userService.getChatStatus(userId), text);
     }
 }
