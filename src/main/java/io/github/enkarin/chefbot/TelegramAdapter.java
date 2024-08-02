@@ -53,7 +53,7 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
         try {
             execute(sendMessage);
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error(e.toString());
         }
     }
 }
