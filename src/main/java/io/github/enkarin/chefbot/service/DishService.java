@@ -36,7 +36,7 @@ public class DishService {
     @Transactional
     void deleteDish(final long chatId) {
         final User user = userService.findUser(chatId);
-        final long deletedDishId = user.getEditabledDish().getId();
+        final String deletedDishId = user.getEditabledDish().getDishName();
 
         user.setEditabledDish(null);
         user.setChatStatus(ChatStatus.MAIN_MENU);

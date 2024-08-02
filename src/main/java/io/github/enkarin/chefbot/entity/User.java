@@ -40,7 +40,7 @@ public class User implements Serializable {
     private boolean moderator;
 
     @OneToOne(orphanRemoval = true)
-    @JoinColumn(name = "editable_dish_id", referencedColumnName = "id")
+    @JoinColumn(name = "editable_dish_id", referencedColumnName = "dish_name")
     private Dish editabledDish;
 
     @OneToMany(mappedBy = "owner", orphanRemoval = true)

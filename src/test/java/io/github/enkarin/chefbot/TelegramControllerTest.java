@@ -62,7 +62,7 @@ class TelegramControllerTest extends TestBase {
 
     @Test
     void executeBackMainMenuNotFromMainMenu() {
-        final Dish dish = dishRepository.save(Dish.builder().id(1L).build());
+        final Dish dish = dishRepository.save(Dish.builder().dishName("Рагу").build());
         userRepository.save(User.builder().chatId(CHAT_ID).chatStatus(ChatStatus.NEW_DISH_NAME).editabledDish(dish).build());
 
         final BotAnswer botAnswer = telegramController.executeCommand(CHAT_ID, "/back_to_main_menu");
