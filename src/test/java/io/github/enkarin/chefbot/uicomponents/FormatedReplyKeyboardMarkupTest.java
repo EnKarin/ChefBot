@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class FormatedReplyKeyboardMarkupTest extends TestBase {
     @Test
     void createKeyboardWithEvenElementQuantity() {
-        final FormatedReplyKeyboardMarkup keyboardMarkup = new FormatedReplyKeyboardMarkup(UserAnswerOption.YES_NO);
+        final FormatedReplyKeyboardMarkup keyboardMarkup = new FormatedReplyKeyboardMarkup(UserAnswerOption.YES_OR_NO);
 
         assertThat(keyboardMarkup.getKeyboard().size()).isEqualTo(1);
         assertThat(keyboardMarkup.getKeyboard().get(0)).extracting(KeyboardButton::getText).containsAll(List.of("Да", "Нет"));

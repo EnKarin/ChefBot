@@ -30,7 +30,7 @@ class UserServiceTest extends TestBase {
         assertThat(userRepository.findAll())
                 .hasSize(1)
                 .first()
-                .extracting(User::getChatId)
+                .extracting(User::getId)
                 .isEqualTo(USER_ID);
     }
 
@@ -42,17 +42,17 @@ class UserServiceTest extends TestBase {
         assertThat(userRepository.findAll())
                 .hasSize(1)
                 .first()
-                .extracting(User::getChatId)
+                .extracting(User::getId)
                 .isEqualTo(USER_ID);
     }
 
     @Test
     void getAllModeratorsShouldWork() {
         final long noModeratorId = USER_ID - 5;
-        userRepository.save(User.builder().chatId(USER_ID).moderator(true).build());
-        userRepository.save(User.builder().chatId(USER_ID - 1).moderator(true).build());
-        userRepository.save(User.builder().chatId(USER_ID - 2).moderator(true).build());
-        userService.createOfUpdateUser(noModeratorId, CHAT_ID, USERNAME);
+        userRepository.save(User.builder().id(USER_ID).chatId(CHAT_ID).username("a").moderator(true).build());
+        userRepository.save(User.builder().id(USER_ID - 1).chatId(CHAT_ID - 1).username("b").moderator(true).build());
+        userRepository.save(User.builder().id(USER_ID - 2).chatId(CHAT_ID - 2).username("c").moderator(true).build());
+        userService.createOfUpdateUser(noModeratorId, CHAT_ID - 5, USERNAME);
 
         assertThat(userService.getAllModerators())
                 .hasSize(3)
@@ -63,8 +63,16 @@ class UserServiceTest extends TestBase {
     void getChatStatusShouldWork() {
         userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
-        assertThat(userService.getChatStatus(USER_ID))
-                .isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(userService.getChatStatus(USER_ID)).isEqualTo(ChatStatus.MAIN_MENU);
+    }
+
+    @Test
+    void setChatStatusShouldWork() {
+        userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
+
+        userService.setChatStatus(USER_ID, ChatStatus.REMOVE_DISH);
+
+        assertThat(userRepository.findById(USER_ID).orElseThrow().getChatStatus()).isEqualTo(ChatStatus.REMOVE_DISH);
     }
 
     @Test

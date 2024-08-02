@@ -1,6 +1,5 @@
 package io.github.enkarin.chefbot.entity;
 
-import io.github.enkarin.chefbot.entity.base.BaseEntity;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,15 +27,17 @@ import java.util.Set;
 @NoArgsConstructor
 @ToString(callSuper = true)
 @Table(name = "t_user")
-public class User extends BaseEntity implements Serializable {
-
+public class User implements Serializable {
     @Serial
     private static final long serialVersionUID = -224945856393620757L;
 
-    @Column(name = "chat_id")
+    @Id
+    private long id;
+
+    @Column(name = "chat_id", unique = true)
     private long chatId;
 
-    @Column(name = "username")
+    @Column(name = "username", unique = true)
     private String username;
 
     @Column(name = "moderator")

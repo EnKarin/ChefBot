@@ -23,7 +23,7 @@ class TelegramControllerTest extends TestBase {
 
     @Test
     void executeWorkerCommandStart() {
-        final BotAnswer botAnswer = telegramController.executeWorkerCommand(USER_ID, "/start");
+        final BotAnswer botAnswer = telegramController.executeStartCommand(USER_ID, CHAT_ID, USERNAME);
 
         assertThat(botAnswer.messageText()).isEqualTo("Приветствую! Здесь вы можете найти блюдо по вашим предпочтениям и поделиться своими рецептами с другими пользователями");
         assertThat(botAnswer.userAnswerOption()).isEqualTo(UserAnswerOption.NONE);
@@ -31,22 +31,12 @@ class TelegramControllerTest extends TestBase {
     }
 
     @Test
-    void becomingModerator() {
+    void callUndetectableCommand() {
         userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.MAIN_MENU).build());
 
         final BotAnswer botAnswer = telegramController.executeWorkerCommand(USER_ID, "/change_moderator_status");
 
-        assertThat(botAnswer.messageText()).isEqualTo("Вы стали модератором!");
-        assertThat(botAnswer.userAnswerOption()).isEqualTo(UserAnswerOption.NONE);
-    }
-
-    @Test
-    void leaveModerator() {
-        userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.MAIN_MENU).moderator(true).build());
-
-        final BotAnswer botAnswer = telegramController.executeWorkerCommand(USER_ID, "/change_moderator_status");
-
-        assertThat(botAnswer.messageText()).isEqualTo("Вы больше не модератор");
+        assertThat(botAnswer.messageText()).isEqualTo("Указанной команды не существует");
         assertThat(botAnswer.userAnswerOption()).isEqualTo(UserAnswerOption.NONE);
     }
 
@@ -67,18 +57,8 @@ class TelegramControllerTest extends TestBase {
 
         final BotAnswer botAnswer = telegramController.executeWorkerCommand(USER_ID, "/back_to_main_menu");
 
-        assertThat(botAnswer.messageText()).isEqualTo("Вы возвращены в главное меню");
-        assertThat(botAnswer.userAnswerOption()).isEqualTo(UserAnswerOption.NONE);
-    }
-
-    @Test
-    void executeUndetectableCommand() {
-        userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.MAIN_MENU).build());
-
-        final BotAnswer botAnswer = telegramController.executeWorkerCommand(USER_ID, "/aboba");
-
-        assertThat(botAnswer.messageText()).isEqualTo("Указанной команды не существует");
-        assertThat(botAnswer.userAnswerOption()).isEqualTo(UserAnswerOption.NONE);
+        assertThat(botAnswer.messageText()).isEqualTo("Вы хотите вернуться в главное меню? Весь прогресс текущей операции будет утерян.");
+        assertThat(botAnswer.userAnswerOption()).isEqualTo(UserAnswerOption.YES_OR_NO);
     }
 
     @Test

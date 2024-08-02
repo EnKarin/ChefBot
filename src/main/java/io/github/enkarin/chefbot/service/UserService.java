@@ -18,14 +18,11 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void createOfUpdateUser(final long userId, final long chatId, final String username) { // todo
-        userRepository.findById(userId).orElseGet(() -> userRepository.save(User.builder()
-                .id(userId)
-                .chatId(chatId)
-                .username(username)
-                .chatStatus(ChatStatus.MAIN_MENU)
-                .build()));
-
+    public void createOfUpdateUser(final long userId, final long chatId, final String username) {
+        final User user = userRepository.findById(userId).orElseGet(() -> User.builder().id(userId).chatStatus(ChatStatus.MAIN_MENU).build());
+        user.setChatId(chatId);
+        user.setUsername(username);
+        userRepository.save(user);
     }
 
     public Set<Long> getAllModerators() {
@@ -34,14 +31,18 @@ public class UserService {
                 .collect(Collectors.toSet());
     }
 
-    @Transactional
     public ChatStatus getChatStatus(final long userId) {
         return findUser(userId).getChatStatus();
     }
 
     @Transactional
+    public void setChatStatus(final long userId, final ChatStatus chatStatus) {
+        findUser(userId).setChatStatus(chatStatus);
+    }
+
+    @Transactional
     public void backToMainMenu(final long userId) {
-        final User user = userRepository.findById(userId).orElseThrow();
+        final User user = findUser(userId);
         user.setEditabledDish(null);
         user.setChatStatus(ChatStatus.MAIN_MENU);
     }

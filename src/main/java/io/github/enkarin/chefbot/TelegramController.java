@@ -2,6 +2,7 @@ package io.github.enkarin.chefbot;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.enums.ChatStatus;
+import io.github.enkarin.chefbot.enums.UserAnswerOption;
 import io.github.enkarin.chefbot.service.ProcessingFacade;
 import io.github.enkarin.chefbot.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +30,8 @@ public class TelegramController {
                 };
             } else {
                 if ("/back_to_main_menu".equals(text)) {
-                    userService.backToMainMenu(userId);
-                    return new BotAnswer("Вы возвращены в главное меню");
+                    userService.setChatStatus(userId, ChatStatus.APPROVE_BACK_TO_MAIN_MENU);
+                    return new BotAnswer("Вы хотите вернуться в главное меню? Весь прогресс текущей операции будет утерян.", UserAnswerOption.YES_OR_NO);
                 } else {
                     return new BotAnswer("Эта команда доступна только в главном меню. " +
                             "Вам необходимо продолжить ввод или вернуться в главное меню c помощью команды /back_to_main_menu");
