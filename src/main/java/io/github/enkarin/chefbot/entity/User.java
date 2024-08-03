@@ -52,4 +52,7 @@ public class User implements Serializable {
 
     @Enumerated(EnumType.STRING)
     private ChatStatus chatStatus;
+
+    @Enumerated(EnumType.STRING)
+    private ChatStatus previousChatStatus;
 }

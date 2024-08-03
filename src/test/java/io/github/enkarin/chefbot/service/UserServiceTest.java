@@ -67,12 +67,14 @@ class UserServiceTest extends TestBase {
     }
 
     @Test
-    void setChatStatusShouldWork() {
+    void switchToNewStatusShouldWork() {
         userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
-        userService.setChatStatus(USER_ID, ChatStatus.REMOVE_DISH);
+        userService.switchToNewStatus(USER_ID, ChatStatus.REMOVE_DISH);
 
-        assertThat(userRepository.findById(USER_ID).orElseThrow().getChatStatus()).isEqualTo(ChatStatus.REMOVE_DISH);
+        final User user = userRepository.findById(USER_ID).orElseThrow();
+        assertThat(user.getChatStatus()).isEqualTo(ChatStatus.REMOVE_DISH);
+        assertThat(user.getPreviousChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
     }
 
     @Test

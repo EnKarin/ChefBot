@@ -36,8 +36,10 @@ public class UserService {
     }
 
     @Transactional
-    public void setChatStatus(final long userId, final ChatStatus chatStatus) {
-        findUser(userId).setChatStatus(chatStatus);
+    public void switchToNewStatus(final long userId, final ChatStatus newChatStatus) {
+        final User user = findUser(userId);
+        user.setPreviousChatStatus(user.getChatStatus());
+        user.setChatStatus(newChatStatus);
     }
 
     @Transactional
