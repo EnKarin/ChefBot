@@ -30,7 +30,7 @@ public class TelegramController {
                 };
             } else {
                 if ("/back_to_main_menu".equals(text)) {
-                    userService.setChatStatus(userId, ChatStatus.APPROVE_BACK_TO_MAIN_MENU);
+                    userService.switchToNewStatus(userId, ChatStatus.APPROVE_BACK_TO_MAIN_MENU);
                     return new BotAnswer("Вы хотите вернуться в главное меню? Весь прогресс текущей операции будет утерян.", UserAnswerOption.YES_OR_NO);
                 } else {
                     return new BotAnswer("Эта команда доступна только в главном меню. " +
