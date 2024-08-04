@@ -1,5 +1,6 @@
 package io.github.enkarin.chefbot.service;
 
+import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
@@ -42,23 +43,32 @@ class DishServiceTest extends TestBase {
     }
 
     @Test
-    @Transactional //todo: remove transactionality when an opportunity arises
+    void findById() {
+        final long dishId = dishRepository.save(Dish.builder().dishName("Каша").build()).getId();
+
+        assertThat(dishService.findById(dishId)).satisfies(dishDto -> {
+            assertThat(dishDto).isNotNull();
+            assertThat(dishDto.getName()).isEqualTo("Каша");
+            assertThat(dishDto.isSoup()).isFalse();
+            assertThat(dishDto.isSpicy()).isFalse();
+        });
+
+        dishRepository.deleteById(dishId);
+    }
+
+    @Test
     void initDishNameReuse() {
         final long dishId = userService.findUser(USER_ID).getEditabledDish().getId();
 
         dishService.initDishName(USER_ID, "Каша");
 
-        assertThat(userRepository.findById(USER_ID))
-                .isPresent()
-                .get()
-                .satisfies(u -> {
-                    assertThat(u.getEditabledDish()).isNotNull();
-                    assertThat(u.getEditabledDish().getDishName()).isEqualTo("Каша");
-                    assertThat(u.getEditabledDish().isSoup()).isFalse();
-                    assertThat(u.getEditabledDish().isSpicy()).isFalse();
-                });
+        assertThat(dishService.findById(dishId)).satisfies(dishDto -> {
+            assertThat(dishDto).isNotNull();
+            assertThat(dishDto.getName()).isEqualTo("Каша");
+            assertThat(dishDto.isSoup()).isFalse();
+            assertThat(dishDto.isSpicy()).isFalse();
+        });
         assertThat(dishRepository.count()).isEqualTo(1);
-        assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish().getId()).isEqualTo(dishId);
     }
 
     @Test
@@ -70,7 +80,7 @@ class DishServiceTest extends TestBase {
                 .get()
                 .extracting(User::getEditabledDish, User::getChatStatus)
                 .containsOnly(null, ChatStatus.MAIN_MENU);
-        assertThat(dishRepository.findAll()).isEmpty();
+        assertThat(dishRepository.count()).isEqualTo(0);
     }
 
     @Test

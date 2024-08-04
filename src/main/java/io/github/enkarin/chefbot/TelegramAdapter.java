@@ -1,6 +1,7 @@
 package io.github.enkarin.chefbot;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
+import io.github.enkarin.chefbot.dto.DishDto;
 import io.github.enkarin.chefbot.enums.UserAnswerOption;
 import io.github.enkarin.chefbot.uicomponents.FormatedReplyKeyboardMarkup;
 import lombok.Getter;
@@ -53,6 +54,9 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
     }
 
     private void send(final long chatId, final BotAnswer botAnswer) {
+        if (botAnswer.publishDishId() != -1) {
+            publishDish(chatId, botAnswer.publishDishId());
+        }
         final SendMessage sendMessage = new SendMessage();
         sendMessage.setText(botAnswer.messageText());
         if (botAnswer.userAnswerOption() != UserAnswerOption.DEFAULT) {
@@ -65,6 +69,13 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
             execute(sendMessage);
         } catch (Exception e) {
             log.error(e.toString());
+        }
+    }
+
+    private void publishDish(final long chatId, final long publishDishId) {
+        final DishDto dishDto = telegramController.findDishById(publishDishId);
+        for (long nowChatId : telegramController.findSuitableModerators(chatId)) {
+            //todo: Send approve request logic
         }
     }
 }

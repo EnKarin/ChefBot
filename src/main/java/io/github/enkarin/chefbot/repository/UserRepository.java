@@ -7,5 +7,5 @@ import java.util.Set;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    Set<User> findAllByModeratorIsTrue();
+    Set<User> findAllByModeratorIsTrueAndChatIdIsNot(long id);
 }

@@ -45,14 +45,27 @@ class UserServiceTest extends TestBase {
     }
 
     @Test
-    void getAllModeratorsShouldWork() {
+    void getAllModeratorsWithoutNonExistUserShouldWork() {
         final long noModeratorId = USER_ID - 5;
         userRepository.save(User.builder().id(USER_ID).chatId(CHAT_ID).username("a").moderator(true).build());
         userRepository.save(User.builder().id(USER_ID - 1).chatId(CHAT_ID - 1).username("b").moderator(true).build());
         userRepository.save(User.builder().id(USER_ID - 2).chatId(CHAT_ID - 2).username("c").moderator(true).build());
         userService.createOfUpdateUser(noModeratorId, CHAT_ID - 5, USERNAME);
 
-        assertThat(userService.getAllModerators()).hasSize(3).doesNotContain(noModeratorId);
+        assertThat(userService.getAllModeratorsWithoutCurrentUser(0)).hasSize(3).doesNotContain(noModeratorId);
+    }
+
+    @Test
+    void getAllModeratorsWithoutCurrentUserShouldWork() {
+        final long noModeratorId = USER_ID - 5;
+        userRepository.save(User.builder().id(USER_ID).chatId(CHAT_ID).username("a").moderator(true).build());
+        userRepository.save(User.builder().id(USER_ID - 1).chatId(CHAT_ID - 1).username("b").moderator(true).build());
+        userRepository.save(User.builder().id(USER_ID - 2).chatId(CHAT_ID - 2).username("c").moderator(true).build());
+        userService.createOfUpdateUser(noModeratorId, CHAT_ID - 5, USERNAME);
+
+        assertThat(userService.getAllModeratorsWithoutCurrentUser(CHAT_ID))
+                .hasSize(2)
+                .doesNotContain(noModeratorId, USER_ID);
     }
 
     @Test

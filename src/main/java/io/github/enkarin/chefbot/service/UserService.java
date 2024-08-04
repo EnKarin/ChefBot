@@ -29,8 +29,8 @@ public class UserService {
         return findUser(userId).getChatStatus();
     }
 
-    Set<Long> getAllModerators() {
-        return userRepository.findAllByModeratorIsTrue().stream()
+    public Set<Long> getAllModeratorsWithoutCurrentUser(final long currentChatId) {
+        return userRepository.findAllByModeratorIsTrueAndChatIdIsNot(currentChatId).stream()
                 .map(User::getChatId)
                 .collect(Collectors.toSet());
     }
