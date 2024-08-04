@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class UserServiceTest extends TestBase {
-
     @Autowired
     private UserService userService;
 
@@ -18,8 +17,7 @@ class UserServiceTest extends TestBase {
     void findOrSaveShouldWork() {
         userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
-        assertThat(userRepository.findById(USER_ID))
-                .isPresent();
+        assertThat(userRepository.findById(USER_ID)).isPresent();
     }
 
     @Test
@@ -54,9 +52,7 @@ class UserServiceTest extends TestBase {
         userRepository.save(User.builder().id(USER_ID - 2).chatId(CHAT_ID - 2).username("c").moderator(true).build());
         userService.createOfUpdateUser(noModeratorId, CHAT_ID - 5, USERNAME);
 
-        assertThat(userService.getAllModerators())
-                .hasSize(3)
-                .doesNotContain(noModeratorId);
+        assertThat(userService.getAllModerators()).hasSize(3).doesNotContain(noModeratorId);
     }
 
     @Test
@@ -72,9 +68,10 @@ class UserServiceTest extends TestBase {
 
         userService.switchToNewStatus(USER_ID, ChatStatus.REMOVE_DISH);
 
-        final User user = userRepository.findById(USER_ID).orElseThrow();
-        assertThat(user.getChatStatus()).isEqualTo(ChatStatus.REMOVE_DISH);
-        assertThat(user.getPreviousChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(userRepository.findById(USER_ID).orElseThrow()).satisfies(user -> {
+            assertThat(user.getChatStatus()).isEqualTo(ChatStatus.REMOVE_DISH);
+            assertThat(user.getPreviousChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+        });
     }
 
     @Test
@@ -84,9 +81,10 @@ class UserServiceTest extends TestBase {
 
         userService.switchToNewStatus(USER_ID, ChatStatus.REMOVE_DISH);
 
-        final User user = userRepository.findById(USER_ID).orElseThrow();
-        assertThat(user.getChatStatus()).isEqualTo(ChatStatus.REMOVE_DISH);
-        assertThat(user.getPreviousChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(userRepository.findById(USER_ID).orElseThrow()).satisfies(user -> {
+            assertThat(user.getChatStatus()).isEqualTo(ChatStatus.REMOVE_DISH);
+            assertThat(user.getPreviousChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+        });
     }
 
     @Test
@@ -105,10 +103,11 @@ class UserServiceTest extends TestBase {
 
         userService.switchToNewStatus(USER_ID, ChatStatus.MAIN_MENU);
 
-        final User user = userRepository.findById(USER_ID).orElseThrow();
-        assertThat(user.getEditabledDish()).isNull();
-        assertThat(user.getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
-        assertThat(user.getPreviousChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(userRepository.findById(USER_ID).orElseThrow()).satisfies(user -> {
+            assertThat(user.getEditabledDish()).isNull();
+            assertThat(user.getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+            assertThat(user.getPreviousChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+        });
     }
 
     @Test
@@ -131,9 +130,10 @@ class UserServiceTest extends TestBase {
 
         assertThat(userService.backToPreviousStatus(USER_ID)).isEqualTo(ChatStatus.MAIN_MENU);
 
-        final User user = userRepository.findById(USER_ID).orElseThrow();
-        assertThat(user.getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
-        assertThat(user.getPreviousChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(userRepository.findById(USER_ID).orElseThrow()).satisfies(user -> {
+            assertThat(user.getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+            assertThat(user.getPreviousChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+        });
     }
 
     @Test
