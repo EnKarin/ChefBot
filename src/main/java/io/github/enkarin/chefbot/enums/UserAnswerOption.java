@@ -9,6 +9,7 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public enum UserAnswerOption {
     NONE(null),
+    DEFAULT(null),
     YES_OR_NO(new String[]{"Да", "Нет"}),
     CUISINES(Arrays.stream(WorldCuisine.values()).map(WorldCuisine::getLocalizedValue).toArray(String[]::new));
 

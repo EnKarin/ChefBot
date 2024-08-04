@@ -4,6 +4,7 @@ import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 
 public interface ProcessingService {
-    BotAnswer execute(long userId, String text);
+    ChatStatus execute(long userId, String text);
+    BotAnswer getMessageForUser();
     ChatStatus getCurrentStatus();
 }

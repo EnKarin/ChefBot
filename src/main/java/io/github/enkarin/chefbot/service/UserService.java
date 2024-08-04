@@ -25,28 +25,44 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public Set<Long> getAllModerators() {
+    public ChatStatus getChatStatus(final long userId) {
+        return findUser(userId).getChatStatus();
+    }
+
+    Set<Long> getAllModerators() {
         return userRepository.findAllByModeratorIsTrue().stream()
                 .map(User::getChatId)
                 .collect(Collectors.toSet());
     }
 
-    public ChatStatus getChatStatus(final long userId) {
-        return findUser(userId).getChatStatus();
+    ChatStatus getPreviousChatStatus(final long userId) {
+        return findUser(userId).getPreviousChatStatus();
     }
 
     @Transactional
-    public void switchToNewStatus(final long userId, final ChatStatus newChatStatus) {
+    void switchToNewStatus(final long userId, final ChatStatus newChatStatus) {
         final User user = findUser(userId);
-        user.setPreviousChatStatus(user.getChatStatus());
-        user.setChatStatus(newChatStatus);
+        if (user.getChatStatus() != newChatStatus) {
+            if (newChatStatus == ChatStatus.MAIN_MENU) {
+                user.setEditabledDish(null);
+                user.setPreviousChatStatus(ChatStatus.MAIN_MENU);
+            } else {
+                user.setPreviousChatStatus(user.getChatStatus());
+            }
+            user.setChatStatus(newChatStatus);
+        }
+    }
+
+    boolean canUndo(final long userId) {
+        final User user = findUser(userId);
+        return user.getChatStatus() != user.getPreviousChatStatus();
     }
 
     @Transactional
-    public void backToMainMenu(final long userId) {
+    ChatStatus backToPreviousStatus(final long userId) {
         final User user = findUser(userId);
-        user.setEditabledDish(null);
-        user.setChatStatus(ChatStatus.MAIN_MENU);
+        user.setChatStatus(user.getPreviousChatStatus());
+        return user.getChatStatus();
     }
 
     User findUser(final long userId) {
