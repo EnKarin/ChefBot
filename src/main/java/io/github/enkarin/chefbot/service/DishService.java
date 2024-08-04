@@ -3,7 +3,6 @@ package io.github.enkarin.chefbot.service;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.Product;
 import io.github.enkarin.chefbot.entity.User;
-import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.repository.DishRepository;
 import io.github.enkarin.chefbot.repository.ProductRepository;
@@ -25,21 +24,23 @@ public class DishService {
     @Transactional
     void initDishName(final long userId, final String name) {
         final User user = userService.findUser(userId);
-        user.setEditabledDish(dishRepository.save(Dish.builder()
-                .dishName(name)
-                .owner(user)
-                .build()
-        ));
-        user.setChatStatus(ChatStatus.NEW_DISH_NAME);
+        if (user.getEditabledDish() == null) {
+            user.setEditabledDish(dishRepository.save(Dish.builder()
+                    .dishName(name)
+                    .owner(user)
+                    .build()
+            ));
+        } else {
+            user.getEditabledDish().setDishName(name);
+        }
     }
 
     @Transactional
     void deleteDish(final long userId) {
         final User user = userService.findUser(userId);
-        final String deletedDishId = user.getEditabledDish().getDishName();
+        final long deletedDishId = user.getEditabledDish().getId();
 
         user.setEditabledDish(null);
-        user.setChatStatus(ChatStatus.MAIN_MENU);
         dishRepository.deleteById(deletedDishId);
     }
 

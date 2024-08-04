@@ -1,15 +1,10 @@
 package io.github.enkarin.chefbot;
 
-import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
-import io.github.enkarin.chefbot.enums.UserAnswerOption;
-import io.github.enkarin.chefbot.service.ProcessingFacade;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.MessageEntity;
@@ -20,9 +15,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TelegramAdapterTest extends TestBase {
-    @MockBean
-    private ProcessingFacade processingFacade;
-
     @Autowired
     private TelegramAdapter telegramAdapter;
 
@@ -36,6 +28,7 @@ class TelegramAdapterTest extends TestBase {
     @Test
     void onUpdateReceivedChangeModeratorStatusCommand() {
         userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.SELECT_DISH_PRICE).build());
+
         telegramAdapter.onUpdateReceived(createTelegramCommand("/back_to_main_menu"));
 
         assertThat(userRepository.findById(USER_ID).orElseThrow().getChatStatus()).isEqualTo(ChatStatus.APPROVE_BACK_TO_MAIN_MENU);
@@ -43,9 +36,9 @@ class TelegramAdapterTest extends TestBase {
 
     @Test
     void onUpdateReceivedNotCommandInput() {
-        userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.NEW_DISH_SPICY).build());
+        userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.APPROVE_BACK_TO_MAIN_MENU).build());
         final Message message = new Message();
-        message.setText("test text");
+        message.setText("Да");
         message.setChat(new Chat(USER_ID, "test chat"));
         final org.telegram.telegrambots.meta.api.objects.User user = new org.telegram.telegrambots.meta.api.objects.User();
         user.setId(USER_ID);
@@ -53,11 +46,10 @@ class TelegramAdapterTest extends TestBase {
         message.setFrom(user);
         final Update update = new Update();
         update.setMessage(message);
-        Mockito.when(processingFacade.execute(USER_ID, ChatStatus.NEW_DISH_SPICY, "test text")).thenReturn(new BotAnswer("Dish is spicy?", UserAnswerOption.YES_OR_NO));
 
         telegramAdapter.onUpdateReceived(update);
 
-        Mockito.verify(processingFacade).execute(USER_ID, ChatStatus.NEW_DISH_SPICY, "test text");
+        assertThat(userRepository.findById(USER_ID).orElseThrow().getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
     }
 
     private Update createTelegramCommand(final String text) {

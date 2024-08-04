@@ -12,12 +12,27 @@ import java.util.stream.Collectors;
 @Service
 public class ProcessingFacade {
     private final Map<ChatStatus, ProcessingService> processingServiceMap;
+    private final UserService userService;
 
-    public ProcessingFacade(final List<ProcessingService> processingServiceList) {
+    public ProcessingFacade(final List<ProcessingService> processingServiceList, final UserService userService) {
         processingServiceMap = processingServiceList.stream().collect(Collectors.toMap(ProcessingService::getCurrentStatus, Function.identity()));
+        this.userService = userService;
     }
 
-    public BotAnswer execute(final long userId, final ChatStatus chatStatus, final String text) {
-        return processingServiceMap.get(chatStatus).execute(userId, text);
+    public BotAnswer execute(final long userId, final String text) {
+        return goToStatus(userId, processingServiceMap.get(userService.getChatStatus(userId)).execute(userId, text));
+    }
+
+    public BotAnswer goToStatus(final long userId, final ChatStatus newChatStatus) {
+        userService.switchToNewStatus(userId, newChatStatus);
+        return processingServiceMap.get(newChatStatus).getMessageForUser();
+    }
+
+    public BotAnswer undo(final long userId) {
+        if (userService.canUndo(userId)) {
+            return processingServiceMap.get(userService.backToPreviousStatus(userId)).getMessageForUser();
+        } else {
+            return new BotAnswer("Отменить действие можно лишь один раз подряд");
+        }
     }
 }

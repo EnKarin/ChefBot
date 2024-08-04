@@ -5,6 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -33,6 +34,9 @@ public class Dish implements Serializable {
     private static final long serialVersionUID = -653331779227835564L;
 
     @Id
+    @GeneratedValue
+    private long id;
+
     @Column(name = "dish_name")
     private String dishName;
 

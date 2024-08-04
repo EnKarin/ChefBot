@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,12 +34,31 @@ class DishServiceTest extends TestBase {
                 .isPresent()
                 .get()
                 .satisfies(u -> {
-                    assertThat(u.getChatStatus()).isEqualTo(ChatStatus.NEW_DISH_NAME);
                     assertThat(u.getEditabledDish()).isNotNull();
                     assertThat(u.getEditabledDish().getDishName()).isEqualTo("Рагу");
                     assertThat(u.getEditabledDish().isSoup()).isFalse();
                     assertThat(u.getEditabledDish().isSpicy()).isFalse();
                 });
+    }
+
+    @Test
+    @Transactional //todo: remove transactionality when an opportunity arises
+    void initDishNameReuse() {
+        final long dishId = userService.findUser(USER_ID).getEditabledDish().getId();
+
+        dishService.initDishName(USER_ID, "Каша");
+
+        assertThat(userRepository.findById(USER_ID))
+                .isPresent()
+                .get()
+                .satisfies(u -> {
+                    assertThat(u.getEditabledDish()).isNotNull();
+                    assertThat(u.getEditabledDish().getDishName()).isEqualTo("Каша");
+                    assertThat(u.getEditabledDish().isSoup()).isFalse();
+                    assertThat(u.getEditabledDish().isSpicy()).isFalse();
+                });
+        assertThat(dishRepository.count()).isEqualTo(1);
+        assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish().getId()).isEqualTo(dishId);
     }
 
     @Test
@@ -81,7 +101,7 @@ class DishServiceTest extends TestBase {
         final String dishId = userService.findUser(USER_ID).getEditabledDish().getDishName();
         assertThat(jdbcTemplate.queryForList(
                 "select p.product_name from t_dish d " +
-                        "inner join t_dish_product dp on d.dish_name=dp.dish_id " +
+                        "inner join t_dish_product dp on d.id=dp.dish_id " +
                         "inner join t_product p on dp.product_id=p.product_name where d.dish_name=?",
                 String.class,
                 dishId)).containsOnly("Овсянка", "Три ведра укропа");
