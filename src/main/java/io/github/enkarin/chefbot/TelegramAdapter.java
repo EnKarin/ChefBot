@@ -1,7 +1,6 @@
 package io.github.enkarin.chefbot;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
-import io.github.enkarin.chefbot.dto.DishDto;
 import io.github.enkarin.chefbot.enums.UserAnswerOption;
 import io.github.enkarin.chefbot.uicomponents.FormatedReplyKeyboardMarkup;
 import lombok.Getter;
