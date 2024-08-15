@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -111,7 +110,7 @@ class DishServiceTest extends TestBase {
         final String dishId = userService.findUser(USER_ID).getEditabledDish().getDishName();
         assertThat(jdbcTemplate.queryForList(
                 "select p.product_name from t_dish d " +
-                        "inner join t_dish_product dp on d.id=dp.dish_id " +
+                        "inner join t_dish_product dp on d.dish_id=dp.dish_id " +
                         "inner join t_product p on dp.product_id=p.product_name where d.dish_name=?",
                 String.class,
                 dishId)).containsOnly("Овсянка", "Три ведра укропа");

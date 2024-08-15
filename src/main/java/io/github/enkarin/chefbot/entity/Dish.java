@@ -35,6 +35,7 @@ public class Dish implements Serializable {
 
     @Id
     @GeneratedValue
+    @Column(name = "dish_id")
     private long id;
 
     @Column(name = "dish_name")
