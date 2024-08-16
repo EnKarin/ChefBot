@@ -23,7 +23,6 @@ public class DishService {
     private final DishRepository dishRepository;
     private final UserService userService;
 
-    //todo: realise exception processing
     @Transactional
     void initDishName(final long userId, final String name) {
         final User user = userService.findUser(userId);
