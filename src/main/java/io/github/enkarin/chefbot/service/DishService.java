@@ -5,6 +5,7 @@ import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.Product;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
+import io.github.enkarin.chefbot.exceptions.DishNameAlreadyExistsInCurrentUserException;
 import io.github.enkarin.chefbot.mappers.DishEntityDtoMapper;
 import io.github.enkarin.chefbot.repository.DishRepository;
 import io.github.enkarin.chefbot.repository.ProductRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -31,24 +33,23 @@ public class DishService {
     @Transactional
     void initDishName(final long userId, final String name) {
         final User user = userService.findUser(userId);
-        if (user.getEditabledDish() == null) {
-            user.setEditabledDish(dishRepository.save(Dish.builder()
-                    .dishName(name)
-                    .owner(user)
-                    .build()
-            ));
-        } else {
-            user.getEditabledDish().setDishName(name);
-        }
+        if(user.getDishes().stream().map(Dish::getDishName).noneMatch(n -> n.equals(name))) {
+            if (user.getEditabledDish() == null) {
+                initNewDish(name, user);
+            } else {
+                renameCreatingDish(name, user);
+            }
+        } else throw new DishNameAlreadyExistsInCurrentUserException(name);
     }
 
     @Transactional
-    void deleteDish(final long userId) {
+    void deleteEditableDish(final long userId) {
         final User user = userService.findUser(userId);
-        final long deletedDishId = user.getEditabledDish().getId();
-
-        user.setEditabledDish(null);
-        dishRepository.deleteById(deletedDishId);
+        final Dish deletedDish = user.getEditabledDish();
+        if (Objects.nonNull(deletedDish)) {
+            user.setEditabledDish(null);
+            dishRepository.delete(deletedDish);
+        }
     }
 
     @Transactional
@@ -82,5 +83,17 @@ public class DishService {
 
     private Dish findEditableDish(final long userId) {
         return userService.findUser(userId).getEditabledDish();
+    }
+
+    private void renameCreatingDish(final String name, final User owner) {
+        owner.getEditabledDish().setDishName(name);
+    }
+
+    private void initNewDish(final String name, final User owner) {
+        owner.setEditabledDish(dishRepository.save(Dish.builder()
+                .dishName(name)
+                .owner(owner)
+                .products(new HashSet<>())
+                .build()));
     }
 }

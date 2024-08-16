@@ -13,17 +13,20 @@ class UserServiceTest extends TestBase {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private DishService dishService;
+
     @Test
     void findOrSaveShouldWork() {
-        userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
         assertThat(userRepository.findById(USER_ID)).isPresent();
     }
 
     @Test
-    void createOfUpdateUserShouldWorkForSecondCall() {
-        userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
-        userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
+    void createOrUpdateUserShouldWorkForSecondCall() {
+        userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
         assertThat(userRepository.findAll())
                 .hasSize(1)
@@ -35,7 +38,7 @@ class UserServiceTest extends TestBase {
 
     @Test
     void findOrSaveShouldWorkIfUserNotPresent() {
-        userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
         assertThat(userRepository.findAll())
                 .hasSize(1)
@@ -50,7 +53,7 @@ class UserServiceTest extends TestBase {
         userRepository.save(User.builder().id(USER_ID).chatId(CHAT_ID).username("a").moderator(true).build());
         userRepository.save(User.builder().id(USER_ID - 1).chatId(CHAT_ID - 1).username("b").moderator(true).build());
         userRepository.save(User.builder().id(USER_ID - 2).chatId(CHAT_ID - 2).username("c").moderator(true).build());
-        userService.createOfUpdateUser(noModeratorId, CHAT_ID - 5, USERNAME);
+        userService.createOrUpdateUser(noModeratorId, CHAT_ID - 5, USERNAME);
 
         assertThat(userService.getAllModeratorsWithoutCurrentUser(0)).hasSize(3).doesNotContain(noModeratorId);
     }
@@ -61,7 +64,7 @@ class UserServiceTest extends TestBase {
         userRepository.save(User.builder().id(USER_ID).chatId(CHAT_ID).username("a").moderator(true).build());
         userRepository.save(User.builder().id(USER_ID - 1).chatId(CHAT_ID - 1).username("b").moderator(true).build());
         userRepository.save(User.builder().id(USER_ID - 2).chatId(CHAT_ID - 2).username("c").moderator(true).build());
-        userService.createOfUpdateUser(noModeratorId, CHAT_ID - 5, USERNAME);
+        userService.createOrUpdateUser(noModeratorId, CHAT_ID - 5, USERNAME);
 
         assertThat(userService.getAllModeratorsWithoutCurrentUser(CHAT_ID))
                 .hasSize(2)
@@ -70,14 +73,14 @@ class UserServiceTest extends TestBase {
 
     @Test
     void getChatStatusShouldWork() {
-        userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
         assertThat(userService.getChatStatus(USER_ID)).isEqualTo(ChatStatus.MAIN_MENU);
     }
 
     @Test
     void switchToNewStatusShouldWork() {
-        userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
         userService.switchToNewStatus(USER_ID, ChatStatus.REMOVE_DISH);
 
@@ -89,7 +92,7 @@ class UserServiceTest extends TestBase {
 
     @Test
     void switchToCurrentStatusShouldWork() {
-        userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
         userService.switchToNewStatus(USER_ID, ChatStatus.REMOVE_DISH);
 
         userService.switchToNewStatus(USER_ID, ChatStatus.REMOVE_DISH);
@@ -102,7 +105,7 @@ class UserServiceTest extends TestBase {
 
     @Test
     void switchToNewStatus() {
-        userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
         userService.switchToNewStatus(USER_ID, ChatStatus.REMOVE_DISH);
 

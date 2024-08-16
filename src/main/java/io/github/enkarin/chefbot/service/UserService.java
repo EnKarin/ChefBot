@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,8 +19,12 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void createOfUpdateUser(final long userId, final long chatId, final String username) {
-        final User user = userRepository.findById(userId).orElseGet(() -> User.builder().id(userId).chatStatus(ChatStatus.MAIN_MENU).build());
+    public void createOrUpdateUser(final long userId, final long chatId, final String username) {
+        final User user = userRepository.findById(userId).orElseGet(() -> User.builder()
+                .id(userId)
+                .chatStatus(ChatStatus.MAIN_MENU)
+                .dishes(new HashSet<>())
+                .build());
         user.setChatId(chatId);
         user.setUsername(username);
         userRepository.save(user);

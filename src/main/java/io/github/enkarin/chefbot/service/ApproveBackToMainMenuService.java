@@ -12,11 +12,15 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class ApproveBackToMainMenuService implements ProcessingService {
     private final UserService userService;
+    private final DishService dishService;
 
     @Override
     public ChatStatus execute(final long userId, final String text) {
         return switch (text.toLowerCase(Locale.ROOT)) {
-            case "да" -> ChatStatus.MAIN_MENU;
+            case "да" -> {
+                dishService.deleteEditableDish(userId);
+                yield ChatStatus.MAIN_MENU;
+            }
             case "нет" -> userService.getPreviousChatStatus(userId);
             default -> getCurrentStatus();
         };

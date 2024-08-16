@@ -85,7 +85,7 @@ class TelegramControllerTest extends TestBase {
 
     @Test
     void callUndoFromMainMenu() {
-        userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/undo").messageText()).isEqualTo("Эта команда не доступна в главном меню");
     }

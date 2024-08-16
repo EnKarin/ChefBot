@@ -4,6 +4,7 @@ import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
+import io.github.enkarin.chefbot.exceptions.DishNameAlreadyExistsInCurrentUserException;
 import io.github.enkarin.chefbot.repository.ProductRepository;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class DishServiceTest extends TestBase {
     @Autowired
@@ -24,7 +26,7 @@ class DishServiceTest extends TestBase {
 
     @BeforeEach
     void init() {
-        userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
         dishService.initDishName(USER_ID, "Рагу");
     }
 
@@ -39,6 +41,20 @@ class DishServiceTest extends TestBase {
                     assertThat(u.getEditabledDish().isSoup()).isFalse();
                     assertThat(u.getEditabledDish().isSpicy()).isFalse();
                 });
+    }
+
+    @Test
+    void exitToMainMenuNotShouldRemoveEditableDish() {
+        userService.switchToNewStatus(USER_ID, ChatStatus.MAIN_MENU);
+
+        assertThat(dishRepository.findAll()).extracting(Dish::getDishName).contains("Рагу");
+    }
+
+    @Test
+    void tryCreateDishWithExistsNameInCurrentUserShouldThrowException() {
+        assertThatThrownBy(() -> dishService.initDishName(USER_ID, "Рагу"))
+                .isInstanceOf(DishNameAlreadyExistsInCurrentUserException.class)
+                .hasMessage("Рагу уже было добавлено вами ранее");
     }
 
     @Test
@@ -71,14 +87,24 @@ class DishServiceTest extends TestBase {
     }
 
     @Test
-    void deleteDishShouldWork() {
-        dishService.deleteDish(USER_ID);
+    void deleteEditableDishShouldWork() {
+        dishService.deleteEditableDish(USER_ID);
 
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
                 .get()
                 .extracting(User::getEditabledDish, User::getChatStatus)
                 .containsOnly(null, ChatStatus.MAIN_MENU);
+        assertThat(dishRepository.count()).isEqualTo(0);
+    }
+
+    @Test
+    void deleteEditableDishWithoutEditableDishShouldWork() {
+        dishService.deleteEditableDish(USER_ID);
+
+        dishService.deleteEditableDish(USER_ID);
+
+        assertThat(userService.findUser(USER_ID).getEditabledDish()).isNull();
         assertThat(dishRepository.count()).isEqualTo(0);
     }
 

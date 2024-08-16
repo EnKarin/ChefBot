@@ -27,7 +27,7 @@ import java.util.Set;
 @Entity
 @SuperBuilder
 @NoArgsConstructor
-@ToString(callSuper = true)
+@ToString
 @Table(name = "t_dish")
 public class Dish implements Serializable {
     @Serial
@@ -62,6 +62,6 @@ public class Dish implements Serializable {
     @JoinColumn(name = "user_id")
     private User owner;
 
-    @Column(name = "published", nullable = false)
+    @Column(name = "published")
     private boolean published;
 }

@@ -21,7 +21,7 @@ public class TelegramController {
     private final DishService dishService;
 
     public BotAnswer executeStartCommand(final long userId, final long chatId, final String username) {
-        userService.createOfUpdateUser(userId, chatId, username);
+        userService.createOrUpdateUser(userId, chatId, username);
         return new BotAnswer("Приветствую! Здесь вы можете найти блюдо по вашим предпочтениям и поделиться своими рецептами с другими пользователями");
     }
 
