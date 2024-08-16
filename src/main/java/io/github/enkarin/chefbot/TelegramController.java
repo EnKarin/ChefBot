@@ -2,6 +2,7 @@ package io.github.enkarin.chefbot;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.enums.ChatStatus;
+import io.github.enkarin.chefbot.exceptions.DishNameAlreadyExistsInCurrentUserException;
 import io.github.enkarin.chefbot.service.ProcessingFacade;
 import io.github.enkarin.chefbot.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,10 @@ public class TelegramController {
     }
 
     public BotAnswer processingNonCommandInput(final long userId, final String text) {
-        return processingFacade.execute(userId, text);
+        try {
+            return processingFacade.execute(userId, text);
+        } catch (DishNameAlreadyExistsInCurrentUserException e) {
+            return new BotAnswer(e.getMessage());
+        }
     }
 }
