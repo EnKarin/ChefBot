@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
-
     private final UserRepository userRepository;
 
     @Transactional

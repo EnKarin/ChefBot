@@ -2,6 +2,7 @@ package io.github.enkarin.chefbot.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -11,10 +12,13 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class RequestMessage {
+public class RequestMessageInfo {
     @Id
+    @GeneratedValue
+    private long id;
+
     @Column(name = "message_id")
-    private long messageId;
+    private int messageId;
 
     private long chatId;
 

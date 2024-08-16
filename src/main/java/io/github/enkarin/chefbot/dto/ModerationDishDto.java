@@ -6,7 +6,8 @@ import lombok.Data;
 import java.util.Set;
 
 @Data
-public class DishDto {
+public class ModerationDishDto {
+    private long requestId;
     private String name;
     private boolean spicy;
     private boolean soup;
@@ -16,10 +17,11 @@ public class DishDto {
     @Override
     public String toString() {
         return String.format("""
-                *%s*
+                *Запрос №%d*
+                Название: %s
                 Острое: %b
                 Суп: %b
                 Кухня: %s
-                Состав: %s""", name, spicy, soup, worldCuisine.getLocalizedValue(), String.join(", ", products));
+                Состав: %s""", requestId, name, spicy, soup, worldCuisine.getLocalizedValue(), String.join(", ", products));
     }
 }

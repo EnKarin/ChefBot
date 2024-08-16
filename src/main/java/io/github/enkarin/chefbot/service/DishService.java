@@ -1,12 +1,10 @@
 package io.github.enkarin.chefbot.service;
 
-import io.github.enkarin.chefbot.dto.DishDto;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.Product;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.exceptions.DishNameAlreadyExistsInCurrentUserException;
-import io.github.enkarin.chefbot.mappers.DishEntityDtoMapper;
 import io.github.enkarin.chefbot.repository.DishRepository;
 import io.github.enkarin.chefbot.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,16 +22,12 @@ public class DishService {
     private final ProductRepository productRepository;
     private final DishRepository dishRepository;
     private final UserService userService;
-    private final DishEntityDtoMapper mapper;
 
-    public DishDto findById(final long id) {
-        return mapper.entityToDto(dishRepository.findById(id).orElseThrow());
-    }
-
+    //todo: realise exception processing
     @Transactional
     void initDishName(final long userId, final String name) {
         final User user = userService.findUser(userId);
-        if(user.getDishes().stream().map(Dish::getDishName).noneMatch(n -> n.equals(name))) {
+        if (user.getDishes().stream().map(Dish::getDishName).noneMatch(n -> n.equals(name))) {
             if (user.getEditabledDish() == null) {
                 initNewDish(name, user);
             } else {

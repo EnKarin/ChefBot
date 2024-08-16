@@ -61,9 +61,8 @@ class DishServiceTest extends TestBase {
     void findById() {
         final long dishId = dishRepository.save(Dish.builder().dishName("Каша").build()).getId();
 
-        assertThat(dishService.findById(dishId)).satisfies(dishDto -> {
-            assertThat(dishDto).isNotNull();
-            assertThat(dishDto.getName()).isEqualTo("Каша");
+        assertThat(dishRepository.findById(dishId).orElseThrow()).satisfies(dishDto -> {
+            assertThat(dishDto.getDishName()).isEqualTo("Каша");
             assertThat(dishDto.isSoup()).isFalse();
             assertThat(dishDto.isSpicy()).isFalse();
         });
@@ -77,9 +76,8 @@ class DishServiceTest extends TestBase {
 
         dishService.initDishName(USER_ID, "Каша");
 
-        assertThat(dishService.findById(dishId)).satisfies(dishDto -> {
-            assertThat(dishDto).isNotNull();
-            assertThat(dishDto.getName()).isEqualTo("Каша");
+        assertThat(dishRepository.findById(dishId).orElseThrow()).satisfies(dishDto -> {
+            assertThat(dishDto.getDishName()).isEqualTo("Каша");
             assertThat(dishDto.isSoup()).isFalse();
             assertThat(dishDto.isSpicy()).isFalse();
         });

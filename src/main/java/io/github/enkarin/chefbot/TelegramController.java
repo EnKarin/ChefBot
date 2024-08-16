@@ -1,16 +1,12 @@
 package io.github.enkarin.chefbot;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
-import io.github.enkarin.chefbot.dto.DishDto;
 import io.github.enkarin.chefbot.enums.ChatStatus;
-import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.service.ProcessingFacade;
 import io.github.enkarin.chefbot.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-import java.util.Set;
 
 @Slf4j
 @Component
@@ -18,7 +14,6 @@ import java.util.Set;
 public class TelegramController {
     private final UserService userService;
     private final ProcessingFacade processingFacade;
-    private final DishService dishService;
 
     public BotAnswer executeStartCommand(final long userId, final long chatId, final String username) {
         userService.createOrUpdateUser(userId, chatId, username);
@@ -48,13 +43,5 @@ public class TelegramController {
 
     public BotAnswer processingNonCommandInput(final long userId, final String text) {
         return processingFacade.execute(userId, text);
-    }
-
-    public DishDto findDishById(final long dishId) {
-        return dishService.findById(dishId);
-    }
-
-    public Set<Long> findSuitableModerators(final long currentChatId) {
-        return userService.getAllModeratorsWithoutCurrentUser(currentChatId);
     }
 }
