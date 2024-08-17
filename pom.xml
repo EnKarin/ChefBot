@@ -189,6 +189,9 @@
                     <rulesets>
                         <ruleset>/config/pmd/pmd.xml</ruleset>
                     </rulesets>
+                    <excludeRoots>
+                        <excludeRoot>target/generated-sources</excludeRoot>
+                    </excludeRoots>
                     <linkXRef>false</linkXRef>
                     <failOnViolation>true</failOnViolation>
                     <printFailingErrors>true</printFailingErrors>

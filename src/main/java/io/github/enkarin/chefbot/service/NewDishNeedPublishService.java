@@ -10,7 +10,7 @@ import java.util.Locale;
 @Service
 public class NewDishNeedPublishService implements ProcessingService {
     @Override
-    public ChatStatus execute(long userId, String text) {
+    public ChatStatus execute(final long userId, final String text) {
         return switch (text.toLowerCase(Locale.ROOT)) {
             case "да" -> null;
             case "нет" -> ChatStatus.MAIN_MENU;

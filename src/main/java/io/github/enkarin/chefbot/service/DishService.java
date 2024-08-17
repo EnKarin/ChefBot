@@ -32,7 +32,9 @@ public class DishService {
             } else {
                 renameCreatingDish(name, user);
             }
-        } else throw new DishNameAlreadyExistsInCurrentUserException(name);
+        } else {
+            throw new DishNameAlreadyExistsInCurrentUserException(name);
+        }
     }
 
     @Transactional

@@ -14,11 +14,12 @@ public interface DishEntityDtoMapper {
     @Mapping(target = "name", source = "dishName")
     @Mapping(target = "worldCuisine", source = "cuisine")
     @Mapping(target = "requestId", ignore = true)
+    @Mapping(target = "ownerChatId", source = "owner.chatId")
     ModerationDishDto entityToDto(Dish dish);
 
     Set<String> productsToString(Set<Product> products);
 
-    default String productToString(Product product) {
+    default String productToString(final Product product) {
         return product.getProductName();
     }
 }

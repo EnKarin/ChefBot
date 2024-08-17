@@ -1,8 +1,10 @@
 package io.github.enkarin.chefbot.controllers;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
+import io.github.enkarin.chefbot.dto.ModerationResultDto;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.exceptions.DishNameAlreadyExistsInCurrentUserException;
+import io.github.enkarin.chefbot.service.ModerationService;
 import io.github.enkarin.chefbot.service.ProcessingFacade;
 import io.github.enkarin.chefbot.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Component;
 public class TelegramController {
     private final UserService userService;
     private final ProcessingFacade processingFacade;
+    private final ModerationService moderationService;
 
     public BotAnswer executeStartCommand(final long userId, final long chatId, final String username) {
         userService.createOrUpdateUser(userId, chatId, username);
@@ -48,5 +51,13 @@ public class TelegramController {
         } catch (DishNameAlreadyExistsInCurrentUserException e) {
             return new BotAnswer(e.getMessage());
         }
+    }
+
+    public ModerationResultDto approveModerationRequest(final String callbackData) {
+        return moderationService.approveRequest(Long.parseLong(callbackData.substring(callbackData.indexOf('№') + 1)));
+    }
+
+    public ModerationResultDto declineModerationRequest(final String callbackData) {
+        return moderationService.declineRequest(Long.parseLong(callbackData.substring(callbackData.indexOf('№') + 1)));
     }
 }

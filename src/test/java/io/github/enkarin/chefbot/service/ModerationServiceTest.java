@@ -63,10 +63,17 @@ class ModerationServiceTest extends ModerationTest {
     }
 
     @Test
+    void findAllRequestsMustBeNonFreshAfterCall() {
+        moderationService.findAllRequests();
+
+        assertThat(moderationRequestRepository.findAll()).noneMatch(ModerationRequest::isFresh);
+    }
+
+    @Test
     void approveRequest() {
         assertThat(moderationService.approveRequest(moderationRequestsId[1])).satisfies(moderationResultDto -> {
             assertThat(moderationResultDto.approve()).isTrue();
-            assertThat(moderationResultDto.name()).isEqualTo("secondDish");
+            assertThat(moderationResultDto.dishName()).isEqualTo("secondDish");
             assertThat(moderationResultDto.ownerChat()).isEqualTo(CHAT_ID);
             assertThat(moderationResultDto.messageForRemove()).extracting(ModerationRequestMessageDto::chatId).contains(20L, 22L);
         });
@@ -77,7 +84,7 @@ class ModerationServiceTest extends ModerationTest {
     void declineRequest() {
         assertThat(moderationService.declineRequest(moderationRequestsId[2])).satisfies(moderationResultDto -> {
             assertThat(moderationResultDto.approve()).isFalse();
-            assertThat(moderationResultDto.name()).isEqualTo("thirdDish");
+            assertThat(moderationResultDto.dishName()).isEqualTo("thirdDish");
             assertThat(moderationResultDto.ownerChat()).isEqualTo(CHAT_ID);
             assertThat(moderationResultDto.messageForRemove()).extracting(ModerationRequestMessageDto::chatId).contains(30L, 33L);
         });

@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class ModerationService {
     private final ModerationRequestRepository moderationRequestRepository;
@@ -26,7 +26,6 @@ public class ModerationService {
     private final ModerationRequestMessageEntityDtoMapper moderationRequestMessageEntityDtoMapper;
     private final DishEntityDtoMapper dishEntityDtoMapper;
 
-    @Transactional
     void createModerationRequest(final Dish moderableDish) {
         moderationRequestRepository.save(ModerationRequest.builder()
                 .moderationDish(moderableDish)
@@ -34,7 +33,6 @@ public class ModerationService {
                 .build());
     }
 
-    @Transactional
     void addRequestMessages(final long moderationRequestId, final Set<ModerationRequestMessageDto> moderationRequestMessageDtoSet) {
         final ModerationRequest currentRequest = moderationRequestRepository.findById(moderationRequestId).orElseThrow();
         moderationRequestMessageRepository.saveAll(moderationRequestMessageDtoSet.stream()
@@ -43,19 +41,24 @@ public class ModerationService {
                 .collect(Collectors.toSet()));
     }
 
-    @Transactional
     Set<ModerationDishDto> findAllFreshRequests() {
-        final List<ModerationRequest> moderationRequests = moderationRequestRepository.findByFreshIsTrue();
-        moderationRequests.forEach(moderationRequest -> moderationRequest.setFresh(false));
-        return findAllRequests(moderationRequests);
+        return findAllRequests(moderationRequestRepository.findByFreshIsTrue());
     }
 
     Set<ModerationDishDto> findAllRequests() {
         return findAllRequests(moderationRequestRepository.findAll());
     }
 
-    @Transactional
-    ModerationResultDto approveRequest(final long requestId) {
+    private Set<ModerationDishDto> findAllRequests(final List<ModerationRequest> moderationRequests) {
+        moderationRequests.forEach(moderationRequest -> moderationRequest.setFresh(false));
+        return moderationRequests.stream().map(moderationRequest -> {
+            final ModerationDishDto dto = dishEntityDtoMapper.entityToDto(moderationRequest.getModerationDish());
+            dto.setRequestId(moderationRequest.getId());
+            return dto;
+        }).collect(Collectors.toSet());
+    }
+
+    public ModerationResultDto approveRequest(final long requestId) {
         final ModerationRequest moderationRequest = moderationRequestRepository.findById(requestId).orElseThrow();
         final ModerationResultDto resultDto = ModerationResultDto.createApproveResult(moderationRequest.getModerationDish().getDishName(),
                 moderationRequest.getModerationDish().getOwner().getChatId(),
@@ -64,22 +67,12 @@ public class ModerationService {
         return resultDto;
     }
 
-    @Transactional
-    ModerationResultDto declineRequest(final long requestId) {
+    public ModerationResultDto declineRequest(final long requestId) {
         final ModerationRequest moderationRequest = moderationRequestRepository.findById(requestId).orElseThrow();
         final ModerationResultDto resultDto = ModerationResultDto.createDeclineResult(moderationRequest.getModerationDish().getDishName(),
                 moderationRequest.getModerationDish().getOwner().getChatId(),
                 moderationRequest.getModerationRequestMessages().stream().map(moderationRequestMessageEntityDtoMapper::entityToDto).collect(Collectors.toSet()));
         moderationRequestRepository.delete(moderationRequest);
         return resultDto;
-    }
-
-    private Set<ModerationDishDto> findAllRequests(final List<ModerationRequest> moderationRequests) {
-        return moderationRequests.stream().map(moderationRequest -> {
-            final ModerationDishDto dto = dishEntityDtoMapper.entityToDto(moderationRequest.getModerationDish());
-            dto.setRequestId(moderationRequest.getId());
-            dto.setOwnerChatId(moderationRequest.getModerationDish().getOwner().getChatId());
-            return dto;
-        }).collect(Collectors.toSet());
     }
 }

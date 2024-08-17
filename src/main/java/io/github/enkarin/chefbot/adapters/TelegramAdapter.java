@@ -4,6 +4,7 @@ import io.github.enkarin.chefbot.controllers.TelegramController;
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.dto.ModerationDishDto;
 import io.github.enkarin.chefbot.dto.ModerationRequestMessageDto;
+import io.github.enkarin.chefbot.dto.ModerationResultDto;
 import io.github.enkarin.chefbot.enums.UserAnswerOption;
 import io.github.enkarin.chefbot.uicomponents.FormatedReplyKeyboardMarkup;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -24,6 +26,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static java.util.Objects.nonNull;
+
 @Slf4j
 @Component
 public final class TelegramAdapter extends TelegramLongPollingBot {
@@ -32,6 +36,12 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
     @Getter
     private final String botToken;
     private final TelegramController telegramController;
+
+    @Value("adapter.prefix.approve")
+    private String approvePrefix;
+
+    @Value("adapter.prefix.decline")
+    private String declinePrefix;
 
     public TelegramAdapter(final TelegramBotsApi telegramBotsApi,
                            @Value("${telegram-bot.name}") final String botUsername,
@@ -46,18 +56,55 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(final Update update) {
         final Message message = update.getMessage();
-        final long chatId = message.getChatId();
-        final String text = message.getText();
-        final long userId = message.getFrom().getId();
-        final String username = message.getFrom().getUserName();
-        if ("/start".equals(text)) {
-            send(chatId, telegramController.executeStartCommand(userId, chatId, username));
-        } else {
-            if (message.isCommand()) {
-                send(chatId, telegramController.executeWorkerCommand(userId, text));
+        if (nonNull(message)) {
+            final long chatId = message.getChatId();
+            final String text = message.getText();
+            final long userId = message.getFrom().getId();
+            final String username = message.getFrom().getUserName();
+            if ("/start".equals(text)) {
+                send(chatId, telegramController.executeStartCommand(userId, chatId, username));
             } else {
-                send(chatId, telegramController.processingNonCommandInput(userId, text));
+                if (message.isCommand()) {
+                    send(chatId, telegramController.executeWorkerCommand(userId, text));
+                } else {
+                    send(chatId, telegramController.processingNonCommandInput(userId, text));
+                }
             }
+        } else {
+            final String callbackData = update.getCallbackQuery().getData();
+            final ModerationResultDto moderationResultDto = callbackData.startsWith(approvePrefix)
+                    ? telegramController.approveModerationRequest(callbackData)
+                    : telegramController.declineModerationRequest(callbackData);
+            if (moderationResultDto.approve()) {
+                sendApproveResultToOwner(moderationResultDto.ownerChat(), moderationResultDto.dishName());
+            } else {
+                sendDeclineResultToOwner(moderationResultDto.ownerChat(), moderationResultDto.dishName());
+            }
+            moderationResultDto.messageForRemove().forEach(this::deleteOddRequestMessage);
+        }
+    }
+
+    private void sendApproveResultToOwner(final long chatId, final String dishName) {
+        try {
+            execute(defaultConfigurationMessage(chatId, "Блюдо ".concat(dishName).concat(" прошло модерацию и успешно опубликовано!")));
+        } catch (Exception e) {
+            log.error(e.toString());
+        }
+    }
+
+    private void sendDeclineResultToOwner(final long chatId, final String dishName) {
+        try {
+            execute(defaultConfigurationMessage(chatId, "Блюдо ".concat(dishName).concat(" не прошло модерацию")));
+        } catch (Exception e) {
+            log.error(e.toString());
+        }
+    }
+
+    private void deleteOddRequestMessage(final ModerationRequestMessageDto messageDto) {
+        try {
+            execute(new DeleteMessage(Long.toString(messageDto.chatId()), messageDto.messageId()));
+        } catch (Exception e) {
+            log.error(e.toString());
         }
     }
 
@@ -80,8 +127,9 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
         for (final long chatId : chats) {
             try {
                 final SendMessage moderationMessage = defaultConfigurationMessage(chatId, moderationDishDto.toString());
-                moderationMessage.setReplyMarkup(new InlineKeyboardMarkup(List.of(List.of(new InlineKeyboardButton("Одобрить заявку №" + moderationDishDto.getRequestId()),
-                        new InlineKeyboardButton("Отклонить заявку №" + moderationDishDto.getRequestId())))));
+                moderationMessage.setReplyMarkup(new InlineKeyboardMarkup(List.of(List.of(
+                        new InlineKeyboardButton(approvePrefix + " заявку №" + moderationDishDto.getRequestId()),
+                        new InlineKeyboardButton(declinePrefix + " заявку №" + moderationDishDto.getRequestId())))));
                 requestMessageDtoSet.add(new ModerationRequestMessageDto(execute(moderationMessage).getMessageId(), chatId));
             } catch (Exception e) {
                 log.error(e.toString());

@@ -37,5 +37,12 @@ class ModerationRequestSenderTest extends ModerationTest {
 
     @Test
     void resendOldRequests() {
+        when(adapter.sendModerationRequests(eq(Set.of(CHAT_ID - 1)), any())).thenReturn(Set.of(new ModerationRequestMessageDto(1000, 1111)));
+
+        moderationRequestSender.resendOldRequests();
+
+        verify(adapter, times(4)).sendModerationRequests(eq(Set.of(CHAT_ID - 1)), any());
+        assertThat(moderationRequestRepository.findAll()).noneMatch(ModerationRequest::isFresh);
+        assertThat(moderationRequestMessageRepository.findAll()).extracting(ModerationRequestMessage::getChatId).filteredOn(chatId -> chatId == 1111).hasSize(4);
     }
 }

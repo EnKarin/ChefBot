@@ -47,6 +47,11 @@
             <property name="minimum" value="2" />
         </properties>
     </rule>
+    <rule ref="category/java/codestyle.xml/TooManyStaticImports">
+        <properties>
+            <property name="maximumStaticImports" value="10"/>
+        </properties>
+    </rule>
 
     <rule ref="category/java/design.xml">
         <exclude name="LawOfDemeter"/>
@@ -80,7 +85,9 @@
         <exclude name="UseConcurrentHashMap"/>
     </rule>
 
-    <rule ref="category/java/performance.xml"/>
+    <rule ref="category/java/performance.xml">
+        <exclude name="AvoidInstantiatingObjectsInLoops"/>
+    </rule>
 
     <rule ref="category/java/security.xml"/>
 
