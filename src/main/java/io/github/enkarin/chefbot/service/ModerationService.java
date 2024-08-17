@@ -36,10 +36,11 @@ public class ModerationService {
 
     @Transactional
     void addRequestMessages(final long moderationRequestId, final Set<ModerationRequestMessageDto> moderationRequestMessageDtoSet) {
-        moderationRequestRepository.findById(moderationRequestId).orElseThrow()
-                .getModerationRequestMessages().addAll(moderationRequestMessageRepository.saveAll(moderationRequestMessageDtoSet.stream()
-                        .map(moderationRequestMessageEntityDtoMapper::dtoToEntity)
-                        .collect(Collectors.toSet())));
+        final ModerationRequest currentRequest = moderationRequestRepository.findById(moderationRequestId).orElseThrow();
+        currentRequest.getModerationRequestMessages().addAll(moderationRequestMessageRepository.saveAll(moderationRequestMessageDtoSet.stream()
+                .map(moderationRequestMessageEntityDtoMapper::dtoToEntity)
+                .peek(moderationRequestMessage -> moderationRequestMessage.setCurrentModerationRequest(currentRequest))
+                .collect(Collectors.toSet())));
     }
 
     @Transactional

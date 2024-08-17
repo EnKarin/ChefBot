@@ -14,7 +14,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -44,30 +43,34 @@ class ModerationServiceTest extends TestBase {
     void init() {
         userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
         final User user = userService.findUser(USER_ID);
-        moderationRequestsId[0] = moderationRequestRepository.save(ModerationRequest.builder()
+        final ModerationRequest firstModerationRequest = moderationRequestRepository.save(ModerationRequest.builder()
                 .fresh(false)
-                .moderationRequestMessages(moderationRequestMessageRepository.saveAll(List.of(ModerationRequestMessage.builder().messageId(1).chatId(10).build(),
-                                ModerationRequestMessage.builder().messageId(1).chatId(11).build())))
                 .moderationDish(dishRepository.save(Dish.builder().owner(user).dishName("firstDish").build()))
-                .build()).getId();
-        moderationRequestsId[1] =  moderationRequestRepository.save(ModerationRequest.builder()
+                .build());
+        moderationRequestMessageRepository.saveAll(List.of(ModerationRequestMessage.builder().messageId(1).chatId(10).currentModerationRequest(firstModerationRequest).build(),
+                ModerationRequestMessage.builder().messageId(1).chatId(11).currentModerationRequest(firstModerationRequest).build()));
+        moderationRequestsId[0] = firstModerationRequest.getId();
+        final ModerationRequest secondModerationRequest = moderationRequestRepository.save(ModerationRequest.builder()
                 .fresh(false)
-                .moderationRequestMessages(moderationRequestMessageRepository.saveAll(List.of(ModerationRequestMessage.builder().messageId(2).chatId(20).build(),
-                        ModerationRequestMessage.builder().messageId(2).chatId(22).build())))
                 .moderationDish(dishRepository.save(Dish.builder().owner(user).dishName("secondDish").build()))
-                .build()).getId();
-        moderationRequestsId[2] = moderationRequestRepository.save(ModerationRequest.builder()
+                .build());
+        moderationRequestMessageRepository.saveAll(List.of(ModerationRequestMessage.builder().messageId(2).chatId(20).currentModerationRequest(secondModerationRequest).build(),
+                ModerationRequestMessage.builder().messageId(2).chatId(22).currentModerationRequest(secondModerationRequest).build()));
+        moderationRequestsId[1] = secondModerationRequest.getId();
+        final ModerationRequest thirdModerationRequest = moderationRequestRepository.save(ModerationRequest.builder()
                 .fresh(true)
-                .moderationRequestMessages(moderationRequestMessageRepository.saveAll(List.of(ModerationRequestMessage.builder().messageId(3).chatId(30).build(),
-                        ModerationRequestMessage.builder().messageId(3).chatId(33).build())))
                 .moderationDish(dishRepository.save(Dish.builder().owner(user).dishName("thirdDish").build()))
-                .build()).getId();
-        moderationRequestsId[3] = moderationRequestRepository.save(ModerationRequest.builder()
+                .build());
+        moderationRequestMessageRepository.saveAll(List.of(ModerationRequestMessage.builder().messageId(3).chatId(30).currentModerationRequest(thirdModerationRequest).build(),
+                ModerationRequestMessage.builder().messageId(3).chatId(33).currentModerationRequest(thirdModerationRequest).build()));
+        moderationRequestsId[2] = thirdModerationRequest.getId();
+        final ModerationRequest fourthModerationRequest = moderationRequestRepository.save(ModerationRequest.builder()
                 .fresh(true)
-                .moderationRequestMessages(moderationRequestMessageRepository.saveAll(List.of(ModerationRequestMessage.builder().messageId(4).chatId(40).build(),
-                        ModerationRequestMessage.builder().messageId(4).chatId(44).build())))
                 .moderationDish(dishRepository.save(Dish.builder().owner(user).dishName("fourthDish").build()))
-                .build()).getId();
+                .build());
+        moderationRequestMessageRepository.saveAll(List.of(ModerationRequestMessage.builder().messageId(4).chatId(40).currentModerationRequest(fourthModerationRequest).build(),
+                ModerationRequestMessage.builder().messageId(4).chatId(44).currentModerationRequest(fourthModerationRequest).build()));
+        moderationRequestsId[3] = fourthModerationRequest.getId();
     }
 
     @AfterEach
@@ -85,7 +88,6 @@ class ModerationServiceTest extends TestBase {
     }
 
     @Test
-    @Transactional
     void addRequestMessages() {
         final Set<ModerationRequestMessageDto> messageDtoSet = moderationRequestMessageRepository
                 .saveAll(List.of(ModerationRequestMessage.builder().messageId(13).chatId(130).build(), ModerationRequestMessage.builder().messageId(13).chatId(133).build()))
@@ -95,9 +97,8 @@ class ModerationServiceTest extends TestBase {
 
         moderationService.addRequestMessages(moderationRequestsId[0], messageDtoSet);
 
-        assertThat(moderationRequestRepository.findById(moderationRequestsId[0]).orElseThrow().getModerationRequestMessages())
-                .extracting(ModerationRequestMessage::getChatId)
-                .contains(130L, 133L, 10L, 11L);
+        assertThat(moderationRequestMessageRepository.findAll()).extracting(ModerationRequestMessage::getChatId).contains(130L, 133L, 10L, 11L);
+        assertThat(moderationService.declineRequest(moderationRequestsId[0]).messageForRemove()).extracting(ModerationRequestMessageDto::getChatId).contains(130L, 133L, 10L, 11L);
     }
 
     @Test
@@ -130,7 +131,7 @@ class ModerationServiceTest extends TestBase {
 
     @Test
     void declineRequest() {
-        assertThat(moderationService.approveRequest(moderationRequestsId[2])).satisfies(moderationResultDto -> {
+        assertThat(moderationService.declineRequest(moderationRequestsId[2])).satisfies(moderationResultDto -> {
             assertThat(moderationResultDto.approve()).isFalse();
             assertThat(moderationResultDto.name()).isEqualTo("thirdDish");
             assertThat(moderationResultDto.ownerChat()).isEqualTo(CHAT_ID);
