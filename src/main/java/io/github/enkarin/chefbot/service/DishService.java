@@ -86,7 +86,6 @@ public class DishService {
         owner.setEditabledDish(dishRepository.save(Dish.builder()
                 .dishName(name)
                 .owner(owner)
-                .products(new HashSet<>())
                 .build()));
     }
 }

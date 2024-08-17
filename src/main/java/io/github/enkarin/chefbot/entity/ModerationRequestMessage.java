@@ -6,13 +6,19 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
-public class RequestMessageInfo {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class ModerationRequestMessage {
     @Id
     @GeneratedValue
     private long id;

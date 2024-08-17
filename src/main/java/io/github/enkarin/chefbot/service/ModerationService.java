@@ -1,15 +1,14 @@
 package io.github.enkarin.chefbot.service;
 
 import io.github.enkarin.chefbot.dto.ModerationDishDto;
+import io.github.enkarin.chefbot.dto.ModerationRequestMessageDto;
 import io.github.enkarin.chefbot.dto.ModerationResultDto;
-import io.github.enkarin.chefbot.dto.RequestMessageInfoDto;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.ModerationRequest;
-import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.mappers.DishEntityDtoMapper;
-import io.github.enkarin.chefbot.mappers.RequestMessageInfoEntityDtoMapper;
+import io.github.enkarin.chefbot.mappers.ModerationRequestMessageEntityDtoMapper;
+import io.github.enkarin.chefbot.repository.ModerationRequestMessageRepository;
 import io.github.enkarin.chefbot.repository.ModerationRequestRepository;
-import io.github.enkarin.chefbot.repository.RequestMessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,25 +22,23 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ModerationService {
     private final ModerationRequestRepository moderationRequestRepository;
-    private final RequestMessageRepository requestMessageRepository;
-    private final RequestMessageInfoEntityDtoMapper requestMessageInfoEntityDtoMapper;
+    private final ModerationRequestMessageRepository moderationRequestMessageRepository;
+    private final ModerationRequestMessageEntityDtoMapper moderationRequestMessageEntityDtoMapper;
     private final DishEntityDtoMapper dishEntityDtoMapper;
 
     @Transactional
-    long createModerationRequest(final User author, final Dish moderableDish) {
-        return moderationRequestRepository.save(ModerationRequest.builder()
-                .fromUser(author)
+    void createModerationRequest(final Dish moderableDish) {
+        moderationRequestRepository.save(ModerationRequest.builder()
                 .moderationDish(moderableDish)
                 .fresh(true)
-                .moderatorsRequestMessageInfos(List.of())
-                .build()).getId();
+                .build());
     }
 
     @Transactional
-    void addRequestMessages(final long moderationRequestId, final Set<RequestMessageInfoDto> requestMessageInfoDtoSet) {
+    void addRequestMessages(final long moderationRequestId, final Set<ModerationRequestMessageDto> moderationRequestMessageDtoSet) {
         moderationRequestRepository.findById(moderationRequestId).orElseThrow()
-                .getModeratorsRequestMessageInfos().addAll(requestMessageRepository.saveAll(requestMessageInfoDtoSet.stream()
-                        .map(requestMessageInfoEntityDtoMapper::dtoToEntity)
+                .getModerationRequestMessages().addAll(moderationRequestMessageRepository.saveAll(moderationRequestMessageDtoSet.stream()
+                        .map(moderationRequestMessageEntityDtoMapper::dtoToEntity)
                         .collect(Collectors.toSet())));
     }
 
@@ -60,8 +57,8 @@ public class ModerationService {
     ModerationResultDto approveRequest(final long requestId) {
         final ModerationRequest moderationRequest = moderationRequestRepository.findById(requestId).orElseThrow();
         final ModerationResultDto resultDto = ModerationResultDto.createApproveResult(moderationRequest.getModerationDish().getDishName(),
-                moderationRequest.getFromUser().getChatId(),
-                moderationRequest.getModeratorsRequestMessageInfos().stream().map(requestMessageInfoEntityDtoMapper::entityToDto).collect(Collectors.toSet()));
+                moderationRequest.getModerationDish().getOwner().getChatId(),
+                moderationRequest.getModerationRequestMessages().stream().map(moderationRequestMessageEntityDtoMapper::entityToDto).collect(Collectors.toSet()));
         moderationRequestRepository.delete(moderationRequest);
         return resultDto;
     }
@@ -70,8 +67,8 @@ public class ModerationService {
     ModerationResultDto declineRequest(final long requestId) {
         final ModerationRequest moderationRequest = moderationRequestRepository.findById(requestId).orElseThrow();
         final ModerationResultDto resultDto = ModerationResultDto.createDeclineResult(moderationRequest.getModerationDish().getDishName(),
-                moderationRequest.getFromUser().getChatId(),
-                moderationRequest.getModeratorsRequestMessageInfos().stream().map(requestMessageInfoEntityDtoMapper::entityToDto).collect(Collectors.toSet()));
+                moderationRequest.getModerationDish().getOwner().getChatId(),
+                moderationRequest.getModerationRequestMessages().stream().map(moderationRequestMessageEntityDtoMapper::entityToDto).collect(Collectors.toSet()));
         moderationRequestRepository.delete(moderationRequest);
         return resultDto;
     }

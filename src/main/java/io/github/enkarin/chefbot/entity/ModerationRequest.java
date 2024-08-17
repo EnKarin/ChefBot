@@ -7,8 +7,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
@@ -17,6 +19,8 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ModerationRequest {
     @Id
     @GeneratedValue
@@ -24,15 +28,11 @@ public class ModerationRequest {
     private long id;
 
     @OneToOne
-    @JoinColumn(name = "from_user")
-    private User fromUser;
-
-    @OneToOne
     @JoinColumn(name = "moderation_dish")
     private Dish moderationDish;
 
     @OneToMany(mappedBy = "currentModerationRequest", orphanRemoval = true)
-    private List<RequestMessageInfo> moderatorsRequestMessageInfos;
+    private List<ModerationRequestMessage> moderationRequestMessages;
 
     @Column(name = "fresh")
     private boolean fresh;

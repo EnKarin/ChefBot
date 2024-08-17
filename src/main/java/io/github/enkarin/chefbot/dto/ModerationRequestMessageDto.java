@@ -3,11 +3,11 @@ package io.github.enkarin.chefbot.dto;
 import lombok.Data;
 
 @Data
-public class RequestMessageInfoDto {
+public class ModerationRequestMessageDto {
     private int messageId;
     private long chatId;
 
-    public RequestMessageInfoDto(final int messageId) {
+    public ModerationRequestMessageDto(final int messageId) {
         this.messageId = messageId;
     }
 }
