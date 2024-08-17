@@ -1,5 +1,6 @@
 package io.github.enkarin.chefbot;
 
+import io.github.enkarin.chefbot.controllers.TelegramController;
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.User;

@@ -1,4 +1,4 @@
-package io.github.enkarin.chefbot;
+package io.github.enkarin.chefbot.controllers;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.enums.ChatStatus;

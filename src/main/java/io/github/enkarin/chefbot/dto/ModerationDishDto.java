@@ -1,13 +1,16 @@
 package io.github.enkarin.chefbot.dto;
 
 import io.github.enkarin.chefbot.enums.WorldCuisine;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.Set;
 
 @Data
+@Builder
 public class ModerationDishDto {
     private long requestId;
+    private long ownerChatId;
     private String name;
     private boolean spicy;
     private boolean soup;

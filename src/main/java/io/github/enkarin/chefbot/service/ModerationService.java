@@ -37,10 +37,10 @@ public class ModerationService {
     @Transactional
     void addRequestMessages(final long moderationRequestId, final Set<ModerationRequestMessageDto> moderationRequestMessageDtoSet) {
         final ModerationRequest currentRequest = moderationRequestRepository.findById(moderationRequestId).orElseThrow();
-        currentRequest.getModerationRequestMessages().addAll(moderationRequestMessageRepository.saveAll(moderationRequestMessageDtoSet.stream()
+        moderationRequestMessageRepository.saveAll(moderationRequestMessageDtoSet.stream()
                 .map(moderationRequestMessageEntityDtoMapper::dtoToEntity)
                 .peek(moderationRequestMessage -> moderationRequestMessage.setCurrentModerationRequest(currentRequest))
-                .collect(Collectors.toSet())));
+                .collect(Collectors.toSet()));
     }
 
     @Transactional
@@ -78,6 +78,7 @@ public class ModerationService {
         return moderationRequests.stream().map(moderationRequest -> {
             final ModerationDishDto dto = dishEntityDtoMapper.entityToDto(moderationRequest.getModerationDish());
             dto.setRequestId(moderationRequest.getId());
+            dto.setOwnerChatId(moderationRequest.getModerationDish().getOwner().getChatId());
             return dto;
         }).collect(Collectors.toSet());
     }
