@@ -1,5 +1,6 @@
 package io.github.enkarin.chefbot.service;
 
+import io.github.enkarin.chefbot.dto.ModerationDishDto;
 import io.github.enkarin.chefbot.dto.ModerationRequestMessageDto;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.ModerationRequest;
@@ -101,17 +102,40 @@ class ModerationServiceTest extends TestBase {
 
     @Test
     void findAllFreshRequests() {
+        assertThat(moderationService.findAllFreshRequests()).extracting(ModerationDishDto::getName).contains("thirdDish", "fourthDish");
+    }
+
+    @Test
+    void findAllFreshRequestsMustBeNonFreshAfterCall() {
+        moderationService.findAllFreshRequests();
+
+        assertThat(moderationRequestRepository.findAll()).noneMatch(ModerationRequest::isFresh);
     }
 
     @Test
     void findAllRequests() {
+        assertThat(moderationService.findAllRequests()).extracting(ModerationDishDto::getName).contains("firstDish", "secondDish", "thirdDish", "fourthDish");
     }
 
     @Test
     void approveRequest() {
+        assertThat(moderationService.approveRequest(moderationRequestsId[1])).satisfies(moderationResultDto -> {
+            assertThat(moderationResultDto.approve()).isTrue();
+            assertThat(moderationResultDto.name()).isEqualTo("secondDish");
+            assertThat(moderationResultDto.ownerChat()).isEqualTo(CHAT_ID);
+            assertThat(moderationResultDto.messageForRemove()).extracting(ModerationRequestMessageDto::getChatId).contains(20L, 22L);
+        });
+        assertThat(moderationRequestRepository.existsById(moderationRequestsId[1])).isFalse();
     }
 
     @Test
     void declineRequest() {
+        assertThat(moderationService.approveRequest(moderationRequestsId[2])).satisfies(moderationResultDto -> {
+            assertThat(moderationResultDto.approve()).isFalse();
+            assertThat(moderationResultDto.name()).isEqualTo("thirdDish");
+            assertThat(moderationResultDto.ownerChat()).isEqualTo(CHAT_ID);
+            assertThat(moderationResultDto.messageForRemove()).extracting(ModerationRequestMessageDto::getChatId).contains(30L, 33L);
+        });
+        assertThat(moderationRequestRepository.existsById(moderationRequestsId[2])).isFalse();
     }
 }
