@@ -35,21 +35,21 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
     private final String botUsername;
     @Getter
     private final String botToken;
+    private final String approvePrefix;
+    private final String declinePrefix;
     private final TelegramController telegramController;
-
-    @Value("adapter.prefix.approve")
-    private String approvePrefix;
-
-    @Value("adapter.prefix.decline")
-    private String declinePrefix;
 
     public TelegramAdapter(final TelegramBotsApi telegramBotsApi,
                            @Value("${telegram-bot.name}") final String botUsername,
                            @Value("${telegram-bot.token}") final String botToken,
+                           @Value("adapter.prefix.approve") final String approvePrefix,
+                           @Value("adapter.prefix.decline") final String declinePrefix,
                            final TelegramController telegramController) throws TelegramApiException {
         this.botUsername = botUsername;
         this.botToken = botToken;
         this.telegramController = telegramController;
+        this.approvePrefix = approvePrefix;
+        this.declinePrefix = declinePrefix;
         telegramBotsApi.registerBot(this);
     }
 

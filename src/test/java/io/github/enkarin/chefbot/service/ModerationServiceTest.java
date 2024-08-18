@@ -22,11 +22,14 @@ class ModerationServiceTest extends ModerationTest {
     @Autowired
     private ModerationRequestMessageEntityDtoMapper mapper;
 
+    @Autowired
+    private DishService dishService;
+
     @Test
     void createModerationRequest() {
-        final Dish dish = dishRepository.save(Dish.builder().owner(userService.findUser(USER_ID)).dishName("newDish").build());
+        dishService.initDishName(USER_ID, "newDish");
 
-        moderationService.createModerationRequest(dish);
+        moderationService.createModerationRequest(USER_ID);
 
         assertThat(moderationRequestRepository.findAll()).extracting(ModerationRequest::getModerationDish).extracting(Dish::getDishName).contains("newDish");
     }

@@ -39,4 +39,12 @@ class ApproveBackToMainMenuServiceTest extends TestBase {
 
         assertThat(userService.findUser(USER_ID).getEditabledDish()).isNull();
     }
+
+    @Test
+    void executeWithNo() {
+        userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_NAME);
+        userService.switchToNewStatus(USER_ID, ChatStatus.APPROVE_BACK_TO_MAIN_MENU);
+
+        assertThat(approveBackToMainMenuService.execute(USER_ID, "Нет")).isEqualTo(ChatStatus.NEW_DISH_NAME);
+    }
 }

@@ -1,6 +1,7 @@
 package io.github.enkarin.chefbot;
 
 import io.github.enkarin.chefbot.adapters.TelegramAdapter;
+import io.github.enkarin.chefbot.dto.ModerationDishDto;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.util.TestBase;
@@ -12,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.MessageEntity;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -66,4 +68,11 @@ class TelegramAdapterTest extends TestBase {
         update.setMessage(message);
         return update;
     }
+
+    @Test
+    void sendModerationRequests() {
+        assertThat(telegramAdapter.sendModerationRequests(Set.of(10L, 20L), ModerationDishDto.builder().requestId(666).build())).isNotNull();
+    }
+
+    // todo: test callback
 }

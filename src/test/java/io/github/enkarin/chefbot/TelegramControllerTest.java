@@ -97,4 +97,6 @@ class TelegramControllerTest extends TestBase {
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/undo").messageText()).isEqualTo("Отменить действие можно лишь один раз подряд");
     }
+
+    //todo: test callback
 }

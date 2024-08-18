@@ -3,7 +3,6 @@ package io.github.enkarin.chefbot.service;
 import io.github.enkarin.chefbot.dto.ModerationDishDto;
 import io.github.enkarin.chefbot.dto.ModerationRequestMessageDto;
 import io.github.enkarin.chefbot.dto.ModerationResultDto;
-import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.ModerationRequest;
 import io.github.enkarin.chefbot.mappers.DishEntityDtoMapper;
 import io.github.enkarin.chefbot.mappers.ModerationRequestMessageEntityDtoMapper;
@@ -21,14 +20,15 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 public class ModerationService {
+    private final UserService userService;
     private final ModerationRequestRepository moderationRequestRepository;
     private final ModerationRequestMessageRepository moderationRequestMessageRepository;
     private final ModerationRequestMessageEntityDtoMapper moderationRequestMessageEntityDtoMapper;
     private final DishEntityDtoMapper dishEntityDtoMapper;
 
-    void createModerationRequest(final Dish moderableDish) {
+    void createModerationRequest(final long userId) {
         moderationRequestRepository.save(ModerationRequest.builder()
-                .moderationDish(moderableDish)
+                .moderationDish(userService.findUser(userId).getEditabledDish())
                 .fresh(true)
                 .build());
     }
