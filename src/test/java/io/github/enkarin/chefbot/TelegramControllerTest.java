@@ -7,11 +7,7 @@ import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.UserAnswerOption;
-import io.github.enkarin.chefbot.repository.ModerationRequestMessageRepository;
-import io.github.enkarin.chefbot.repository.ModerationRequestRepository;
 import io.github.enkarin.chefbot.util.ModerationTest;
-import io.github.enkarin.chefbot.util.TestBase;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -104,21 +100,29 @@ class TelegramControllerTest extends ModerationTest {
 
     @Test
     void approveModerationRequest() {
+        moderationInit();
+
         assertThat(telegramController.approveModerationRequest("Подтвердить запрос №" + moderationRequestsId[0])).satisfies(moderationResultDto -> {
             assertThat(moderationResultDto.approve()).isTrue();
             assertThat(moderationResultDto.dishName()).isEqualTo("firstDish");
             assertThat(moderationResultDto.messageForRemove()).extracting(ModerationRequestMessageDto::chatId).contains(10L, 11L);
         });
         assertThat(moderationRequestRepository.existsById(moderationRequestsId[0])).isFalse();
+
+        moderationClean();
     }
 
     @Test
     void declineModerationRequest() {
+        moderationInit();
+
         assertThat(telegramController.declineModerationRequest("Отклонить запрос №" + moderationRequestsId[1])).satisfies(moderationResultDto -> {
             assertThat(moderationResultDto.approve()).isFalse();
             assertThat(moderationResultDto.dishName()).isEqualTo("secondDish");
             assertThat(moderationResultDto.messageForRemove()).extracting(ModerationRequestMessageDto::chatId).contains(20L, 22L);
         });
         assertThat(moderationRequestRepository.existsById(moderationRequestsId[1])).isFalse();
+
+        moderationClean();
     }
 }

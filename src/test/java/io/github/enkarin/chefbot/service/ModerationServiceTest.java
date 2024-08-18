@@ -7,6 +7,8 @@ import io.github.enkarin.chefbot.entity.ModerationRequest;
 import io.github.enkarin.chefbot.entity.ModerationRequestMessage;
 import io.github.enkarin.chefbot.mappers.ModerationRequestMessageEntityDtoMapper;
 import io.github.enkarin.chefbot.util.ModerationTest;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,6 +27,16 @@ class ModerationServiceTest extends ModerationTest {
 
     @Autowired
     private DishService dishService;
+
+    @BeforeEach
+    void init() {
+        moderationInit();
+    }
+
+    @AfterEach
+    void clean() {
+        moderationClean();
+    }
 
     @Test
     void createModerationRequest() {

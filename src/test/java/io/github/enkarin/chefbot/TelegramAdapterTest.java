@@ -77,16 +77,24 @@ class TelegramAdapterTest extends ModerationTest {
 
     @Test
     void approveModerationRequest() {
+        moderationInit();
+
         telegramAdapter.onUpdateReceived(createUpdateWithCallbackQuery("Одобрить запрос №" + moderationRequestsId[0]));
 
         assertThat(moderationRequestRepository.existsById(moderationRequestsId[0])).isFalse();
+
+        moderationClean();
     }
 
     @Test
     void declineModerationRequest() {
+        moderationInit();
+
         telegramAdapter.onUpdateReceived(createUpdateWithCallbackQuery("Отклонить запрос №" + moderationRequestsId[1]));
 
         assertThat(moderationRequestRepository.existsById(moderationRequestsId[1])).isFalse();
+
+        moderationClean();
     }
 
     private Update createUpdateWithCallbackQuery(final String data) {
