@@ -1,19 +1,20 @@
 package io.github.enkarin.chefbot;
 
+import io.github.enkarin.chefbot.controllers.TelegramController;
 import io.github.enkarin.chefbot.dto.BotAnswer;
+import io.github.enkarin.chefbot.dto.ModerationRequestMessageDto;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.UserAnswerOption;
-import io.github.enkarin.chefbot.util.TestBase;
+import io.github.enkarin.chefbot.util.ModerationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class TelegramControllerTest extends TestBase {
-
+class TelegramControllerTest extends ModerationTest {
     @Autowired
     private TelegramController telegramController;
 
@@ -85,7 +86,7 @@ class TelegramControllerTest extends TestBase {
 
     @Test
     void callUndoFromMainMenu() {
-        userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/undo").messageText()).isEqualTo("Эта команда не доступна в главном меню");
     }
@@ -95,5 +96,37 @@ class TelegramControllerTest extends TestBase {
         userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.NEW_DISH_NAME).previousChatStatus(ChatStatus.NEW_DISH_NAME).build());
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/undo").messageText()).isEqualTo("Отменить действие можно лишь один раз подряд");
+    }
+
+    @Test
+    void approveModerationRequest() {
+        moderationInit();
+
+        assertThat(telegramController.approveModerationRequest("Подтвердить запрос №" + moderationRequestsId[0])).satisfies(moderationResultDto -> {
+            assertThat(moderationResultDto.approve()).isTrue();
+            assertThat(moderationResultDto.dishName()).isEqualTo("firstDish");
+            assertThat(moderationResultDto.messageForRemove()).extracting(ModerationRequestMessageDto::chatId).contains(10L, 11L);
+        });
+        assertThat(moderationRequestRepository.existsById(moderationRequestsId[0])).isFalse();
+        assertThat(dishRepository.findAll()).anySatisfy(dish -> {
+            assertThat(dish.getDishName()).isEqualTo("firstDish");
+            assertThat(dish.isPublished()).isTrue();
+        });
+    }
+
+    @Test
+    void declineModerationRequest() {
+        moderationInit();
+
+        assertThat(telegramController.declineModerationRequest("Отклонить запрос №" + moderationRequestsId[1])).satisfies(moderationResultDto -> {
+            assertThat(moderationResultDto.approve()).isFalse();
+            assertThat(moderationResultDto.dishName()).isEqualTo("secondDish");
+            assertThat(moderationResultDto.messageForRemove()).extracting(ModerationRequestMessageDto::chatId).contains(20L, 22L);
+        });
+        assertThat(moderationRequestRepository.existsById(moderationRequestsId[1])).isFalse();
+        assertThat(dishRepository.findAll()).anySatisfy(dish -> {
+            assertThat(dish.getDishName()).isEqualTo("secondDish");
+            assertThat(dish.isPublished()).isFalse();
+        });
     }
 }

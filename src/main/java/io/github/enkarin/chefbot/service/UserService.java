@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,12 +15,15 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
-
     private final UserRepository userRepository;
 
     @Transactional
-    public void createOfUpdateUser(final long userId, final long chatId, final String username) {
-        final User user = userRepository.findById(userId).orElseGet(() -> User.builder().id(userId).chatStatus(ChatStatus.MAIN_MENU).build());
+    public void createOrUpdateUser(final long userId, final long chatId, final String username) {
+        final User user = userRepository.findById(userId).orElseGet(() -> User.builder()
+                .id(userId)
+                .chatStatus(ChatStatus.MAIN_MENU)
+                .dishes(new HashSet<>())
+                .build());
         user.setChatId(chatId);
         user.setUsername(username);
         userRepository.save(user);
@@ -29,8 +33,8 @@ public class UserService {
         return findUser(userId).getChatStatus();
     }
 
-    Set<Long> getAllModerators() {
-        return userRepository.findAllByModeratorIsTrue().stream()
+    public Set<Long> getAllModeratorsWithoutCurrentUser(final long currentChatId) {
+        return userRepository.findAllByModeratorIsTrueAndChatIdIsNot(currentChatId).stream()
                 .map(User::getChatId)
                 .collect(Collectors.toSet());
     }

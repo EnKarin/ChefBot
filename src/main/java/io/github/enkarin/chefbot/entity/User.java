@@ -32,6 +32,7 @@ public class User implements Serializable {
     private static final long serialVersionUID = -224945856393620757L;
 
     @Id
+    @Column(name = "user_id")
     private long id;
 
     @Column(name = "chat_id", unique = true)
@@ -44,7 +45,7 @@ public class User implements Serializable {
     private boolean moderator;
 
     @OneToOne(orphanRemoval = true)
-    @JoinColumn(name = "editable_dish_id", referencedColumnName = "dish_name")
+    @JoinColumn(name = "editable_dish_id")
     private Dish editabledDish;
 
     @OneToMany(mappedBy = "owner", orphanRemoval = true)

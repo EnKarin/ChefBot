@@ -22,8 +22,17 @@ class ProcessingFacadeTest extends TestBase {
     }
 
     @Test
+    void executeWithNewDishNeedPublish() {
+        userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_NEED_PUBLISH);
+
+        assertThat(processingFacade.execute(USER_ID, "aboba").messageText()).isEqualTo("Хотите опубликовать это блюдо, чтобы оно было доступно всем пользователям?");
+        assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.NEW_DISH_NEED_PUBLISH);
+    }
+
+    @Test
     void goToStatus() {
-        userService.createOfUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
         assertThat(processingFacade.goToStatus(USER_ID, ChatStatus.APPROVE_BACK_TO_MAIN_MENU)).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Вы хотите вернуться в главное меню? Весь прогресс текущей операции будет утерян.");
