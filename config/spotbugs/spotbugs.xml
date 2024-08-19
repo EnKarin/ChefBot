@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FindBugsFilter>
     <Match>
-        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2,VA_FORMAT_STRING_USES_NEWLINE"/>
     </Match>
     <Match>
         <Bug pattern="BC_UNCONFIRMED_CAST_OF_RETURN_VALUE"/>
-        <Class name="io.github.enkarin.bookcrossing.support.PostgreSQLInitializer"/>
+        <Class name="io.github.enkarin.chefbot.util.PostgreSQLInitializer"/>
     </Match>
 </FindBugsFilter>

@@ -11,6 +11,10 @@ spring:
     url: jdbc:postgresql://localhost:5432/chefdata
     username: ${DATABASE_USER}
     password: ${DATABASE_PASS}
-# todo telegram-bot:
-#  todo name:
-#  todo token:
+telegram-bot:
+  name: ${BOT_NAME}
+  token: ${BOT_TOKEN}
+adapter:
+  prefix:
+    approve: Одобрить
+    decline: Отклонить
