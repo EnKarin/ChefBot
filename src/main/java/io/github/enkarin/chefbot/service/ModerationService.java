@@ -3,6 +3,7 @@ package io.github.enkarin.chefbot.service;
 import io.github.enkarin.chefbot.dto.ModerationDishDto;
 import io.github.enkarin.chefbot.dto.ModerationRequestMessageDto;
 import io.github.enkarin.chefbot.dto.ModerationResultDto;
+import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.ModerationRequest;
 import io.github.enkarin.chefbot.mappers.DishEntityDtoMapper;
 import io.github.enkarin.chefbot.mappers.ModerationRequestMessageEntityDtoMapper;
@@ -60,6 +61,8 @@ public class ModerationService {
 
     public ModerationResultDto approveRequest(final long requestId) {
         final ModerationRequest moderationRequest = moderationRequestRepository.findById(requestId).orElseThrow();
+        final Dish moderationDish = moderationRequest.getModerationDish();
+        moderationDish.setPublished(true);
         final ModerationResultDto resultDto = ModerationResultDto.createApproveResult(moderationRequest.getModerationDish().getDishName(),
                 moderationRequest.getModerationDish().getOwner().getChatId(),
                 moderationRequest.getModerationRequestMessages().stream().map(moderationRequestMessageEntityDtoMapper::entityToDto).collect(Collectors.toSet()));

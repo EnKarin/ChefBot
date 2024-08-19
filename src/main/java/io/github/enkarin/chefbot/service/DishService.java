@@ -15,6 +15,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import static java.util.Objects.isNull;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -26,8 +28,8 @@ public class DishService {
     @Transactional
     void initDishName(final long userId, final String name) {
         final User user = userService.findUser(userId);
-        if (user.getDishes().stream().map(Dish::getDishName).noneMatch(n -> n.equals(name))) {
-            if (user.getEditabledDish() == null) {
+        if (currentUserContainDishWithSpecifiedName(name, user)) {
+            if (isNull(user.getEditabledDish())) {
                 initNewDish(name, user);
             } else {
                 renameCreatingDish(name, user);
@@ -35,6 +37,10 @@ public class DishService {
         } else {
             throw new DishNameAlreadyExistsInCurrentUserException(name);
         }
+    }
+
+    private boolean currentUserContainDishWithSpecifiedName(final String name, final User user) {
+        return user.getDishes().stream().map(Dish::getDishName).noneMatch(n -> n.equals(name));
     }
 
     @Transactional

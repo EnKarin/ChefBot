@@ -42,8 +42,8 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
     public TelegramAdapter(final TelegramBotsApi telegramBotsApi,
                            @Value("${telegram-bot.name}") final String botUsername,
                            @Value("${telegram-bot.token}") final String botToken,
-                           @Value("adapter.prefix.approve") final String approvePrefix,
-                           @Value("adapter.prefix.decline") final String declinePrefix,
+                           @Value("${adapter.prefix.approve}") final String approvePrefix,
+                           @Value("${adapter.prefix.decline}") final String declinePrefix,
                            final TelegramController telegramController) throws TelegramApiException {
         this.botUsername = botUsername;
         this.botToken = botToken;
