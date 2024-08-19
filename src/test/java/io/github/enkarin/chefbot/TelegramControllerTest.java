@@ -108,8 +108,10 @@ class TelegramControllerTest extends ModerationTest {
             assertThat(moderationResultDto.messageForRemove()).extracting(ModerationRequestMessageDto::chatId).contains(10L, 11L);
         });
         assertThat(moderationRequestRepository.existsById(moderationRequestsId[0])).isFalse();
-
-        moderationClean();
+        assertThat(dishRepository.findAll()).anySatisfy(dish -> {
+            assertThat(dish.getDishName()).isEqualTo("firstDish");
+            assertThat(dish.isPublished()).isTrue();
+        });
     }
 
     @Test
@@ -122,7 +124,9 @@ class TelegramControllerTest extends ModerationTest {
             assertThat(moderationResultDto.messageForRemove()).extracting(ModerationRequestMessageDto::chatId).contains(20L, 22L);
         });
         assertThat(moderationRequestRepository.existsById(moderationRequestsId[1])).isFalse();
-
-        moderationClean();
+        assertThat(dishRepository.findAll()).anySatisfy(dish -> {
+            assertThat(dish.getDishName()).isEqualTo("secondDish");
+            assertThat(dish.isPublished()).isFalse();
+        });
     }
 }

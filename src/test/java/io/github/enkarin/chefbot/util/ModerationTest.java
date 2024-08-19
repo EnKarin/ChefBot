@@ -6,6 +6,7 @@ import io.github.enkarin.chefbot.entity.ModerationRequestMessage;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.repository.ModerationRequestMessageRepository;
 import io.github.enkarin.chefbot.repository.ModerationRequestRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -53,7 +54,8 @@ public abstract class ModerationTest extends TestBase {
         moderationRequestsId[3] = fourthModerationRequest.getId();
     }
 
-    protected void moderationClean() {
+    @AfterEach
+    void moderationClean() {
         moderationRequestRepository.deleteAll();
     }
 }

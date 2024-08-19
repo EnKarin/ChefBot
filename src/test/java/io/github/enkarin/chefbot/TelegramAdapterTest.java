@@ -82,8 +82,10 @@ class TelegramAdapterTest extends ModerationTest {
         telegramAdapter.onUpdateReceived(createUpdateWithCallbackQuery("Одобрить запрос №" + moderationRequestsId[0]));
 
         assertThat(moderationRequestRepository.existsById(moderationRequestsId[0])).isFalse();
-
-        moderationClean();
+        assertThat(dishRepository.findAll()).anySatisfy(dish -> {
+            assertThat(dish.getDishName()).isEqualTo("firstDish");
+            assertThat(dish.isPublished()).isTrue();
+        });
     }
 
     @Test
@@ -93,8 +95,10 @@ class TelegramAdapterTest extends ModerationTest {
         telegramAdapter.onUpdateReceived(createUpdateWithCallbackQuery("Отклонить запрос №" + moderationRequestsId[1]));
 
         assertThat(moderationRequestRepository.existsById(moderationRequestsId[1])).isFalse();
-
-        moderationClean();
+        assertThat(dishRepository.findAll()).anySatisfy(dish -> {
+            assertThat(dish.getDishName()).isEqualTo("secondDish");
+            assertThat(dish.isPublished()).isFalse();
+        });
     }
 
     private Update createUpdateWithCallbackQuery(final String data) {
