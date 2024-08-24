@@ -9,10 +9,16 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Entity
 @Getter
 @Setter
-public class SearchFilter {
+public class SearchFilter implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 7328055925213805550L;
+
     @Id
     @GeneratedValue
     private long id;
@@ -21,6 +27,6 @@ public class SearchFilter {
     private Boolean spicy;
     private boolean searchFromPublicDish;
 
-    @Enumerated(value = EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     private WorldCuisine cuisine;
 }
