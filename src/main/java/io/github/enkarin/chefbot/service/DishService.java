@@ -77,7 +77,8 @@ public class DishService {
         final Dish dish = findEditableDish(userId);
         final Set<Product> products = new HashSet<>();
         for (final String foodstuffName : foodstuffNames) {
-            products.add(productRepository.findById(foodstuffName).orElseGet(() -> productRepository.save(Product.builder().productName(foodstuffName).build())));
+            final String trimFoodstuff = foodstuffName.trim();
+            products.add(productRepository.findById(trimFoodstuff).orElseGet(() -> productRepository.save(Product.builder().productName(trimFoodstuff).build())));
         }
         dish.setProducts(products);
     }
