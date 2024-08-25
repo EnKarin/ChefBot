@@ -39,10 +39,7 @@ public class ProcessingExecuteSearchService implements ProcessingService {
                 .map(DisplayDishDto::toString)
                 .collect(Collectors.joining("\n\n"));
 
-        return BotAnswer.builder()
-                .userAnswerOption(UserAnswerOption.MORE_OR_STOP)
-                .messageText(StringUtils.isNoneBlank(dishes) ? dishes : "Подходщих блюд нет")
-                .build();
+        return BotAnswer.builder().userAnswerOption(UserAnswerOption.MORE_OR_STOP).messageText(StringUtils.isNoneBlank(dishes) ? dishes : "Подходящих блюд нет").build();
     }
 
     @Override
