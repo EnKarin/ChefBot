@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class TelegramControllerTest extends ModerationTest {
     @Autowired
@@ -77,14 +76,6 @@ class TelegramControllerTest extends ModerationTest {
     }
 
     @Test
-    void processingNotCommandInput() {
-        createUser(ChatStatus.NEW_DISH_NAME);
-
-        assertThatThrownBy(() -> telegramController.processingNonCommandInput(USER_ID, "test text"))
-                .isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
     void callUndoFromMainMenu() {
         userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
@@ -142,5 +133,19 @@ class TelegramControllerTest extends ModerationTest {
                 .get()
                 .extracting(User::getChatStatus)
                 .isEqualTo(ChatStatus.SELECT_DISH_SOUP);
+    }
+
+    @Test
+    void addDishShouldUpdateShatStatus() {
+        createUser(ChatStatus.MAIN_MENU);
+
+        assertThat(telegramController.executeWorkerCommand(USER_ID, "/add_dish"))
+                .extracting(BotAnswer::messageText, BotAnswer::userAnswerOption)
+                .containsOnly("Введите название блюда", UserAnswerOption.NONE);
+        assertThat(userRepository.findById(USER_ID))
+                .isPresent()
+                .get()
+                .extracting(User::getChatStatus)
+                .isEqualTo(ChatStatus.NEW_DISH_NAME);
     }
 }

@@ -1,16 +1,17 @@
-package io.github.enkarin.chefbot.service.pipelines;
+package io.github.enkarin.chefbot.service.pipelines.addendum;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.UserAnswerOption;
 import io.github.enkarin.chefbot.service.ModerationService;
+import io.github.enkarin.chefbot.service.pipelines.ProcessingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
 
 @Service
-public class NewDishNeedPublishService implements ProcessingService {
+public class ProcessingAddDishNeedPublishService implements ProcessingService {
     @Autowired
     private ModerationService moderationService;
 

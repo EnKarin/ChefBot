@@ -12,10 +12,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
 import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.StringUtils.capitalize;
 
 @Service
 @Transactional(readOnly = true)
@@ -54,30 +56,31 @@ public class DishService {
     }
 
     @Transactional
-    void putDishIsSpicy(final long userId) {
+    public void putDishIsSpicy(final long userId) {
         final Dish dish = findEditableDish(userId);
         dish.setSpicy(true);
     }
 
 
     @Transactional
-    void putDishIsSoup(final long userId) {
+    public void putDishIsSoup(final long userId) {
         final Dish dish = findEditableDish(userId);
         dish.setSoup(true);
     }
 
     @Transactional
-    void putDishCuisine(final long userId, final WorldCuisine cuisine) {
+    public void putDishCuisine(final long userId, final WorldCuisine cuisine) {
         final Dish dish = findEditableDish(userId);
         dish.setCuisine(cuisine);
     }
 
     @Transactional
-    void putDishFoodstuff(final long userId, final String... foodstuffNames) {
+    public void putDishFoodstuff(final long userId, final String... foodstuffNames) {
         final Dish dish = findEditableDish(userId);
         final Set<Product> products = new HashSet<>();
         for (final String foodstuffName : foodstuffNames) {
-            products.add(productRepository.findById(foodstuffName).orElseGet(() -> productRepository.save(Product.builder().productName(foodstuffName).build())));
+            final String trimFoodstuff = capitalize(foodstuffName.trim().toLowerCase(Locale.ROOT));
+            products.add(productRepository.findById(trimFoodstuff).orElseGet(() -> productRepository.save(Product.builder().productName(trimFoodstuff).build())));
         }
         dish.setProducts(products);
     }

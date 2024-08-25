@@ -281,27 +281,27 @@
                                         <limit>
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0</minimum>
+                                            <minimum>0.91</minimum>
                                         </limit>
                                         <limit>
                                             <counter>BRANCH</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0</minimum>
+                                            <minimum>0.88</minimum>
                                         </limit>
                                         <limit>
                                             <counter>CLASS</counter>
                                             <value>MISSEDCOUNT</value>
-                                            <maximum>1</maximum>
+                                            <maximum>0</maximum>
                                         </limit>
                                         <limit>
                                             <counter>METHOD</counter>
                                             <value>MISSEDCOUNT</value>
-                                            <maximum>3</maximum>
+                                            <maximum>2</maximum>
                                         </limit>
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>MISSEDCOUNT</value>
-                                            <maximum>33</maximum>
+                                            <maximum>27</maximum>
                                         </limit>
                                     </limits>
                                 </rule>

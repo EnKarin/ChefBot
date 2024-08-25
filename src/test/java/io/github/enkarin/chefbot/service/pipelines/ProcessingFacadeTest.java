@@ -1,10 +1,12 @@
 package io.github.enkarin.chefbot.service.pipelines;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
+import io.github.enkarin.chefbot.entity.Product;
 import io.github.enkarin.chefbot.entity.SearchFilter;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.UserAnswerOption;
+import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.repository.SearchFilterRepository;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.Test;
@@ -110,5 +112,36 @@ class ProcessingFacadeTest extends TestBase {
                 .isEqualTo("""
                         **third:**
                         thirdProduct""");
+    }
+
+    @Test
+    void goToStatusShouldWorkWithAddDish() {
+        createUser(ChatStatus.NEW_DISH_NAME);
+
+        final String dishName = "Кимчи суп";
+        processingFacade.execute(USER_ID, dishName); //enter dish name
+        processingFacade.execute(USER_ID, "Да"); //enter is soup
+        processingFacade.execute(USER_ID, "Да"); //enter is spicy
+        processingFacade.execute(USER_ID, "Азиатская"); //enter cuisine
+        processingFacade.execute(USER_ID, "кимчи, свинина, репчатый лук, перцовая паста кочудян, тофу"); //enter foodstuff
+        processingFacade.execute(USER_ID, "нет"); //enter is need publish
+
+        assertThat(dishRepository.findAll())
+                .hasSize(1)
+                .first()
+                .satisfies(d -> {
+                    assertThat(d.getDishName())
+                            .isEqualTo(dishName);
+                    assertThat(d.isSoup())
+                            .isTrue();
+                    assertThat(d.isSpicy())
+                            .isTrue();
+                    assertThat(d.getCuisine())
+                            .isEqualTo(WorldCuisine.ASIA);
+                });
+        assertThat(productRepository.findAll())
+                .hasSize(5)
+                .extracting(Product::getProductName)
+                .containsOnly("Кимчи", "Свинина", "Репчатый лук", "Перцовая паста кочудян", "Тофу");
     }
 }
