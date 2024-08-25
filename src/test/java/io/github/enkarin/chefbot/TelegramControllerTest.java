@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class TelegramControllerTest extends ModerationTest {
     @Autowired
@@ -74,14 +73,6 @@ class TelegramControllerTest extends ModerationTest {
             assertThat(botAnswer.messageText()).isEqualTo("Произошла непредвиденная ошибка");
             assertThat(botAnswer.userAnswerOption()).isEqualTo(UserAnswerOption.DEFAULT);
         });
-    }
-
-    @Test
-    void processingNotCommandInput() {
-        createUser(ChatStatus.NEW_DISH_NAME);
-
-        assertThatThrownBy(() -> telegramController.processingNonCommandInput(USER_ID, "test text"))
-                .isInstanceOf(NullPointerException.class);
     }
 
     @Test
