@@ -5,16 +5,15 @@ import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.UserAnswerOption;
 import io.github.enkarin.chefbot.service.ModerationService;
 import io.github.enkarin.chefbot.service.pipelines.ProcessingService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
 
 @Service
-@RequiredArgsConstructor
 public class ProcessingAddDishNeedPublishService implements ProcessingService {
-
-    private final ModerationService moderationService;
+    @Autowired
+    private ModerationService moderationService;
 
     @Override
     public ChatStatus execute(final long userId, final String text) {
@@ -30,10 +29,7 @@ public class ProcessingAddDishNeedPublishService implements ProcessingService {
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return BotAnswer.builder()
-                .messageText("Желаете опубликовать рецепт?")
-                .userAnswerOption(UserAnswerOption.YES_OR_NO)
-                .build();
+        return new BotAnswer("Хотите опубликовать это блюдо, чтобы оно было доступно всем пользователям?", UserAnswerOption.YES_OR_NO);
     }
 
     @Override

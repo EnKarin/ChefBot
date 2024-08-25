@@ -1,8 +1,9 @@
-package io.github.enkarin.chefbot.service.pipelines;
+package io.github.enkarin.chefbot.service.pipelines.addendum;
 
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.repository.ModerationRequestRepository;
 import io.github.enkarin.chefbot.service.DishService;
+import io.github.enkarin.chefbot.service.pipelines.addendum.ProcessingAddDishNeedPublishService;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -10,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class NewDishNeedPublishServiceTest extends TestBase {
+class ProcessingAddDishNeedPublishServiceTest extends TestBase {
     @Autowired
-    private NewDishNeedPublishService service;
+    private ProcessingAddDishNeedPublishService service;
 
     @Autowired
     private DishService dishService;
