@@ -25,12 +25,12 @@ public class ProcessingFacade {
 
     public BotAnswer goToStatus(final long userId, final ChatStatus newChatStatus) {
         userService.switchToNewStatus(userId, newChatStatus);
-        return processingServiceMap.get(newChatStatus).getMessageForUser();
+        return processingServiceMap.get(newChatStatus).getMessageForUser(userId);
     }
 
     public BotAnswer undo(final long userId) {
         if (userService.canUndo(userId)) {
-            return processingServiceMap.get(userService.backToPreviousStatus(userId)).getMessageForUser();
+            return processingServiceMap.get(userService.backToPreviousStatus(userId)).getMessageForUser(userId);
         } else {
             return new BotAnswer("Отменить действие можно лишь один раз подряд");
         }

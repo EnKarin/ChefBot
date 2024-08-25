@@ -26,7 +26,7 @@ public class NewDishNeedPublishService implements ProcessingService {
     }
 
     @Override
-    public BotAnswer getMessageForUser() {
+    public BotAnswer getMessageForUser(final long userId) {
         return new BotAnswer("Хотите опубликовать это блюдо, чтобы оно было доступно всем пользователям?", UserAnswerOption.YES_OR_NO);
     }
 

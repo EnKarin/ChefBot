@@ -29,7 +29,7 @@ class TelegramControllerTest extends ModerationTest {
 
     @Test
     void callUndetectableCommand() {
-        userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.MAIN_MENU).build());
+        createUser(ChatStatus.MAIN_MENU);
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/change_moderator_status")).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Указанной команды не существует");
@@ -39,7 +39,7 @@ class TelegramControllerTest extends ModerationTest {
 
     @Test
     void executeBackMainMenuFromMainMenu() {
-        userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.MAIN_MENU).build());
+        createUser(ChatStatus.MAIN_MENU);
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/back_to_main_menu")).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Вы уже в главном меню");
@@ -60,7 +60,7 @@ class TelegramControllerTest extends ModerationTest {
 
     @Test
     void callCommandNotFromMainMenu() {
-        userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.NEW_DISH_NAME).build());
+        createUser(ChatStatus.NEW_DISH_NAME);
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/change_moderator_status")).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Эта команда не доступна вне главного меню");
@@ -78,7 +78,7 @@ class TelegramControllerTest extends ModerationTest {
 
     @Test
     void processingNotCommandInput() {
-        userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.NEW_DISH_NAME).build());
+        createUser(ChatStatus.NEW_DISH_NAME);
 
         assertThatThrownBy(() -> telegramController.processingNonCommandInput(USER_ID, "test text"))
                 .isInstanceOf(NullPointerException.class);
@@ -128,5 +128,19 @@ class TelegramControllerTest extends ModerationTest {
             assertThat(dish.getDishName()).isEqualTo("secondDish");
             assertThat(dish.isPublished()).isFalse();
         });
+    }
+
+    @Test
+    void SearchDishShouldUpdateChatStatus() {
+        createUser(ChatStatus.MAIN_MENU);
+
+        assertThat(telegramController.executeWorkerCommand(USER_ID, "/search_dish"))
+                .extracting(BotAnswer::messageText, BotAnswer::userAnswerOption)
+                .containsOnly("Вы хотите суп?", UserAnswerOption.YES_OR_NO);
+        assertThat(userRepository.findById(USER_ID))
+                .isPresent()
+                .get()
+                .extracting(User::getChatStatus)
+                .isEqualTo(ChatStatus.SELECT_DISH_SOUP);
     }
 }

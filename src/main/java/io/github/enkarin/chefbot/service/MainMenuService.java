@@ -12,7 +12,7 @@ public class MainMenuService implements ProcessingService {
     }
 
     @Override
-    public BotAnswer getMessageForUser() {
+    public BotAnswer getMessageForUser(final long userId) {
         return BotAnswer.createBotAnswerWithoutKeyboard("Вы в главном меню. Выберете следующую команду для выполнения.");
     }
 

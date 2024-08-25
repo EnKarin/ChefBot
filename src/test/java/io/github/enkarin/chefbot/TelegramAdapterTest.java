@@ -31,7 +31,7 @@ class TelegramAdapterTest extends ModerationTest {
 
     @Test
     void onUpdateReceivedChangeModeratorStatusCommand() {
-        userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.SELECT_DISH_PRICE).build());
+        createUser(ChatStatus.SELECT_DISH_PRICE);
 
         telegramAdapter.onUpdateReceived(createTelegramCommand("/back_to_main_menu"));
 
@@ -40,7 +40,7 @@ class TelegramAdapterTest extends ModerationTest {
 
     @Test
     void onUpdateReceivedNotCommandInput() {
-        userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.APPROVE_BACK_TO_MAIN_MENU).build());
+        createUser(ChatStatus.APPROVE_BACK_TO_MAIN_MENU);
         final Message message = new Message();
         message.setText("Да");
         message.setChat(new Chat(USER_ID, "test chat"));

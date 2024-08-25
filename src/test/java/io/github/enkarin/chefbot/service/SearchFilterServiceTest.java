@@ -24,9 +24,6 @@ class SearchFilterServiceTest extends TestBase {
     @Autowired
     private SearchFilterRepository searchFilterRepository;
 
-    @Autowired
-    private ProductRepository productRepository;
-
     @BeforeEach
     void initUser() {
         userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);

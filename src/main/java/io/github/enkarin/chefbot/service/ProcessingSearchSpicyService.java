@@ -10,29 +10,35 @@ import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
-public class ApproveBackToMainMenuService implements ProcessingService {
-    private final UserService userService;
-    private final DishService dishService;
+public class ProcessingSearchSpicyService implements ProcessingService {
+
+    private final SearchFilterService filterService;
 
     @Override
     public ChatStatus execute(final long userId, final String text) {
         return switch (text.toLowerCase(Locale.ROOT)) {
             case "да" -> {
-                dishService.deleteEditableDish(userId);
-                yield ChatStatus.MAIN_MENU;
+                filterService.putSpicySign(userId, true);
+                yield ChatStatus.SELECT_DISH_KITCHEN;
             }
-            case "нет" -> userService.getPreviousChatStatus(userId);
+            case "нет" -> {
+                filterService.putSpicySign(userId, false);
+                yield ChatStatus.SELECT_DISH_KITCHEN;
+            }
             default -> getCurrentStatus();
         };
     }
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return new BotAnswer("Вы хотите вернуться в главное меню? Весь прогресс текущей операции будет утерян.", UserAnswerOption.YES_OR_NO);
+        return BotAnswer.builder()
+                .userAnswerOption(UserAnswerOption.YES_OR_NO)
+                .messageText("Острое блюдо?")
+                .build();
     }
 
     @Override
     public ChatStatus getCurrentStatus() {
-        return ChatStatus.APPROVE_BACK_TO_MAIN_MENU;
+        return ChatStatus.SELECT_DISH_SPICY;
     }
 }
