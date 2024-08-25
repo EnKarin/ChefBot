@@ -24,34 +24,34 @@ public class SearchFilterService {
     private final UserService userService;
     private final DishRepository dishRepository;
 
-    void createSearchFilter(final long ownerId) {
+    public void createSearchFilter(final long ownerId) {
         userService.findUser(ownerId).setSearchFilter(searchFilterRepository.save(new SearchFilter()));
     }
 
-    void deleteSearchFilter(final long ownerId) {
+    public void deleteSearchFilter(final long ownerId) {
         final User user = userService.findUser(ownerId);
         final SearchFilter searchFilter = user.getSearchFilter();
         user.setSearchFilter(null);
         searchFilterRepository.delete(searchFilter);
     }
 
-    void putSoupSign(final long ownerId, final boolean soup) {
+    public void putSoupSign(final long ownerId, final boolean soup) {
         userService.findUser(ownerId).getSearchFilter().setSoup(soup);
     }
 
-    void putSpicySign(final long ownerId, final boolean spicy) {
+    public void putSpicySign(final long ownerId, final boolean spicy) {
         userService.findUser(ownerId).getSearchFilter().setSpicy(spicy);
     }
 
-    void putKitchen(final long ownerId, final WorldCuisine cuisine) {
+    public void putKitchen(final long ownerId, final WorldCuisine cuisine) {
         userService.findUser(ownerId).getSearchFilter().setCuisine(cuisine);
     }
 
-    void putNeedPublicSearch(final long ownerId, final boolean searchFromPublicDish) {
+    public void putNeedPublicSearch(final long ownerId, final boolean searchFromPublicDish) {
         userService.findUser(ownerId).getSearchFilter().setSearchFromPublicDish(searchFromPublicDish);
     }
 
-    Set<DisplayDishDto> searchDishWithCurrentFilter(final long ownerId) {
+    public Set<DisplayDishDto> searchDishWithCurrentFilter(final long ownerId) {
         final User currentUser = userService.findUser(ownerId);
         final SearchFilter searchFilter = currentUser.getSearchFilter();
         final Set<DisplayDishDto> result;

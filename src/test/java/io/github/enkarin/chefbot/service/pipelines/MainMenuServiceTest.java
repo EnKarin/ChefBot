@@ -1,4 +1,4 @@
-package io.github.enkarin.chefbot.service;
+package io.github.enkarin.chefbot.service.pipelines;
 
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.util.TestBase;

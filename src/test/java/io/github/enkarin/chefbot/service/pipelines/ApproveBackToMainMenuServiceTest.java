@@ -1,6 +1,7 @@
-package io.github.enkarin.chefbot.service;
+package io.github.enkarin.chefbot.service.pipelines;
 
 import io.github.enkarin.chefbot.enums.ChatStatus;
+import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
