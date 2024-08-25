@@ -56,4 +56,8 @@ public class User implements Serializable {
 
     @Enumerated(EnumType.STRING)
     private ChatStatus previousChatStatus;
+
+    @OneToOne(orphanRemoval = true)
+    @JoinColumn(name = "search_filter_id")
+    private SearchFilter searchFilter;
 }

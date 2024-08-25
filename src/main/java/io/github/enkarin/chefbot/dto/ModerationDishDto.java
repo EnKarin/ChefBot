@@ -20,7 +20,7 @@ public class ModerationDishDto {
     @Override
     public String toString() {
         return String.format("""
-                *Запрос №%d*
+                **Запрос №%d**
                 Название: %s
                 Острое: %b
                 Суп: %b

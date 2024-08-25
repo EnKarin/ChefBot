@@ -138,6 +138,6 @@ class DishServiceTest extends TestBase {
                         "inner join t_product p on dp.product_id=p.product_name where d.dish_name=?",
                 String.class,
                 dishId)).containsOnly("Овсянка", "Три ведра укропа");
-        assertThat(productRepository.findAll()).hasSize(2);
+        assertThat(productRepository.count()).isEqualTo(2);
     }
 }
