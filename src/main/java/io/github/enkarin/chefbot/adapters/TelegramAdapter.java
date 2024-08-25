@@ -113,7 +113,7 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
             final SendMessage sendMessage = defaultConfigurationMessage(chatId, botAnswer.messageText());
             if (botAnswer.userAnswerOption() != UserAnswerOption.DEFAULT) {
                 sendMessage.setReplyMarkup(botAnswer.userAnswerOption() == UserAnswerOption.NONE
-                        ? new ReplyKeyboardRemove()
+                        ? new ReplyKeyboardRemove(true)
                         : new FormatedReplyKeyboardMarkup(botAnswer.userAnswerOption()));
             }
             execute(sendMessage);
@@ -128,8 +128,14 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
             try {
                 final SendMessage moderationMessage = defaultConfigurationMessage(chatId, moderationDishDto.toString());
                 moderationMessage.setReplyMarkup(new InlineKeyboardMarkup(List.of(List.of(
-                        new InlineKeyboardButton(approvePrefix + " заявку №" + moderationDishDto.getRequestId()),
-                        new InlineKeyboardButton(declinePrefix + " заявку №" + moderationDishDto.getRequestId())))));
+                        InlineKeyboardButton.builder()
+                                .text(approvePrefix + " заявку №" + moderationDishDto.getRequestId())
+                                .callbackData(approvePrefix + " заявку №" + moderationDishDto.getRequestId())
+                                .build(),
+                        InlineKeyboardButton.builder()
+                                .text(declinePrefix + " заявку №" + moderationDishDto.getRequestId())
+                                .callbackData(declinePrefix + " заявку №" + moderationDishDto.getRequestId())
+                                .build()))));
                 requestMessageDtoSet.add(new ModerationRequestMessageDto(execute(moderationMessage).getMessageId(), chatId));
             } catch (Exception e) {
                 log.error(e.toString());

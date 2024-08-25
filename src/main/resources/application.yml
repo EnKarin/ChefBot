@@ -1,7 +1,7 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     open-in-view: false
     properties:
       hibernate:
