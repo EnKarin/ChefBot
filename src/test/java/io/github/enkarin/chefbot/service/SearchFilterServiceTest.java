@@ -156,6 +156,26 @@ class SearchFilterServiceTest extends TestBase {
         });
     }
 
+    @Test
+    void paginationInSearchPublicDishWithCurrentFilter() {
+        searchFilterService.createSearchFilter(USER_ID);
+        searchFilterService.putNeedPublicSearch(USER_ID, true);
+        initDishes();
+
+        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).extracting(DisplayDishDto::dishName).containsOnly("first", "second", "third", "fourth", "fifth");
+        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).extracting(DisplayDishDto::dishName).containsOnly("sixth");
+    }
+
+    @Test
+    void paginationInSearchCurrentUserDishWithCurrentFilter() {
+        searchFilterService.createSearchFilter(USER_ID);
+        searchFilterService.putNeedPublicSearch(USER_ID, false);
+        initDishes();
+
+        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).extracting(DisplayDishDto::dishName).containsOnly("fifth", "sixth");
+        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).isEmpty();
+    }
+
     private void initDishes() {
         dishRepository.save(Dish.builder()
                 .dishName("first")
@@ -196,7 +216,6 @@ class SearchFilterServiceTest extends TestBase {
                 .cuisine(WorldCuisine.MIDDLE_EASTERN)
                 .products(Set.of(productRepository.save(Product.builder().productName("fifthProduct").build())))
                 .owner(userService.findUser(USER_ID))
-                .published(true)
                 .build());
         dishRepository.save(Dish.builder()
                 .dishName("sixth")
@@ -205,7 +224,6 @@ class SearchFilterServiceTest extends TestBase {
                 .cuisine(WorldCuisine.MEDITERRANEAN)
                 .products(Set.of(productRepository.save(Product.builder().productName("sixthProduct").build())))
                 .owner(userService.findUser(USER_ID))
-                .published(true)
                 .build());
     }
 }

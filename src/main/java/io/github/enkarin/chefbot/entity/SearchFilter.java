@@ -26,6 +26,7 @@ public class SearchFilter implements Serializable {
     private Boolean soup;
     private Boolean spicy;
     private boolean searchFromPublicDish;
+    private int pageNumber;
 
     @Enumerated(EnumType.STRING)
     private WorldCuisine cuisine;
