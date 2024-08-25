@@ -54,26 +54,26 @@ public class DishService {
     }
 
     @Transactional
-    void putDishIsSpicy(final long userId) {
+    public void putDishIsSpicy(final long userId) {
         final Dish dish = findEditableDish(userId);
         dish.setSpicy(true);
     }
 
 
     @Transactional
-    void putDishIsSoup(final long userId) {
+    public void putDishIsSoup(final long userId) {
         final Dish dish = findEditableDish(userId);
         dish.setSoup(true);
     }
 
     @Transactional
-    void putDishCuisine(final long userId, final WorldCuisine cuisine) {
+    public void putDishCuisine(final long userId, final WorldCuisine cuisine) {
         final Dish dish = findEditableDish(userId);
         dish.setCuisine(cuisine);
     }
 
     @Transactional
-    void putDishFoodstuff(final long userId, final String... foodstuffNames) {
+    public void putDishFoodstuff(final long userId, final String... foodstuffNames) {
         final Dish dish = findEditableDish(userId);
         final Set<Product> products = new HashSet<>();
         for (final String foodstuffName : foodstuffNames) {
