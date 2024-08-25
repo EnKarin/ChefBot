@@ -27,7 +27,7 @@ public class ModerationService {
     private final ModerationRequestMessageEntityDtoMapper moderationRequestMessageEntityDtoMapper;
     private final DishEntityDtoMapper dishEntityDtoMapper;
 
-    void createModerationRequest(final long userId) {
+    public void createModerationRequest(final long userId) {
         moderationRequestRepository.save(ModerationRequest.builder()
                 .moderationDish(userService.findUser(userId).getEditabledDish())
                 .fresh(true)

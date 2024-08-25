@@ -1,8 +1,9 @@
-package io.github.enkarin.chefbot.service;
+package io.github.enkarin.chefbot.service.pipelines.search;
 
 import io.github.enkarin.chefbot.entity.SearchFilter;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
+import io.github.enkarin.chefbot.service.SearchFilterService;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

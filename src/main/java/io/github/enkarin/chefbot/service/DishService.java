@@ -26,7 +26,7 @@ public class DishService {
     private final UserService userService;
 
     @Transactional
-    void initDishName(final long userId, final String name) {
+    public void initDishName(final long userId, final String name) {
         final User user = userService.findUser(userId);
         if (currentUserContainDishWithSpecifiedName(name, user)) {
             if (isNull(user.getEditabledDish())) {
@@ -44,7 +44,7 @@ public class DishService {
     }
 
     @Transactional
-    void deleteEditableDish(final long userId) {
+    public void deleteEditableDish(final long userId) {
         final User user = userService.findUser(userId);
         final Dish deletedDish = user.getEditabledDish();
         if (Objects.nonNull(deletedDish)) {

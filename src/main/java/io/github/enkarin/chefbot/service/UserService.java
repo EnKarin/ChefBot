@@ -39,12 +39,12 @@ public class UserService {
                 .collect(Collectors.toSet());
     }
 
-    ChatStatus getPreviousChatStatus(final long userId) {
+    public ChatStatus getPreviousChatStatus(final long userId) {
         return findUser(userId).getPreviousChatStatus();
     }
 
     @Transactional
-    void switchToNewStatus(final long userId, final ChatStatus newChatStatus) {
+    public void switchToNewStatus(final long userId, final ChatStatus newChatStatus) {
         final User user = findUser(userId);
         if (user.getChatStatus() != newChatStatus) {
             if (newChatStatus == ChatStatus.MAIN_MENU) {
@@ -57,19 +57,19 @@ public class UserService {
         }
     }
 
-    boolean canUndo(final long userId) {
+    public boolean canUndo(final long userId) {
         final User user = findUser(userId);
         return user.getChatStatus() != user.getPreviousChatStatus();
     }
 
     @Transactional
-    ChatStatus backToPreviousStatus(final long userId) {
+    public ChatStatus backToPreviousStatus(final long userId) {
         final User user = findUser(userId);
         user.setChatStatus(user.getPreviousChatStatus());
         return user.getChatStatus();
     }
 
-    User findUser(final long userId) {
+    public User findUser(final long userId) {
         return userRepository.findById(userId).orElseThrow();
     }
 }

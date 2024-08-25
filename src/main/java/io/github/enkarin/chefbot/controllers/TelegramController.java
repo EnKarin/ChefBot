@@ -5,7 +5,7 @@ import io.github.enkarin.chefbot.dto.ModerationResultDto;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.exceptions.DishNameAlreadyExistsInCurrentUserException;
 import io.github.enkarin.chefbot.service.ModerationService;
-import io.github.enkarin.chefbot.service.ProcessingFacade;
+import io.github.enkarin.chefbot.service.pipelines.ProcessingFacade;
 import io.github.enkarin.chefbot.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +30,7 @@ public class TelegramController {
                 return switch (text) {
                     case "/back_to_main_menu" -> new BotAnswer("Вы уже в главном меню");
                     case "/search_dish" -> processingFacade.goToStatus(userId, ChatStatus.SELECT_DISH_SOUP);
+                    case "/add_dish" -> processingFacade.goToStatus(userId, ChatStatus.NEW_DISH_NAME);
                     case "/undo" -> new BotAnswer("Эта команда не доступна в главном меню");
                     default -> new BotAnswer("Указанной команды не существует");
                 };

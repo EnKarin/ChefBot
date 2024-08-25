@@ -1,8 +1,10 @@
-package io.github.enkarin.chefbot.service;
+package io.github.enkarin.chefbot.service.pipelines;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.UserAnswerOption;
+import io.github.enkarin.chefbot.service.DishService;
+import io.github.enkarin.chefbot.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
