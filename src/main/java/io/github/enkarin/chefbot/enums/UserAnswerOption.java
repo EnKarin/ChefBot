@@ -11,6 +11,7 @@ public enum UserAnswerOption {
     NONE(null),
     DEFAULT(null),
     YES_OR_NO(new String[]{"Да", "Нет"}),
+    MORE_OR_STOP(new String[]{"Вывести еще", "Вернуться в главное меню"}),
     CUISINES(Arrays.stream(WorldCuisine.values()).map(WorldCuisine::getLocalizedValue).toArray(String[]::new));
 
     private final String[] answers;

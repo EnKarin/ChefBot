@@ -16,6 +16,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 public class SearchFilter implements Serializable {
+
     @Serial
     private static final long serialVersionUID = 7328055925213805550L;
 

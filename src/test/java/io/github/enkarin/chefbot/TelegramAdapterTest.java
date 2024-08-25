@@ -2,7 +2,6 @@ package io.github.enkarin.chefbot;
 
 import io.github.enkarin.chefbot.adapters.TelegramAdapter;
 import io.github.enkarin.chefbot.dto.ModerationDishDto;
-import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.util.ModerationTest;
 import org.junit.jupiter.api.Test;
@@ -31,7 +30,7 @@ class TelegramAdapterTest extends ModerationTest {
 
     @Test
     void onUpdateReceivedChangeModeratorStatusCommand() {
-        userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.SELECT_DISH_PRICE).build());
+        createUser(ChatStatus.SELECT_DISH_PRICE);
 
         telegramAdapter.onUpdateReceived(createTelegramCommand("/back_to_main_menu"));
 
@@ -40,7 +39,7 @@ class TelegramAdapterTest extends ModerationTest {
 
     @Test
     void onUpdateReceivedNotCommandInput() {
-        userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.APPROVE_BACK_TO_MAIN_MENU).build());
+        createUser(ChatStatus.APPROVE_BACK_TO_MAIN_MENU);
         final Message message = new Message();
         message.setText("Да");
         message.setChat(new Chat(USER_ID, "test chat"));
