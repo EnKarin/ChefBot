@@ -18,18 +18,16 @@ import static java.util.Objects.isNull;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class SearchFilterService {
     private final SearchFilterRepository searchFilterRepository;
     private final UserService userService;
     private final DishRepository dishRepository;
 
-    @Transactional
     void createSearchFilter(final long ownerId) {
         userService.findUser(ownerId).setSearchFilter(searchFilterRepository.save(new SearchFilter()));
     }
 
-    @Transactional
     void deleteSearchFilter(final long ownerId) {
         final User user = userService.findUser(ownerId);
         final SearchFilter searchFilter = user.getSearchFilter();
@@ -37,22 +35,18 @@ public class SearchFilterService {
         searchFilterRepository.delete(searchFilter);
     }
 
-    @Transactional
     void putSoupSign(final long ownerId, final boolean soup) {
         userService.findUser(ownerId).getSearchFilter().setSoup(soup);
     }
 
-    @Transactional
     void putSpicySign(final long ownerId, final boolean spicy) {
         userService.findUser(ownerId).getSearchFilter().setSpicy(spicy);
     }
 
-    @Transactional
     void putKitchen(final long ownerId, final WorldCuisine cuisine) {
         userService.findUser(ownerId).getSearchFilter().setCuisine(cuisine);
     }
 
-    @Transactional
     void putNeedPublicSearch(final long ownerId, final boolean searchFromPublicDish) {
         userService.findUser(ownerId).getSearchFilter().setSearchFromPublicDish(searchFromPublicDish);
     }
@@ -60,21 +54,27 @@ public class SearchFilterService {
     Set<DisplayDishDto> searchDishWithCurrentFilter(final long ownerId) {
         final User currentUser = userService.findUser(ownerId);
         final SearchFilter searchFilter = currentUser.getSearchFilter();
+        final Set<DisplayDishDto> result;
         if (searchFilter.isSearchFromPublicDish()) {
-            return dishRepository.findAllDishByFilter(currentUser.getId(),
+            result = dishRepository.findAllDishByFilterWithSpecifiedOffset(currentUser.getId(),
                             searchFilter.getSpicy(),
                             searchFilter.getSoup(),
-                            isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name())
+                            isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name(),
+                            searchFilter.getPageNumber())
                     .stream()
                     .map(dish -> new DisplayDishDto(dish.getDishName(), dish.getProducts().stream().map(Product::getProductName).collect(Collectors.toSet())))
                     .collect(Collectors.toSet());
         } else {
-            return currentUser.getDishes().stream()
+            result = currentUser.getDishes().stream()
                     .filter(dish -> (isNull(searchFilter.getSoup()) || searchFilter.getSoup() == dish.isSoup())
                             && (isNull(searchFilter.getSpicy()) || searchFilter.getSpicy() == dish.isSpicy())
                             && (isNull(searchFilter.getCuisine()) || searchFilter.getCuisine() == dish.getCuisine()))
+                    .skip(searchFilter.getPageNumber() * 5L)
+                    .limit(5)
                     .map(dish -> new DisplayDishDto(dish.getDishName(), dish.getProducts().stream().map(Product::getProductName).collect(Collectors.toSet())))
                     .collect(Collectors.toSet());
         }
+        searchFilter.setPageNumber(searchFilter.getPageNumber() + 1);
+        return result;
     }
 }
