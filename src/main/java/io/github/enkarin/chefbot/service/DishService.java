@@ -12,10 +12,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
 import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.StringUtils.capitalize;
 
 @Service
 @Transactional(readOnly = true)
@@ -77,7 +79,7 @@ public class DishService {
         final Dish dish = findEditableDish(userId);
         final Set<Product> products = new HashSet<>();
         for (final String foodstuffName : foodstuffNames) {
-            final String trimFoodstuff = foodstuffName.trim();
+            final String trimFoodstuff = capitalize(foodstuffName.trim().toLowerCase(Locale.ROOT));
             products.add(productRepository.findById(trimFoodstuff).orElseGet(() -> productRepository.save(Product.builder().productName(trimFoodstuff).build())));
         }
         dish.setProducts(products);

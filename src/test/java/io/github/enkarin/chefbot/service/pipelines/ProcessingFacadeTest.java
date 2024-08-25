@@ -142,6 +142,6 @@ class ProcessingFacadeTest extends TestBase {
         assertThat(productRepository.findAll())
                 .hasSize(5)
                 .extracting(Product::getProductName)
-                .containsOnly("кимчи", "свинина", "репчатый лук", "перцовая паста кочудян", "тофу");
+                .containsOnly("Кимчи", "Свинина", "Репчатый лук", "Перцовая паста кочудян", "Тофу");
     }
 }
