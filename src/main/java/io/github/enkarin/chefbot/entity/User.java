@@ -44,7 +44,7 @@ public class User implements Serializable {
     @Column(name = "moderator")
     private boolean moderator;
 
-    @OneToOne(orphanRemoval = true)
+    @OneToOne
     @JoinColumn(name = "editable_dish_id")
     private Dish editabledDish;
 

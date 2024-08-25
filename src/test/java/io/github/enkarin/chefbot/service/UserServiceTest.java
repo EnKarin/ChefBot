@@ -1,6 +1,5 @@
 package io.github.enkarin.chefbot.service;
 
-import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.util.TestBase;
@@ -114,16 +113,19 @@ class UserServiceTest extends TestBase {
 
     @Test
     void backToMainMenu() {
-        final Dish dish = dishRepository.save(Dish.builder().dishName("Рагу").build());
-        userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.NEW_DISH_NAME).editabledDish(dish).build());
+        userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_NAME);
+        dishService.initDishName(USER_ID, "Рагу");
 
         userService.switchToNewStatus(USER_ID, ChatStatus.MAIN_MENU);
 
-        assertThat(userRepository.findById(USER_ID).orElseThrow()).satisfies(user -> {
-            assertThat(user.getEditabledDish()).isNull();
-            assertThat(user.getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
-            assertThat(user.getPreviousChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
-        });
+        assertThat(userRepository.findById(USER_ID).orElseThrow())
+                .satisfies(user -> {
+                    assertThat(user.getEditabledDish()).isNull();
+                    assertThat(user.getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+                    assertThat(user.getPreviousChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+                });
+        assertThat(dishRepository.count()).isEqualTo(1);
     }
 
     @Test

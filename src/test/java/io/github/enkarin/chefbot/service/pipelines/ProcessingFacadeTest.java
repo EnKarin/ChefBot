@@ -124,7 +124,7 @@ class ProcessingFacadeTest extends TestBase {
         processingFacade.execute(USER_ID, "Да"); //enter is spicy
         processingFacade.execute(USER_ID, "Азиатская"); //enter cuisine
         processingFacade.execute(USER_ID, "кимчи, свинина, репчатый лук, перцовая паста кочудян, тофу"); //enter foodstuff
-        //processingFacade.execute(USER_ID, "нет"); //enter is need publish //TODO
+        processingFacade.execute(USER_ID, "нет"); //enter is need publish
 
         assertThat(dishRepository.findAll())
                 .hasSize(1)
