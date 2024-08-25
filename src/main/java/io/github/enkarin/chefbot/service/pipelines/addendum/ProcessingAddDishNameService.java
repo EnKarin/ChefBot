@@ -5,8 +5,9 @@ import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.service.pipelines.ProcessingService;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
+import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +17,7 @@ public class ProcessingAddDishNameService implements ProcessingService {
 
     @Override
     public ChatStatus execute(final long userId, final String text) {
-        if (StringUtils.isNoneBlank(text)) {
+        if (isNoneBlank(text)) {
             dishService.initDishName(userId, text);
             return ChatStatus.NEW_DISH_SOUP;
         }
