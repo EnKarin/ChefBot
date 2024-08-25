@@ -1,19 +1,13 @@
 package io.github.enkarin.chefbot.service;
 
 import io.github.enkarin.chefbot.dto.DisplayDishDto;
-import io.github.enkarin.chefbot.entity.Dish;
-import io.github.enkarin.chefbot.entity.Product;
 import io.github.enkarin.chefbot.entity.SearchFilter;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
-import io.github.enkarin.chefbot.repository.ProductRepository;
 import io.github.enkarin.chefbot.repository.SearchFilterRepository;
 import io.github.enkarin.chefbot.util.TestBase;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,12 +21,6 @@ class SearchFilterServiceTest extends TestBase {
     @BeforeEach
     void initUser() {
         userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
-    }
-
-    @AfterEach
-    void cleanDishes() {
-        dishRepository.deleteAll();
-        productRepository.deleteAll();
     }
 
     @Test
@@ -174,56 +162,5 @@ class SearchFilterServiceTest extends TestBase {
 
         assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).extracting(DisplayDishDto::dishName).containsOnly("fifth", "sixth");
         assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).isEmpty();
-    }
-
-    private void initDishes() {
-        dishRepository.save(Dish.builder()
-                .dishName("first")
-                .soup(false)
-                .spicy(false)
-                .cuisine(WorldCuisine.ASIA)
-                .products(Set.of(productRepository.save(Product.builder().productName("firstProduct").build())))
-                .published(true)
-                .build());
-        dishRepository.save(Dish.builder()
-                .dishName("second")
-                .soup(false)
-                .spicy(true)
-                .cuisine(WorldCuisine.INTERNATIONAL)
-                .products(Set.of(productRepository.save(Product.builder().productName("secondProduct").build())))
-                .published(true)
-                .build());
-        dishRepository.save(Dish.builder()
-                .dishName("third")
-                .soup(true)
-                .spicy(false)
-                .cuisine(WorldCuisine.SLAVIC)
-                .products(Set.of(productRepository.save(Product.builder().productName("thirdProduct").build())))
-                .published(true)
-                .build());
-        dishRepository.save(Dish.builder()
-                .dishName("fourth")
-                .soup(true)
-                .spicy(true)
-                .cuisine(WorldCuisine.MEXICAN)
-                .products(Set.of(productRepository.save(Product.builder().productName("fourthProduct").build())))
-                .published(true)
-                .build());
-        dishRepository.save(Dish.builder()
-                .dishName("fifth")
-                .soup(false)
-                .spicy(false)
-                .cuisine(WorldCuisine.MIDDLE_EASTERN)
-                .products(Set.of(productRepository.save(Product.builder().productName("fifthProduct").build())))
-                .owner(userService.findUser(USER_ID))
-                .build());
-        dishRepository.save(Dish.builder()
-                .dishName("sixth")
-                .soup(true)
-                .spicy(true)
-                .cuisine(WorldCuisine.MEDITERRANEAN)
-                .products(Set.of(productRepository.save(Product.builder().productName("sixthProduct").build())))
-                .owner(userService.findUser(USER_ID))
-                .build());
     }
 }

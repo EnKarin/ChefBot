@@ -38,7 +38,7 @@ public class ProcessingExecuteSearchService implements ProcessingService {
 
         return BotAnswer.builder()
                 .userAnswerOption(UserAnswerOption.MORE_OR_STOP)
-                .messageText(StringUtils.isNoneBlank(dishes) ? dishes : null)
+                .messageText(StringUtils.isNoneBlank(dishes) ? dishes : "Подходщих блюд нет")
                 .build();
     }
 

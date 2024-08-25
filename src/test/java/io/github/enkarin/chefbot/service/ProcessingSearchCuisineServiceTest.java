@@ -22,7 +22,7 @@ class ProcessingSearchCuisineServiceTest extends TestBase {
     private SearchFilterService searchFilterService;
 
     @ParameterizedTest
-    @EnumSource(value = WorldCuisine.class)
+    @EnumSource(WorldCuisine.class)
     void executeShouldWork(final WorldCuisine cuisine) {
         createUser(SELECT_DISH_KITCHEN);
         searchFilterService.createSearchFilter(USER_ID);

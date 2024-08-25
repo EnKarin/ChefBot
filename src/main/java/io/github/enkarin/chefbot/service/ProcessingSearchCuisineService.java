@@ -7,8 +7,6 @@ import io.github.enkarin.chefbot.enums.WorldCuisine;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Locale;
-
 @Service
 @RequiredArgsConstructor
 public class ProcessingSearchCuisineService implements ProcessingService {

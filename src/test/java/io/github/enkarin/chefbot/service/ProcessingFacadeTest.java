@@ -71,12 +71,11 @@ class ProcessingFacadeTest extends TestBase {
     @ParameterizedTest
     @MethodSource("provideStatusAndAnswer")
     void goToStatusShouldWork(final ChatStatus status, final String messageText, final UserAnswerOption userAnswerOption) {
-        final var searchFilter = searchFilterRepository.save(new SearchFilter());
         userRepository.save(User.builder()
                 .id(USER_ID)
                 .chatId(CHAT_ID)
                 .chatStatus(ChatStatus.MAIN_MENU)
-                .searchFilter(searchFilter)
+                .searchFilter(searchFilterRepository.save(new SearchFilter()))
                 .build());
 
         assertThat(processingFacade.goToStatus(USER_ID, status))
@@ -86,11 +85,30 @@ class ProcessingFacadeTest extends TestBase {
 
     static Stream<Arguments> provideStatusAndAnswer() {
         return Stream.of(
-                Arguments.of(ChatStatus.SELECT_DISH_PUBLISHED, "Включить блюда других пользователей при поиске?", UserAnswerOption.YES_OR_NO),
-                Arguments.of(ChatStatus.SELECT_DISH_SOUP, "Вы хотите суп?", UserAnswerOption.YES_OR_NO),
-                Arguments.of(ChatStatus.SELECT_DISH_SPICY, "Острое блюдо?", UserAnswerOption.YES_OR_NO),
+                Arguments.of(ChatStatus.SELECT_DISH_PUBLISHED, "Включить блюда других пользователей при поиске?", YES_OR_NO),
+                Arguments.of(ChatStatus.SELECT_DISH_SOUP, "Вы хотите суп?", YES_OR_NO),
+                Arguments.of(ChatStatus.SELECT_DISH_SPICY, "Острое блюдо?", YES_OR_NO),
                 Arguments.of(ChatStatus.SELECT_DISH_KITCHEN, "Выберите кухню мира:", UserAnswerOption.CUISINES),
-                Arguments.of(ChatStatus.EXECUTE_SEARCH, null, UserAnswerOption.MORE_OR_STOP)
+                Arguments.of(ChatStatus.EXECUTE_SEARCH, "Подходщих блюд нет", UserAnswerOption.MORE_OR_STOP)
         );
+    }
+
+    @Test
+    void goToStatusShouldWorkWithExecuteSearch() {
+        userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        userService.switchToNewStatus(USER_ID, ChatStatus.SELECT_DISH_SOUP);
+        initDishes();
+
+        processingFacade.execute(USER_ID, "да"); //select soup
+        processingFacade.execute(USER_ID, "нет"); //select spicy
+        processingFacade.execute(USER_ID, "Славянская"); //select cuisine
+        final BotAnswer userMessage = processingFacade.execute(USER_ID, "да"); //select published
+
+        assertThat(userMessage)
+                .isNotNull()
+                .extracting(BotAnswer::messageText)
+                .isEqualTo("""
+                        **third:**
+                        thirdProduct""");
     }
 }

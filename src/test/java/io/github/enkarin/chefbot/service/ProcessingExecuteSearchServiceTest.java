@@ -22,12 +22,11 @@ class ProcessingExecuteSearchServiceTest extends TestBase {
 
     @Test
     void executeShouldWorkWithBackToMainMenu() {
-        final var searchFilter = searchFilterRepository.save(new SearchFilter());
         userRepository.save(User.builder()
                 .id(USER_ID)
                 .chatId(CHAT_ID)
                 .chatStatus(ChatStatus.MAIN_MENU)
-                .searchFilter(searchFilter)
+                .searchFilter(searchFilterRepository.save(new SearchFilter()))
                 .build());
 
         assertThat(executeSearchService.execute(USER_ID, "вернуться в главное меню"))
@@ -42,7 +41,8 @@ class ProcessingExecuteSearchServiceTest extends TestBase {
 
     @ParameterizedTest
     @ValueSource(strings = {"unknown", "more", "Вывести еще"})
-    void executeShouldWork() {
-
+    void executeShouldWork(final String text) {
+        assertThat(executeSearchService.execute(USER_ID, text))
+                .isEqualTo(ChatStatus.EXECUTE_SEARCH);
     }
 }

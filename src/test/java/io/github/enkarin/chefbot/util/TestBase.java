@@ -42,12 +42,14 @@ public class TestBase {
     @AfterEach
     void clear() {
         userRepository.deleteAll();
+        dishRepository.deleteAll();
+        productRepository.deleteAll();
     }
 
     protected void createUser(final ChatStatus status) {
         userRepository.save(User.builder().id(USER_ID).chatStatus(status).build());
     }
- /*
+
     protected void initDishes() {
         dishRepository.save(Dish.builder()
                 .dishName("first")
@@ -88,7 +90,6 @@ public class TestBase {
                 .cuisine(WorldCuisine.MIDDLE_EASTERN)
                 .products(Set.of(productRepository.save(Product.builder().productName("fifthProduct").build())))
                 .owner(userRepository.findById(USER_ID).orElseThrow())
-                .published(true)
                 .build());
         dishRepository.save(Dish.builder()
                 .dishName("sixth")
@@ -97,7 +98,6 @@ public class TestBase {
                 .cuisine(WorldCuisine.MEDITERRANEAN)
                 .products(Set.of(productRepository.save(Product.builder().productName("sixthProduct").build())))
                 .owner(userRepository.findById(USER_ID).orElseThrow())
-                .published(true)
                 .build());
-    } */
+    }
 }

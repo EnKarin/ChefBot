@@ -2,7 +2,6 @@ package io.github.enkarin.chefbot;
 
 import io.github.enkarin.chefbot.adapters.TelegramAdapter;
 import io.github.enkarin.chefbot.dto.ModerationDishDto;
-import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.util.ModerationTest;
 import org.junit.jupiter.api.Test;

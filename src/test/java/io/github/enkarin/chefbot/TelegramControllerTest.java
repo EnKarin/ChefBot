@@ -131,7 +131,7 @@ class TelegramControllerTest extends ModerationTest {
     }
 
     @Test
-    void SearchDishShouldUpdateChatStatus() {
+    void searchDishShouldUpdateChatStatus() {
         createUser(ChatStatus.MAIN_MENU);
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/search_dish"))
