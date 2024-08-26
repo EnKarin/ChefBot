@@ -21,7 +21,7 @@ public enum UserAnswerOption {
 
     private static String[] createCuisines() {
         final List<String> cuisines = Arrays.stream(WorldCuisine.values()).map(WorldCuisine::getLocalizedValue).collect(Collectors.toList());
-        cuisines.add("Любое");
+        cuisines.add("Любая");
         return cuisines.toArray(String[]::new);
     }
 }
