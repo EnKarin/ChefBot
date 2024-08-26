@@ -20,12 +20,12 @@ class FormatedReplyKeyboardMarkupTest extends TestBase {
 
     @Test
     void createKeyboardWithUnevenElementQuantity() {
-        final FormatedReplyKeyboardMarkup keyboardMarkup = new FormatedReplyKeyboardMarkup(UserAnswerOption.CUISINES);
+        final FormatedReplyKeyboardMarkup keyboardMarkup = new FormatedReplyKeyboardMarkup(UserAnswerOption.CUISINES_WITH_ANY_CASE);
 
         assertThat(keyboardMarkup.getKeyboard().size()).isEqualTo(4);
         assertThat(keyboardMarkup.getKeyboard().get(0)).extracting(KeyboardButton::getText).containsAll(List.of("Азиатская", "Средиземноморская"));
         assertThat(keyboardMarkup.getKeyboard().get(1)).extracting(KeyboardButton::getText).containsAll(List.of("Международная", "Ближневосточная"));
         assertThat(keyboardMarkup.getKeyboard().get(2)).extracting(KeyboardButton::getText).containsAll(List.of("Мексиканская", "Славянская"));
-        assertThat(keyboardMarkup.getKeyboard().get(3)).extracting(KeyboardButton::getText).containsAll(List.of("Что-то необычное"));
+        assertThat(keyboardMarkup.getKeyboard().get(3)).extracting(KeyboardButton::getText).containsAll(List.of("Что-то необычное", "Любая"));
     }
 }

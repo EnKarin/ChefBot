@@ -23,7 +23,7 @@ public class ModerationRequestSender {
         sendRequests(moderationService.findAllFreshRequests());
     }
 
-    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
+    @Scheduled(initialDelay = 1, fixedRate = 1, timeUnit = TimeUnit.DAYS)
     void resendOldRequests() {
         sendRequests(moderationService.findAllRequests());
     }
