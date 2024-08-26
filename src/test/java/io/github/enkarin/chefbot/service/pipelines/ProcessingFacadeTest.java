@@ -127,7 +127,7 @@ class ProcessingFacadeTest extends TestBase {
         processingFacade.execute(USER_ID, "Славянская"); //select cuisine
         assertThatThrownBy(() -> processingFacade.execute(USER_ID, "да")) //select published
                 .isInstanceOf(DishesNotFoundException.class)
-                .hasMessage("Подходящих блюд нет. Вы возвращены в главное меню.");
+                .hasMessage("Подходящие блюда не найдены. Вы возвращены в главное меню.");
     }
 
     @Test

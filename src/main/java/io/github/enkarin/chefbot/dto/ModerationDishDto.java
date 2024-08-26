@@ -20,11 +20,10 @@ public class ModerationDishDto {
     @Override
     public String toString() {
         return String.format("""
-                *Запрос №%d*
-                Название: %s
-                Острое: %b
-                Суп: %b
+                *%s*
+                Острое: %s
+                Суп: %s
                 Кухня: %s
-                Состав: %s""", requestId, name, spicy, soup, worldCuisine.getLocalizedValue(), String.join(", ", products));
+                Состав: %s""", name, spicy ? "да" : "нет", soup ? "да" : "нет", worldCuisine.getLocalizedValue(), String.join(", ", products));
     }
 }

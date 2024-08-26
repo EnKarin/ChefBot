@@ -7,6 +7,6 @@ public class DishesNotFoundException extends RuntimeException {
     private static final long serialVersionUID = -8457039661466489936L;
 
     public DishesNotFoundException() {
-        super("Подходящих блюд нет. Вы возвращены в главное меню.");
+        super("Подходящие блюда не найдены. Вы возвращены в главное меню.");
     }
 }
