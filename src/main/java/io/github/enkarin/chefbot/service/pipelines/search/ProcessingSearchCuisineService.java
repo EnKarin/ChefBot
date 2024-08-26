@@ -29,7 +29,7 @@ public class ProcessingSearchCuisineService implements ProcessingService {
     @Override
     public BotAnswer getMessageForUser(final long userId) {
         return BotAnswer.builder()
-                .userAnswerOption(UserAnswerOption.CUISINES)
+                .userAnswerOption(UserAnswerOption.CUISINES_WITH_ANY_CASE)
                 .messageText("Выберите кухню мира:")
                 .build();
     }

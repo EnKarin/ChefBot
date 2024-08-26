@@ -94,7 +94,7 @@ class ProcessingFacadeTest extends TestBase {
                 Arguments.of(ChatStatus.SELECT_DISH_PUBLISHED, "Включить блюда других пользователей при поиске?", YES_OR_NO),
                 Arguments.of(ChatStatus.SELECT_DISH_SOUP, "Вы хотите суп?", YES_NO_OR_ANY),
                 Arguments.of(ChatStatus.SELECT_DISH_SPICY, "Острое блюдо?", YES_NO_OR_ANY),
-                Arguments.of(ChatStatus.SELECT_DISH_KITCHEN, "Выберите кухню мира:", UserAnswerOption.CUISINES),
+                Arguments.of(ChatStatus.SELECT_DISH_KITCHEN, "Выберите кухню мира:", UserAnswerOption.CUISINES_WITH_ANY_CASE),
                 Arguments.of(ChatStatus.EXECUTE_SEARCH, "*fifth:*\n-fifthProduct\n\n*sixth:*\n-sixthProduct", UserAnswerOption.MORE_OR_STOP)
         );
     }

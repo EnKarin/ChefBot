@@ -20,7 +20,7 @@ class FormatedReplyKeyboardMarkupTest extends TestBase {
 
     @Test
     void createKeyboardWithUnevenElementQuantity() {
-        final FormatedReplyKeyboardMarkup keyboardMarkup = new FormatedReplyKeyboardMarkup(UserAnswerOption.CUISINES);
+        final FormatedReplyKeyboardMarkup keyboardMarkup = new FormatedReplyKeyboardMarkup(UserAnswerOption.CUISINES_WITH_ANY_CASE);
 
         assertThat(keyboardMarkup.getKeyboard().size()).isEqualTo(4);
         assertThat(keyboardMarkup.getKeyboard().get(0)).extracting(KeyboardButton::getText).containsAll(List.of("Азиатская", "Средиземноморская"));
