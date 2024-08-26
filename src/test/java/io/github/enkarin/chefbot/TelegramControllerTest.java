@@ -157,7 +157,7 @@ class TelegramControllerTest extends ModerationTest {
 
         assertThat(telegramController.processingNonCommandInput(USER_ID, "да"))
                 .extracting(BotAnswer::messageText)
-                .isEqualTo("Подходящих блюд нет");
+                .isEqualTo("Подходящих блюд нет. Вы возвращены в главное меню.");
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
                 .get()

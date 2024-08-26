@@ -94,7 +94,7 @@ class ProcessingFacadeTest extends TestBase {
                 Arguments.of(ChatStatus.SELECT_DISH_SOUP, "Вы хотите суп?", YES_OR_NO),
                 Arguments.of(ChatStatus.SELECT_DISH_SPICY, "Острое блюдо?", YES_OR_NO),
                 Arguments.of(ChatStatus.SELECT_DISH_KITCHEN, "Выберите кухню мира:", UserAnswerOption.CUISINES),
-                Arguments.of(ChatStatus.EXECUTE_SEARCH, "**fifth:**\nfifthProduct\n\n**sixth:**\nsixthProduct", UserAnswerOption.MORE_OR_STOP)
+                Arguments.of(ChatStatus.EXECUTE_SEARCH, "*fifth:*\n-fifthProduct\n\n*sixth:*\n-sixthProduct", UserAnswerOption.MORE_OR_STOP)
         );
     }
 
@@ -127,7 +127,7 @@ class ProcessingFacadeTest extends TestBase {
         processingFacade.execute(USER_ID, "Славянская"); //select cuisine
         assertThatThrownBy(() -> processingFacade.execute(USER_ID, "да")) //select published
                 .isInstanceOf(DishesNotFoundException.class)
-                .hasMessage("Подходящих блюд нет");
+                .hasMessage("Подходящих блюд нет. Вы возвращены в главное меню.");
     }
 
     @Test
