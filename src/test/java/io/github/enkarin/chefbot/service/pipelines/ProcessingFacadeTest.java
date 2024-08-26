@@ -7,6 +7,7 @@ import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.UserAnswerOption;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
+import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
 import io.github.enkarin.chefbot.repository.SearchFilterRepository;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import java.util.stream.Stream;
 
 import static io.github.enkarin.chefbot.enums.UserAnswerOption.YES_OR_NO;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ProcessingFacadeTest extends TestBase {
     @Autowired
@@ -79,6 +81,7 @@ class ProcessingFacadeTest extends TestBase {
                 .chatStatus(ChatStatus.MAIN_MENU)
                 .searchFilter(searchFilterRepository.save(new SearchFilter()))
                 .build());
+        initDishes();
 
         assertThat(processingFacade.goToStatus(USER_ID, status))
                 .extracting(BotAnswer::messageText, BotAnswer::userAnswerOption)
@@ -91,7 +94,7 @@ class ProcessingFacadeTest extends TestBase {
                 Arguments.of(ChatStatus.SELECT_DISH_SOUP, "Вы хотите суп?", YES_OR_NO),
                 Arguments.of(ChatStatus.SELECT_DISH_SPICY, "Острое блюдо?", YES_OR_NO),
                 Arguments.of(ChatStatus.SELECT_DISH_KITCHEN, "Выберите кухню мира:", UserAnswerOption.CUISINES),
-                Arguments.of(ChatStatus.EXECUTE_SEARCH, "Подходящих блюд нет", UserAnswerOption.MORE_OR_STOP)
+                Arguments.of(ChatStatus.EXECUTE_SEARCH, "**fifth:**\nfifthProduct\n\n**sixth:**\nsixthProduct", UserAnswerOption.MORE_OR_STOP)
         );
     }
 
@@ -112,6 +115,19 @@ class ProcessingFacadeTest extends TestBase {
                 .isEqualTo("""
                         **third:**
                         thirdProduct""");
+    }
+
+    @Test
+    void goToStatusShouldThrowExceptionWhenDishNotFound() {
+        userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        userService.switchToNewStatus(USER_ID, ChatStatus.SELECT_DISH_SOUP);
+
+        processingFacade.execute(USER_ID, "да"); //select soup
+        processingFacade.execute(USER_ID, "нет"); //select spicy
+        processingFacade.execute(USER_ID, "Славянская"); //select cuisine
+        assertThatThrownBy(() -> processingFacade.execute(USER_ID, "да")) //select published
+                .isInstanceOf(DishesNotFoundException.class)
+                .hasMessage("Подходящих блюд нет");
     }
 
     @Test

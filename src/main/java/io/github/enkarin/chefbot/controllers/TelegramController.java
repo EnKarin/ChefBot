@@ -4,6 +4,7 @@ import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.dto.ModerationResultDto;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.exceptions.DishNameAlreadyExistsInCurrentUserException;
+import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
 import io.github.enkarin.chefbot.service.ModerationService;
 import io.github.enkarin.chefbot.service.pipelines.ProcessingFacade;
 import io.github.enkarin.chefbot.service.UserService;
@@ -51,6 +52,9 @@ public class TelegramController {
         try {
             return processingFacade.execute(userId, text);
         } catch (DishNameAlreadyExistsInCurrentUserException e) {
+            return new BotAnswer(e.getMessage());
+        } catch (DishesNotFoundException e) {
+            processingFacade.goToStatus(userId, ChatStatus.MAIN_MENU);
             return new BotAnswer(e.getMessage());
         }
     }

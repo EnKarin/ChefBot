@@ -148,4 +148,20 @@ class TelegramControllerTest extends ModerationTest {
                 .extracting(User::getChatStatus)
                 .isEqualTo(ChatStatus.NEW_DISH_NAME);
     }
+
+    @Test
+    void processingNonCommandInputShouldWorkWithDishNotFoundEx() {
+        createUser(ChatStatus.SELECT_DISH_SOUP);
+        telegramController.processingNonCommandInput(USER_ID, "да");
+        userService.switchToNewStatus(USER_ID, ChatStatus.SELECT_DISH_PUBLISHED);
+
+        assertThat(telegramController.processingNonCommandInput(USER_ID, "да"))
+                .extracting(BotAnswer::messageText)
+                .isEqualTo("Подходящих блюд нет");
+        assertThat(userRepository.findById(USER_ID))
+                .isPresent()
+                .get()
+                .extracting(User::getChatStatus)
+                .isEqualTo(ChatStatus.MAIN_MENU);
+    }
 }

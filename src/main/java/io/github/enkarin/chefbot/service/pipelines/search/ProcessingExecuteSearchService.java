@@ -4,6 +4,7 @@ import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.dto.DisplayDishDto;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.UserAnswerOption;
+import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
 import io.github.enkarin.chefbot.service.SearchFilterService;
 import io.github.enkarin.chefbot.service.UserService;
 import io.github.enkarin.chefbot.service.pipelines.ProcessingService;
@@ -39,7 +40,14 @@ public class ProcessingExecuteSearchService implements ProcessingService {
                 .map(DisplayDishDto::toString)
                 .collect(Collectors.joining("\n\n"));
 
-        return BotAnswer.builder().userAnswerOption(UserAnswerOption.MORE_OR_STOP).messageText(StringUtils.isNoneBlank(dishes) ? dishes : "Подходящих блюд нет").build();
+        if (StringUtils.isEmpty(dishes)) {
+            throw new DishesNotFoundException();
+        }
+
+        return BotAnswer.builder()
+                .userAnswerOption(UserAnswerOption.MORE_OR_STOP)
+                .messageText(dishes)
+                .build();
     }
 
     @Override
