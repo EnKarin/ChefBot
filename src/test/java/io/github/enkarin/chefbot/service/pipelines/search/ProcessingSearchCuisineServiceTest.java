@@ -5,6 +5,7 @@ import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.service.SearchFilterService;
 import io.github.enkarin.chefbot.util.TestBase;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -22,14 +23,16 @@ class ProcessingSearchCuisineServiceTest extends TestBase {
     @Autowired
     private SearchFilterService searchFilterService;
 
+    @BeforeEach
+    void init() {
+        createUser(SELECT_DISH_KITCHEN);
+        searchFilterService.createSearchFilter(USER_ID);
+    }
+
     @ParameterizedTest
     @EnumSource(WorldCuisine.class)
     void executeShouldWork(final WorldCuisine cuisine) {
-        createUser(SELECT_DISH_KITCHEN);
-        searchFilterService.createSearchFilter(USER_ID);
-
-        assertThat(searchCuisineService.execute(USER_ID, cuisine.getLocalizedValue()))
-                .isEqualTo(SELECT_DISH_PUBLISHED);
+        assertThat(searchCuisineService.execute(USER_ID, cuisine.getLocalizedValue())).isEqualTo(SELECT_DISH_PUBLISHED);
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
                 .get()
@@ -40,7 +43,7 @@ class ProcessingSearchCuisineServiceTest extends TestBase {
 
     @Test
     void executeShouldWorkWithUnknownText() {
-        assertThat(searchCuisineService.execute(USER_ID, "unknown"))
-                .isEqualTo(SELECT_DISH_KITCHEN);
+        assertThat(searchCuisineService.execute(USER_ID, "unknown")).isEqualTo(SELECT_DISH_PUBLISHED);
+        assertThat(userRepository.findById(USER_ID).orElseThrow().getSearchFilter().getCuisine()).isNull();
     }
 }

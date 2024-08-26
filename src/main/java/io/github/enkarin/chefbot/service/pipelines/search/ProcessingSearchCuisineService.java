@@ -22,7 +22,7 @@ public class ProcessingSearchCuisineService implements ProcessingService {
             filterService.putKitchen(userId, cuisine);
             return ChatStatus.SELECT_DISH_PUBLISHED;
         } catch (IllegalArgumentException e) {
-            return getCurrentStatus();
+            return ChatStatus.SELECT_DISH_PUBLISHED;
         }
     }
 

@@ -29,6 +29,10 @@ public class ProcessingSearchSoupService implements ProcessingService {
                 filterService.putSoupSign(userId, false);
                 yield ChatStatus.SELECT_DISH_SPICY;
             }
+            case "любое" -> {
+                filterService.createSearchFilter(userId);
+                yield ChatStatus.SELECT_DISH_SPICY;
+            }
             default -> getCurrentStatus();
         };
     }
@@ -36,7 +40,7 @@ public class ProcessingSearchSoupService implements ProcessingService {
     @Override
     public BotAnswer getMessageForUser(final long userId) {
         return BotAnswer.builder()
-                .userAnswerOption(UserAnswerOption.YES_OR_NO)
+                .userAnswerOption(UserAnswerOption.YES_NO_OR_ANY)
                 .messageText("Вы хотите суп?")
                 .build();
     }

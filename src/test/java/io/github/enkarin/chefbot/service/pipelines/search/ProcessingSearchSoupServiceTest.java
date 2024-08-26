@@ -42,8 +42,7 @@ class ProcessingSearchSoupServiceTest extends TestBase {
 
     @Test
     void executeShouldWorkWithUnknownInput() {
-        assertThat(searchSoupService.execute(USER_ID, "unknown"))
-                .isEqualTo(SELECT_DISH_SOUP);
+        assertThat(searchSoupService.execute(USER_ID, "unknown")).isEqualTo(SELECT_DISH_SOUP);
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
                 .get()
@@ -54,7 +53,8 @@ class ProcessingSearchSoupServiceTest extends TestBase {
     static Stream<Arguments> provideTextAndResult() {
         return Stream.of(
                 Arguments.of("Да", SELECT_DISH_SPICY, true),
-                Arguments.of("Нет", SELECT_DISH_SPICY, false)
+                Arguments.of("Нет", SELECT_DISH_SPICY, false),
+                Arguments.of("Любое", SELECT_DISH_SPICY, null)
         );
     }
 }

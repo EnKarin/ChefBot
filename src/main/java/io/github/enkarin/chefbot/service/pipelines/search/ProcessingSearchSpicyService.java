@@ -27,6 +27,7 @@ public class ProcessingSearchSpicyService implements ProcessingService {
                 filterService.putSpicySign(userId, false);
                 yield ChatStatus.SELECT_DISH_KITCHEN;
             }
+            case "любое" -> ChatStatus.SELECT_DISH_KITCHEN;
             default -> getCurrentStatus();
         };
     }
@@ -34,7 +35,7 @@ public class ProcessingSearchSpicyService implements ProcessingService {
     @Override
     public BotAnswer getMessageForUser(final long userId) {
         return BotAnswer.builder()
-                .userAnswerOption(UserAnswerOption.YES_OR_NO)
+                .userAnswerOption(UserAnswerOption.YES_NO_OR_ANY)
                 .messageText("Острое блюдо?")
                 .build();
     }
