@@ -93,7 +93,7 @@ class TelegramControllerTest extends ModerationTest {
     void approveModerationRequest() {
         moderationInit();
 
-        assertThat(telegramController.approveModerationRequest("Подтвердить запрос №" + moderationRequestsId[0])).satisfies(moderationResultDto -> {
+        assertThat(telegramController.approveModerationRequest(Long.toString(moderationRequestsId[0]))).satisfies(moderationResultDto -> {
             assertThat(moderationResultDto.approve()).isTrue();
             assertThat(moderationResultDto.dishName()).isEqualTo("firstDish");
             assertThat(moderationResultDto.messageForRemove()).extracting(ModerationRequestMessageDto::chatId).contains(10L, 11L);
@@ -109,7 +109,7 @@ class TelegramControllerTest extends ModerationTest {
     void declineModerationRequest() {
         moderationInit();
 
-        assertThat(telegramController.declineModerationRequest("Отклонить запрос №" + moderationRequestsId[1])).satisfies(moderationResultDto -> {
+        assertThat(telegramController.declineModerationRequest(Long.toString(moderationRequestsId[1]))).satisfies(moderationResultDto -> {
             assertThat(moderationResultDto.approve()).isFalse();
             assertThat(moderationResultDto.dishName()).isEqualTo("secondDish");
             assertThat(moderationResultDto.messageForRemove()).extracting(ModerationRequestMessageDto::chatId).contains(20L, 22L);

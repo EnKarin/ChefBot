@@ -6,8 +6,8 @@ import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.exceptions.DishNameAlreadyExistsInCurrentUserException;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
 import io.github.enkarin.chefbot.service.ModerationService;
-import io.github.enkarin.chefbot.service.pipelines.ProcessingFacade;
 import io.github.enkarin.chefbot.service.UserService;
+import io.github.enkarin.chefbot.service.pipelines.ProcessingFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -60,10 +60,10 @@ public class TelegramController {
     }
 
     public ModerationResultDto approveModerationRequest(final String callbackData) {
-        return moderationService.approveRequest(Long.parseLong(callbackData.substring(callbackData.indexOf('№') + 1)));
+        return moderationService.approveRequest(Long.parseLong(callbackData));
     }
 
     public ModerationResultDto declineModerationRequest(final String callbackData) {
-        return moderationService.declineRequest(Long.parseLong(callbackData.substring(callbackData.indexOf('№') + 1)));
+        return moderationService.declineRequest(Long.parseLong(callbackData));
     }
 }

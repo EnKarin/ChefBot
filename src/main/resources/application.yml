@@ -14,7 +14,3 @@ spring:
 telegram-bot:
   name: ${BOT_NAME}
   token: ${BOT_TOKEN}
-adapter:
-  prefix:
-    approve: Одобрить
-    decline: Отклонить

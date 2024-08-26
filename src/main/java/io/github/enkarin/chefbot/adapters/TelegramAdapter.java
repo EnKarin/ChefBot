@@ -35,21 +35,15 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
     private final String botUsername;
     @Getter
     private final String botToken;
-    private final String approvePrefix;
-    private final String declinePrefix;
     private final TelegramController telegramController;
 
     public TelegramAdapter(final TelegramBotsApi telegramBotsApi,
                            @Value("${telegram-bot.name}") final String botUsername,
                            @Value("${telegram-bot.token}") final String botToken,
-                           @Value("${adapter.prefix.approve}") final String approvePrefix,
-                           @Value("${adapter.prefix.decline}") final String declinePrefix,
                            final TelegramController telegramController) throws TelegramApiException {
         this.botUsername = botUsername;
         this.botToken = botToken;
         this.telegramController = telegramController;
-        this.approvePrefix = approvePrefix;
-        this.declinePrefix = declinePrefix;
         telegramBotsApi.registerBot(this);
     }
 
@@ -72,9 +66,9 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
             }
         } else {
             final String callbackData = update.getCallbackQuery().getData();
-            final ModerationResultDto moderationResultDto = callbackData.startsWith(approvePrefix)
-                    ? telegramController.approveModerationRequest(callbackData)
-                    : telegramController.declineModerationRequest(callbackData);
+            final ModerationResultDto moderationResultDto = callbackData.startsWith("A")
+                    ? telegramController.approveModerationRequest(callbackData.substring(1))
+                    : telegramController.declineModerationRequest(callbackData.substring(1));
             if (moderationResultDto.approve()) {
                 sendApproveResultToOwner(moderationResultDto.ownerChat(), moderationResultDto.dishName());
             } else {
@@ -129,12 +123,12 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
                 final SendMessage moderationMessage = defaultConfigurationMessage(chatId, moderationDishDto.toString());
                 moderationMessage.setReplyMarkup(new InlineKeyboardMarkup(List.of(List.of(
                         InlineKeyboardButton.builder()
-                                .text(approvePrefix + " заявку №" + moderationDishDto.getRequestId())
-                                .callbackData(approvePrefix + " заявку №" + moderationDishDto.getRequestId())
+                                .text("Одобрить заявку")
+                                .callbackData("A" + moderationDishDto.getRequestId())
                                 .build(),
                         InlineKeyboardButton.builder()
-                                .text(declinePrefix + " заявку №" + moderationDishDto.getRequestId())
-                                .callbackData(declinePrefix + " заявку №" + moderationDishDto.getRequestId())
+                                .text("Отклонить заявку")
+                                .callbackData("D" + moderationDishDto.getRequestId())
                                 .build()))));
                 requestMessageDtoSet.add(new ModerationRequestMessageDto(execute(moderationMessage).getMessageId(), chatId));
             } catch (Exception e) {
@@ -147,6 +141,7 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
     private SendMessage defaultConfigurationMessage(final long chatId, final String text) {
         final SendMessage sendMessage = new SendMessage();
         sendMessage.setText(text);
+        sendMessage.enableMarkdown(true);
         sendMessage.setChatId(Long.toString(chatId));
         return sendMessage;
     }

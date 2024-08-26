@@ -113,8 +113,8 @@ class ProcessingFacadeTest extends TestBase {
                 .isNotNull()
                 .extracting(BotAnswer::messageText)
                 .isEqualTo("""
-                        **third:**
-                        thirdProduct""");
+                        *third:*
+                        -thirdProduct""");
     }
 
     @Test
