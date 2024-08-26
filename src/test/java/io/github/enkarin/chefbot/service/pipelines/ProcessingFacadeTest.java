@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.stream.Stream;
 
+import static io.github.enkarin.chefbot.enums.UserAnswerOption.YES_NO_OR_ANY;
 import static io.github.enkarin.chefbot.enums.UserAnswerOption.YES_OR_NO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -91,8 +92,8 @@ class ProcessingFacadeTest extends TestBase {
     static Stream<Arguments> provideStatusAndAnswer() {
         return Stream.of(
                 Arguments.of(ChatStatus.SELECT_DISH_PUBLISHED, "Включить блюда других пользователей при поиске?", YES_OR_NO),
-                Arguments.of(ChatStatus.SELECT_DISH_SOUP, "Вы хотите суп?", YES_OR_NO),
-                Arguments.of(ChatStatus.SELECT_DISH_SPICY, "Острое блюдо?", YES_OR_NO),
+                Arguments.of(ChatStatus.SELECT_DISH_SOUP, "Вы хотите суп?", YES_NO_OR_ANY),
+                Arguments.of(ChatStatus.SELECT_DISH_SPICY, "Острое блюдо?", YES_NO_OR_ANY),
                 Arguments.of(ChatStatus.SELECT_DISH_KITCHEN, "Выберите кухню мира:", UserAnswerOption.CUISINES),
                 Arguments.of(ChatStatus.EXECUTE_SEARCH, "*fifth:*\n-fifthProduct\n\n*sixth:*\n-sixthProduct", UserAnswerOption.MORE_OR_STOP)
         );

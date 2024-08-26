@@ -127,7 +127,7 @@ class TelegramControllerTest extends ModerationTest {
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/search_dish"))
                 .extracting(BotAnswer::messageText, BotAnswer::userAnswerOption)
-                .containsOnly("Вы хотите суп?", UserAnswerOption.YES_OR_NO);
+                .containsOnly("Вы хотите суп?", UserAnswerOption.YES_NO_OR_ANY);
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
                 .get()
