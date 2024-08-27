@@ -4,6 +4,7 @@ import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.Product;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
+import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.repository.DishRepository;
 import io.github.enkarin.chefbot.repository.ProductRepository;
@@ -53,7 +54,7 @@ public class TestBase {
     protected void initDishes() {
         dishRepository.save(Dish.builder()
                 .dishName("first")
-                .soup(false)
+                .type(DishType.SALAD)
                 .spicy(false)
                 .cuisine(WorldCuisine.ASIA)
                 .products(Set.of(productRepository.save(Product.builder().productName("firstProduct").build())))
@@ -61,7 +62,7 @@ public class TestBase {
                 .build());
         dishRepository.save(Dish.builder()
                 .dishName("second")
-                .soup(false)
+                .type(DishType.PASTRY)
                 .spicy(true)
                 .cuisine(WorldCuisine.INTERNATIONAL)
                 .products(Set.of(productRepository.save(Product.builder().productName("secondProduct").build())))
@@ -69,7 +70,7 @@ public class TestBase {
                 .build());
         dishRepository.save(Dish.builder()
                 .dishName("third")
-                .soup(true)
+                .type(DishType.SNACK)
                 .spicy(false)
                 .cuisine(WorldCuisine.SLAVIC)
                 .products(Set.of(productRepository.save(Product.builder().productName("thirdProduct").build())))
@@ -77,7 +78,7 @@ public class TestBase {
                 .build());
         dishRepository.save(Dish.builder()
                 .dishName("fourth")
-                .soup(true)
+                .type(DishType.SOUP)
                 .spicy(true)
                 .cuisine(WorldCuisine.MEXICAN)
                 .products(Set.of(productRepository.save(Product.builder().productName("fourthProduct").build())))
@@ -85,7 +86,7 @@ public class TestBase {
                 .build());
         dishRepository.save(Dish.builder()
                 .dishName("fifth")
-                .soup(false)
+                .type(DishType.MAIN_DISH)
                 .spicy(false)
                 .cuisine(WorldCuisine.MIDDLE_EASTERN)
                 .products(Set.of(productRepository.save(Product.builder().productName("fifthProduct").build())))
@@ -93,7 +94,7 @@ public class TestBase {
                 .build());
         dishRepository.save(Dish.builder()
                 .dishName("sixth")
-                .soup(true)
+                .type(DishType.MAIN_DISH)
                 .spicy(true)
                 .cuisine(WorldCuisine.MEDITERRANEAN)
                 .products(Set.of(productRepository.save(Product.builder().productName("sixthProduct").build())))

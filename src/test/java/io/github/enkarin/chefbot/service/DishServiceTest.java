@@ -3,6 +3,7 @@ package io.github.enkarin.chefbot.service;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
+import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.exceptions.DishNameAlreadyExistsInCurrentUserException;
 import io.github.enkarin.chefbot.util.TestBase;
@@ -35,7 +36,7 @@ class DishServiceTest extends TestBase {
                 .satisfies(u -> {
                     assertThat(u.getEditabledDish()).isNotNull();
                     assertThat(u.getEditabledDish().getDishName()).isEqualTo("Рагу");
-                    assertThat(u.getEditabledDish().isSoup()).isFalse();
+                    assertThat(u.getEditabledDish().getType()).isNull();
                     assertThat(u.getEditabledDish().isSpicy()).isFalse();
                 });
     }
@@ -60,7 +61,7 @@ class DishServiceTest extends TestBase {
 
         assertThat(dishRepository.findById(dishId).orElseThrow()).satisfies(dishDto -> {
             assertThat(dishDto.getDishName()).isEqualTo("Каша");
-            assertThat(dishDto.isSoup()).isFalse();
+            assertThat(dishDto.getType()).isNull();
             assertThat(dishDto.isSpicy()).isFalse();
         });
 
@@ -75,7 +76,7 @@ class DishServiceTest extends TestBase {
 
         assertThat(dishRepository.findById(dishId).orElseThrow()).satisfies(dishDto -> {
             assertThat(dishDto.getDishName()).isEqualTo("Каша");
-            assertThat(dishDto.isSoup()).isFalse();
+            assertThat(dishDto.getType()).isNull();
             assertThat(dishDto.isSpicy()).isFalse();
         });
         assertThat(dishRepository.count()).isEqualTo(1);
@@ -112,9 +113,9 @@ class DishServiceTest extends TestBase {
 
     @Test
     void putDishSoup() {
-        dishService.putDishIsSoup(USER_ID);
+        dishService.putDishType(USER_ID, DishType.SOUP);
 
-        assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish().isSoup()).isTrue();
+        assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish().getType()).isEqualTo(DishType.SOUP);
     }
 
     @Test

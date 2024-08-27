@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.stream.Stream;
 
 import static io.github.enkarin.chefbot.enums.ChatStatus.NEW_DISH_KITCHEN;
-import static io.github.enkarin.chefbot.enums.ChatStatus.NEW_DISH_SOUP;
 import static io.github.enkarin.chefbot.enums.ChatStatus.NEW_DISH_SPICY;
+import static io.github.enkarin.chefbot.enums.ChatStatus.SELECT_DISH_SPICY;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ProcessingAddDishSpicyServiceTest extends TestBase {
@@ -28,7 +28,7 @@ class ProcessingAddDishSpicyServiceTest extends TestBase {
     @ParameterizedTest
     @MethodSource("provideTextAndResult")
     void executeShouldWork(final String text, final ChatStatus status, final boolean isSpicy) {
-        createUser(NEW_DISH_SOUP);
+        createUser(SELECT_DISH_SPICY);
         dishService.initDishName(USER_ID, "Кимчи");
 
         assertThat(addDishSpicyService.execute(USER_ID, text))

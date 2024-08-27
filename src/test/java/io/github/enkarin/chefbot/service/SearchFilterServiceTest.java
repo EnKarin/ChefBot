@@ -2,6 +2,7 @@ package io.github.enkarin.chefbot.service;
 
 import io.github.enkarin.chefbot.dto.DisplayDishDto;
 import io.github.enkarin.chefbot.entity.SearchFilter;
+import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.repository.SearchFilterRepository;
 import io.github.enkarin.chefbot.util.TestBase;
@@ -28,7 +29,7 @@ class SearchFilterServiceTest extends TestBase {
         searchFilterService.createSearchFilter(USER_ID);
 
         assertThat(userService.findUser(USER_ID).getSearchFilter()).satisfies(searchFilter -> {
-            assertThat(searchFilter.getSoup()).isNull();
+            assertThat(searchFilter.getDishType()).isNull();
             assertThat(searchFilter.getSpicy()).isNull();
             assertThat(searchFilter.isSearchFromPublicDish()).isFalse();
             assertThat(searchFilter.getCuisine()).isNull();
@@ -46,12 +47,12 @@ class SearchFilterServiceTest extends TestBase {
     }
 
     @Test
-    void putSoupSign() {
+    void putDishType() {
         searchFilterService.createSearchFilter(USER_ID);
 
-        searchFilterService.putSoupSign(USER_ID, true);
+        searchFilterService.putDishType(USER_ID, DishType.PASTRY);
 
-        assertThat(userService.findUser(USER_ID).getSearchFilter().getSoup()).isTrue();
+        assertThat(userService.findUser(USER_ID).getSearchFilter().getDishType()).isEqualTo(DishType.PASTRY);
     }
 
     @Test
@@ -87,7 +88,7 @@ class SearchFilterServiceTest extends TestBase {
         final SearchFilter searchFilter = searchFilterRepository.findAll().get(0);
         searchFilter.setSearchFromPublicDish(true);
         searchFilter.setSpicy(false);
-        searchFilter.setSoup(false);
+        searchFilter.setDishType(DishType.SALAD);
         searchFilter.setCuisine(WorldCuisine.ASIA);
         searchFilterRepository.save(searchFilter);
         initDishes();

@@ -1,5 +1,6 @@
 package io.github.enkarin.chefbot.dto;
 
+import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +14,7 @@ public class ModerationDishDto {
     private long ownerChatId;
     private String name;
     private boolean spicy;
-    private boolean soup;
+    private DishType type;
     private WorldCuisine worldCuisine;
     private Set<String> products;
 
@@ -22,8 +23,8 @@ public class ModerationDishDto {
         return String.format("""
                 *%s*
                 Острое: %s
-                Суп: %s
+                Тип: %s
                 Кухня: %s
-                Состав: %s""", name, spicy ? "да" : "нет", soup ? "да" : "нет", worldCuisine.getLocalizedValue(), String.join(", ", products));
+                Состав: %s""", name, spicy ? "да" : "нет", type.getLocalisedName(), worldCuisine.getLocalizedValue(), String.join(", ", products));
     }
 }

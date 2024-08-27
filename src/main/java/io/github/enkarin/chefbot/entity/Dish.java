@@ -1,5 +1,6 @@
 package io.github.enkarin.chefbot.entity;
 
+import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,8 +45,8 @@ public class Dish implements Serializable {
     @Column(name = "spicy")
     private boolean spicy;
 
-    @Column(name = "soup")
-    private boolean soup;
+    @Enumerated(EnumType.STRING)
+    private DishType type;
 
     @Enumerated(EnumType.STRING)
     private WorldCuisine cuisine;

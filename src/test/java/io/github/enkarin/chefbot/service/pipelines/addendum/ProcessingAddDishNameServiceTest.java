@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static io.github.enkarin.chefbot.enums.ChatStatus.NEW_DISH_NAME;
-import static io.github.enkarin.chefbot.enums.ChatStatus.NEW_DISH_SOUP;
+import static io.github.enkarin.chefbot.enums.ChatStatus.NEW_DISH_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ProcessingAddDishNameServiceTest extends TestBase {
@@ -24,7 +24,7 @@ class ProcessingAddDishNameServiceTest extends TestBase {
     void executeWithCorrectInput() {
         userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
-        assertThat(processingAddDishNameService.execute(USER_ID, "anyName")).isEqualTo(NEW_DISH_SOUP);
+        assertThat(processingAddDishNameService.execute(USER_ID, "anyName")).isEqualTo(NEW_DISH_TYPE);
         assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish().getDishName()).isEqualTo("anyName");
     }
 }
