@@ -26,6 +26,11 @@ public class ModerationDishDto {
                 Острое: %s
                 Тип: %s
                 Кухня: %s
-                Состав: %s""", name, spicy ? "да" : "нет", type.getLocalisedName().toLowerCase(Locale.ROOT), worldCuisine.getLocalizedValue(), String.join(", ", products));
+                Состав: %s""",
+                name,
+                spicy ? "да" : "нет",
+                type.getLocalisedName().toLowerCase(Locale.ROOT),
+                worldCuisine.getLocalizedValue().toLowerCase(Locale.ROOT),
+                String.join(", ", products));
     }
 }
