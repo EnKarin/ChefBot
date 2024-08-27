@@ -78,4 +78,8 @@ public class SearchFilterService {
         searchFilter.setPageNumber(searchFilter.getPageNumber() + 1);
         return result;
     }
+
+    public DisplayDishDto searchRandomDishWithCurrentFilter(final long userId) {
+        return null;
+    }
 }

@@ -15,6 +15,7 @@ public enum UserAnswerOption {
     YES_OR_NO(new String[]{"Да", "Нет"}),
     YES_NO_OR_ANY(new String[]{"Да", "Нет", "Любое"}),
     MORE_OR_STOP(new String[]{"Вывести еще", "Вернуться в главное меню"}),
+    SEARCH_DISH_OPTIONS(new String[]{"Случайное блюдо", "Все блюда", "Случайное личное блюдо", "Все личные блюда"}),
     CUISINES(Arrays.stream(WorldCuisine.values()).map(WorldCuisine::getLocalizedValue).toArray(String[]::new)),
     CUISINES_WITH_ANY_CASE(createCuisinesWithAnyCase()),
     DISH_TYPES(Arrays.stream(DishType.values()).map(DishType::getLocalisedName).toArray(String[]::new)),
