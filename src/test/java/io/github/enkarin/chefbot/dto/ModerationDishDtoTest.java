@@ -12,17 +12,19 @@ class ModerationDishDtoTest {
 
     @Test
     void testToString() {
-        assertThat(ModerationDishDto.builder()
+        final String stringDto = ModerationDishDto.builder()
                 .spicy(false)
                 .worldCuisine(WorldCuisine.INTERNATIONAL)
                 .type(DishType.SOUP)
                 .name("Бульон")
                 .products(Set.of("Курица", "Соль", "Вода"))
-                .build().toString()).isEqualTo("""
+                .build().toString();
+        assertThat(stringDto).startsWith("""
                 *Бульон*
                 Острое: нет
                 Тип: суп
                 Кухня: международная
-                Состав: Курица, Вода, Соль""");
+                Состав:""");
+        assertThat(stringDto).contains("Курица", "Вода", "Соль");
     }
 }
