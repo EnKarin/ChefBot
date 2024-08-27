@@ -4,6 +4,7 @@ import io.github.enkarin.chefbot.dto.DisplayDishDto;
 import io.github.enkarin.chefbot.entity.SearchFilter;
 import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
+import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
 import io.github.enkarin.chefbot.repository.SearchFilterRepository;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SearchFilterServiceTest extends TestBase {
     @Autowired
@@ -163,5 +165,65 @@ class SearchFilterServiceTest extends TestBase {
 
         assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).extracting(DisplayDishDto::dishName).containsOnly("fifth", "sixth");
         assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).isEmpty();
+    }
+
+    @Test
+    void searchPublicRandomDishWithCurrentFilter() {
+        searchFilterService.createSearchFilter(USER_ID);
+        final SearchFilter searchFilter = searchFilterRepository.findAll().get(0);
+        searchFilter.setSearchFromPublicDish(true);
+        searchFilter.setSpicy(false);
+        searchFilter.setDishType(DishType.SALAD);
+        searchFilter.setCuisine(WorldCuisine.ASIA);
+        searchFilterRepository.save(searchFilter);
+        initDishes();
+
+        assertThat(searchFilterService.searchRandomDishWithCurrentFilter(USER_ID)).satisfies(displayDishDto -> {
+            assertThat(displayDishDto).extracting(DisplayDishDto::dishName).isEqualTo("first");
+            assertThat(displayDishDto.productsName()).containsOnly("firstProduct");
+        });
+    }
+
+    @Test
+    void searchPersonalRandomDishWithCurrentFilter() {
+        searchFilterService.createSearchFilter(USER_ID);
+        final SearchFilter searchFilter = searchFilterRepository.findAll().get(0);
+        searchFilter.setSearchFromPublicDish(false);
+        searchFilter.setSpicy(false);
+        searchFilter.setDishType(DishType.SOUP);
+        searchFilterRepository.save(searchFilter);
+        initDishes();
+
+        assertThat(searchFilterService.searchRandomDishWithCurrentFilter(USER_ID)).satisfies(displayDishDto -> {
+            assertThat(displayDishDto).extracting(DisplayDishDto::dishName).isEqualTo("fifth");
+            assertThat(displayDishDto.productsName()).containsOnly("fifthProduct");
+        });
+    }
+
+    @Test
+    void searchPublicRandomDishWithCurrentFilterMustThrowExceptionIfDishesNotFound() {
+        searchFilterService.createSearchFilter(USER_ID);
+        final SearchFilter searchFilter = searchFilterRepository.findAll().get(0);
+        searchFilter.setSearchFromPublicDish(true);
+        searchFilter.setSpicy(true);
+        searchFilter.setDishType(DishType.SALAD);
+        searchFilter.setCuisine(WorldCuisine.ASIA);
+        searchFilterRepository.save(searchFilter);
+        initDishes();
+
+        assertThatThrownBy(() -> searchFilterService.searchRandomDishWithCurrentFilter(USER_ID)).isInstanceOf(DishesNotFoundException.class);
+    }
+
+    @Test
+    void searchPersonalRandomDishWithCurrentFilterMustThrowExceptionIfDishesNotFound() {
+        searchFilterService.createSearchFilter(USER_ID);
+        final SearchFilter searchFilter = searchFilterRepository.findAll().get(0);
+        searchFilter.setSearchFromPublicDish(false);
+        searchFilter.setSpicy(true);
+        searchFilter.setDishType(DishType.SOUP);
+        searchFilterRepository.save(searchFilter);
+        initDishes();
+
+        assertThatThrownBy(() -> searchFilterService.searchRandomDishWithCurrentFilter(USER_ID)).isInstanceOf(DishesNotFoundException.class);
     }
 }

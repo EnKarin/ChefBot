@@ -29,11 +29,11 @@ public class ProcessingSearchPublishedService implements ProcessingService {
             }
             case "случайное личное блюдо" -> {
                 filterService.putNeedPublicSearch(userId, false);
-                yield ChatStatus.EXECUTE_SEARCH_RANDOM;
+                yield ChatStatus.EXECUTE_RANDOM_SEARCH;
             }
             case "случайное блюдо" -> {
                 filterService.putNeedPublicSearch(userId, true);
-                yield ChatStatus.EXECUTE_SEARCH_RANDOM;
+                yield ChatStatus.EXECUTE_RANDOM_SEARCH;
             }
             default -> getCurrentStatus();
         };

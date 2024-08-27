@@ -16,7 +16,7 @@ public class ExecuteRandomSearchService implements ProcessingService {
     private final UserService userService;
 
     @Override
-    public ChatStatus execute(long userId, String text) {
+    public ChatStatus execute(final long userId, final String text) {
         if ("вернуться в главное меню".equalsIgnoreCase(text)) {
             searchFilterService.deleteSearchFilter(userId);
             userService.switchToNewStatus(userId, ChatStatus.MAIN_MENU);
@@ -27,12 +27,12 @@ public class ExecuteRandomSearchService implements ProcessingService {
     }
 
     @Override
-    public BotAnswer getMessageForUser(long userId) {
+    public BotAnswer getMessageForUser(final long userId) {
         return new BotAnswer(searchFilterService.searchRandomDishWithCurrentFilter(userId).toString(), UserAnswerOption.MORE_OR_STOP);
     }
 
     @Override
     public ChatStatus getCurrentStatus() {
-        return ChatStatus.EXECUTE_SEARCH_RANDOM;
+        return ChatStatus.EXECUTE_RANDOM_SEARCH;
     }
 }

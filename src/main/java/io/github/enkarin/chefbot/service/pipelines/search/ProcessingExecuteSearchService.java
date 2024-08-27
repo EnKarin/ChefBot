@@ -38,11 +38,9 @@ public class ProcessingExecuteSearchService implements ProcessingService {
         final String dishes = searchFilterService.searchDishWithCurrentFilter(userId).stream()
                 .map(DisplayDishDto::toString)
                 .collect(Collectors.joining("\n\n"));
-
         if (StringUtils.isEmpty(dishes)) {
             throw new DishesNotFoundException();
         }
-
         return BotAnswer.builder()
                 .userAnswerOption(UserAnswerOption.MORE_OR_STOP)
                 .messageText(dishes)
