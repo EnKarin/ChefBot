@@ -5,6 +5,7 @@ import io.github.enkarin.chefbot.enums.WorldCuisine;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Locale;
 import java.util.Set;
 
 @Data
@@ -25,6 +26,6 @@ public class ModerationDishDto {
                 Острое: %s
                 Тип: %s
                 Кухня: %s
-                Состав: %s""", name, spicy ? "да" : "нет", type.getLocalisedName(), worldCuisine.getLocalizedValue(), String.join(", ", products));
+                Состав: %s""", name, spicy ? "да" : "нет", type.getLocalisedName().toLowerCase(Locale.ROOT), worldCuisine.getLocalizedValue(), String.join(", ", products));
     }
 }

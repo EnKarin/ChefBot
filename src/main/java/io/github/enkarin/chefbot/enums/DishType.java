@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum DishType {
-    SALAD("салат"), SNACK("закуска"), SOUP("суп"), MAIN_DISH("основное блюдо"), PASTRY("выпечка");
+    SALAD("Салат"), SNACK("Закуска"), SOUP("Суп"), MAIN_DISH("Основное блюдо"), PASTRY("Выпечка");
 
     private final String localisedName;
 
