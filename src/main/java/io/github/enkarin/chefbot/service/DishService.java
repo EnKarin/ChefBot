@@ -3,6 +3,7 @@ package io.github.enkarin.chefbot.service;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.Product;
 import io.github.enkarin.chefbot.entity.User;
+import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.exceptions.DishNameAlreadyExistsInCurrentUserException;
 import io.github.enkarin.chefbot.repository.DishRepository;
@@ -63,9 +64,9 @@ public class DishService {
 
 
     @Transactional
-    public void putDishIsSoup(final long userId) {
+    public void putDishType(final long userId, final DishType dishType) {
         final Dish dish = findEditableDish(userId);
-        dish.setSoup(true);
+        dish.setType(dishType);
     }
 
     @Transactional

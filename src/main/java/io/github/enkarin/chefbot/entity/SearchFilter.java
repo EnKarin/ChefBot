@@ -1,5 +1,6 @@
 package io.github.enkarin.chefbot.entity;
 
+import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -24,11 +25,13 @@ public class SearchFilter implements Serializable {
     @GeneratedValue
     private long id;
 
-    private Boolean soup;
     private Boolean spicy;
     private boolean searchFromPublicDish;
     private int pageNumber;
 
     @Enumerated(EnumType.STRING)
     private WorldCuisine cuisine;
+
+    @Enumerated(EnumType.STRING)
+    private DishType dishType;
 }

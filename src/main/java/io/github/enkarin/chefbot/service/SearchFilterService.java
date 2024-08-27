@@ -4,6 +4,7 @@ import io.github.enkarin.chefbot.dto.DisplayDishDto;
 import io.github.enkarin.chefbot.entity.Product;
 import io.github.enkarin.chefbot.entity.SearchFilter;
 import io.github.enkarin.chefbot.entity.User;
+import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.repository.DishRepository;
 import io.github.enkarin.chefbot.repository.SearchFilterRepository;
@@ -35,8 +36,8 @@ public class SearchFilterService {
         searchFilterRepository.delete(searchFilter);
     }
 
-    public void putSoupSign(final long ownerId, final boolean soup) {
-        userService.findUser(ownerId).getSearchFilter().setSoup(soup);
+    public void putDishType(final long ownerId, final DishType dishType) {
+        userService.findUser(ownerId).getSearchFilter().setDishType(dishType);
     }
 
     public void putSpicySign(final long ownerId, final boolean spicy) {
@@ -58,7 +59,7 @@ public class SearchFilterService {
         if (searchFilter.isSearchFromPublicDish()) {
             result = dishRepository.findAllDishByFilterWithSpecifiedOffset(currentUser.getId(),
                             searchFilter.getSpicy(),
-                            searchFilter.getSoup(),
+                            isNull(searchFilter.getDishType()) ? null : searchFilter.getDishType().name(),
                             isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name(),
                             searchFilter.getPageNumber())
                     .stream()
@@ -66,7 +67,7 @@ public class SearchFilterService {
                     .collect(Collectors.toSet());
         } else {
             result = currentUser.getDishes().stream()
-                    .filter(dish -> (isNull(searchFilter.getSoup()) || searchFilter.getSoup() == dish.isSoup())
+                    .filter(dish -> (isNull(searchFilter.getDishType()) || searchFilter.getDishType() == dish.getType())
                             && (isNull(searchFilter.getSpicy()) || searchFilter.getSpicy() == dish.isSpicy())
                             && (isNull(searchFilter.getCuisine()) || searchFilter.getCuisine() == dish.getCuisine()))
                     .skip(searchFilter.getPageNumber() * 5L)

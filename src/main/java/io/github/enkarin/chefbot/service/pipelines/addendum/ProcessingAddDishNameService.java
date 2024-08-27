@@ -19,7 +19,7 @@ public class ProcessingAddDishNameService implements ProcessingService {
     public ChatStatus execute(final long userId, final String text) {
         if (isNoneBlank(text)) {
             dishService.initDishName(userId, text);
-            return ChatStatus.NEW_DISH_SOUP;
+            return ChatStatus.NEW_DISH_TYPE;
         }
 
         return getCurrentStatus();

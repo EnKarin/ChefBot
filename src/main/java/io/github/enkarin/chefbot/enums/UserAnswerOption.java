@@ -15,8 +15,10 @@ public enum UserAnswerOption {
     YES_OR_NO(new String[]{"Да", "Нет"}),
     YES_NO_OR_ANY(new String[]{"Да", "Нет", "Любое"}),
     MORE_OR_STOP(new String[]{"Вывести еще", "Вернуться в главное меню"}),
-    CUISINES(createCuisines()),
-    CUISINES_WITH_ANY_CASE(createCuisinesWithAnyCase());
+    CUISINES(Arrays.stream(WorldCuisine.values()).map(WorldCuisine::getLocalizedValue).toArray(String[]::new)),
+    CUISINES_WITH_ANY_CASE(createCuisinesWithAnyCase()),
+    DISH_TYPES(Arrays.stream(DishType.values()).map(DishType::getLocalisedName).toArray(String[]::new)),
+    DISH_TYPES_WITH_ANY_CASE(createDishTypesWithAnyCase());
 
     private final String[] answers;
 
@@ -26,7 +28,9 @@ public enum UserAnswerOption {
         return cuisines.toArray(String[]::new);
     }
 
-    private static String[] createCuisines() {
-        return Arrays.stream(WorldCuisine.values()).map(WorldCuisine::getLocalizedValue).toArray(String[]::new);
+    private static String[] createDishTypesWithAnyCase() {
+        final List<String> cuisines = Arrays.stream(DishType.values()).map(DishType::getLocalisedName).collect(Collectors.toList());
+        cuisines.add("Любой");
+        return cuisines.toArray(String[]::new);
     }
 }

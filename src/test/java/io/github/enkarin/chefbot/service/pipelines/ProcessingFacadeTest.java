@@ -5,6 +5,7 @@ import io.github.enkarin.chefbot.entity.Product;
 import io.github.enkarin.chefbot.entity.SearchFilter;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
+import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.UserAnswerOption;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.stream.Stream;
 
+import static io.github.enkarin.chefbot.enums.UserAnswerOption.DISH_TYPES_WITH_ANY_CASE;
 import static io.github.enkarin.chefbot.enums.UserAnswerOption.YES_NO_OR_ANY;
 import static io.github.enkarin.chefbot.enums.UserAnswerOption.YES_OR_NO;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -92,7 +94,7 @@ class ProcessingFacadeTest extends TestBase {
     static Stream<Arguments> provideStatusAndAnswer() {
         return Stream.of(
                 Arguments.of(ChatStatus.SELECT_DISH_PUBLISHED, "Включить блюда других пользователей при поиске?", YES_OR_NO),
-                Arguments.of(ChatStatus.SELECT_DISH_SOUP, "Вы хотите суп?", YES_NO_OR_ANY),
+                Arguments.of(ChatStatus.SELECT_DISH_TYPE, "Выберете тип искомого блюда", DISH_TYPES_WITH_ANY_CASE),
                 Arguments.of(ChatStatus.SELECT_DISH_SPICY, "Острое блюдо?", YES_NO_OR_ANY),
                 Arguments.of(ChatStatus.SELECT_DISH_KITCHEN, "Выберите кухню мира:", UserAnswerOption.CUISINES_WITH_ANY_CASE),
                 Arguments.of(ChatStatus.EXECUTE_SEARCH, "*fifth:*\n-fifthProduct\n\n*sixth:*\n-sixthProduct", UserAnswerOption.MORE_OR_STOP)
@@ -102,7 +104,7 @@ class ProcessingFacadeTest extends TestBase {
     @Test
     void goToStatusShouldWorkWithExecuteSearch() {
         userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
-        userService.switchToNewStatus(USER_ID, ChatStatus.SELECT_DISH_SOUP);
+        userService.switchToNewStatus(USER_ID, ChatStatus.SELECT_DISH_TYPE);
         initDishes();
 
         processingFacade.execute(USER_ID, "да"); //select soup
@@ -121,7 +123,7 @@ class ProcessingFacadeTest extends TestBase {
     @Test
     void goToStatusShouldThrowExceptionWhenDishNotFound() {
         userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
-        userService.switchToNewStatus(USER_ID, ChatStatus.SELECT_DISH_SOUP);
+        userService.switchToNewStatus(USER_ID, ChatStatus.SELECT_DISH_TYPE);
 
         processingFacade.execute(USER_ID, "да"); //select soup
         processingFacade.execute(USER_ID, "нет"); //select spicy
@@ -137,7 +139,7 @@ class ProcessingFacadeTest extends TestBase {
 
         final String dishName = "Кимчи суп";
         processingFacade.execute(USER_ID, dishName); //enter dish name
-        processingFacade.execute(USER_ID, "Да"); //enter is soup
+        processingFacade.execute(USER_ID, "Суп"); //enter is soup
         processingFacade.execute(USER_ID, "Да"); //enter is spicy
         processingFacade.execute(USER_ID, "Азиатская"); //enter cuisine
         processingFacade.execute(USER_ID, "кимчи, свинина, репчатый лук, перцовая паста кочудян, тофу"); //enter foodstuff
@@ -147,14 +149,10 @@ class ProcessingFacadeTest extends TestBase {
                 .hasSize(1)
                 .first()
                 .satisfies(d -> {
-                    assertThat(d.getDishName())
-                            .isEqualTo(dishName);
-                    assertThat(d.isSoup())
-                            .isTrue();
-                    assertThat(d.isSpicy())
-                            .isTrue();
-                    assertThat(d.getCuisine())
-                            .isEqualTo(WorldCuisine.ASIA);
+                    assertThat(d.getDishName()).isEqualTo(dishName);
+                    assertThat(d.getType()).isEqualTo(DishType.SOUP);
+                    assertThat(d.isSpicy()).isTrue();
+                    assertThat(d.getCuisine()).isEqualTo(WorldCuisine.ASIA);
                 });
         assertThat(productRepository.findAll())
                 .hasSize(5)

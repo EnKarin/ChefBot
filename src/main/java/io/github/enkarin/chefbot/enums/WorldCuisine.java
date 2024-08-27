@@ -1,10 +1,12 @@
 package io.github.enkarin.chefbot.enums;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Locale;
 
 @Getter
+@RequiredArgsConstructor
 public enum WorldCuisine {
     ASIA("Азиатская"),
     MEDITERRANEAN("Средиземноморская"),
@@ -16,20 +18,12 @@ public enum WorldCuisine {
 
     private final String localizedValue;
 
-    WorldCuisine(final String local) {
-        localizedValue = local;
-    }
-
     public static WorldCuisine getCuisine(final String localizedValue) {
-        return switch (localizedValue.toLowerCase(Locale.ROOT)) {
-            case "азиатская" -> ASIA;
-            case "средиземноморская" -> MEDITERRANEAN;
-            case "международная" -> INTERNATIONAL;
-            case "ближневосточная" -> MIDDLE_EASTERN;
-            case "мексиканская" -> MEXICAN;
-            case "славянская" -> SLAVIC;
-            case "что-то необычное" -> OTHER;
-            default -> throw new IllegalArgumentException("Unexpected value: " + localizedValue.toLowerCase(Locale.ROOT));
-        };
+        for (final WorldCuisine worldCuisine : values()) {
+            if (worldCuisine.getLocalizedValue().equalsIgnoreCase(localizedValue)) {
+                return worldCuisine;
+            }
+        }
+        throw new IllegalArgumentException("Unexpected value: " + localizedValue.toLowerCase(Locale.ROOT));
     }
 }
