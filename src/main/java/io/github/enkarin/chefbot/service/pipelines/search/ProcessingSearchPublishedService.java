@@ -18,14 +18,22 @@ public class ProcessingSearchPublishedService implements ProcessingService {
 
     @Override
     public ChatStatus execute(final long userId, final String text) {
-        return switch (text.toLowerCase(Locale.ROOT)) {
-            case "да" -> {
+        return switch (text.toLowerCase(Locale.ROOT).trim()) {
+            case "все блюда" -> {
                 filterService.putNeedPublicSearch(userId, true);
                 yield ChatStatus.EXECUTE_SEARCH;
             }
-            case "нет" -> {
+            case "все личные блюда" -> {
                 filterService.putNeedPublicSearch(userId, false);
                 yield ChatStatus.EXECUTE_SEARCH;
+            }
+            case "случайное личное блюдо" -> {
+                filterService.putNeedPublicSearch(userId, false);
+                yield ChatStatus.EXECUTE_RANDOM_SEARCH;
+            }
+            case "случайное блюдо" -> {
+                filterService.putNeedPublicSearch(userId, true);
+                yield ChatStatus.EXECUTE_RANDOM_SEARCH;
             }
             default -> getCurrentStatus();
         };
@@ -33,10 +41,7 @@ public class ProcessingSearchPublishedService implements ProcessingService {
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return BotAnswer.builder()
-                .userAnswerOption(UserAnswerOption.YES_OR_NO)
-                .messageText("Включить блюда других пользователей при поиске?")
-                .build();
+        return new BotAnswer("Выберите режим поиска", UserAnswerOption.SEARCH_DISH_OPTIONS);
     }
 
     @Override

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.stream.Stream;
 
+import static io.github.enkarin.chefbot.enums.ChatStatus.EXECUTE_RANDOM_SEARCH;
 import static io.github.enkarin.chefbot.enums.ChatStatus.EXECUTE_SEARCH;
 import static io.github.enkarin.chefbot.enums.ChatStatus.SELECT_DISH_PUBLISHED;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,8 +43,10 @@ class ProcessingSearchPublishedServiceTest extends TestBase {
 
     static Stream<Arguments> provideTextAndResult() {
         return Stream.of(
-                Arguments.of("Да", EXECUTE_SEARCH, true),
-                Arguments.of("Нет", EXECUTE_SEARCH, false),
+                Arguments.of("Все блюда", EXECUTE_SEARCH, true),
+                Arguments.of("Все личные блюда", EXECUTE_SEARCH, false),
+                Arguments.of("Случайное блюдо", EXECUTE_RANDOM_SEARCH, true),
+                Arguments.of("Случайное личное блюдо", EXECUTE_RANDOM_SEARCH, false),
                 Arguments.of("gg", SELECT_DISH_PUBLISHED, false)
         );
     }

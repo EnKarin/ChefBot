@@ -86,7 +86,7 @@ public class TestBase {
                 .build());
         dishRepository.save(Dish.builder()
                 .dishName("fifth")
-                .type(DishType.MAIN_DISH)
+                .type(DishType.SOUP)
                 .spicy(false)
                 .cuisine(WorldCuisine.MIDDLE_EASTERN)
                 .products(Set.of(productRepository.save(Product.builder().productName("fifthProduct").build())))

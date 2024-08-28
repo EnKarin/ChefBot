@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.stream.Stream;
 
 import static io.github.enkarin.chefbot.enums.UserAnswerOption.DISH_TYPES_WITH_ANY_CASE;
+import static io.github.enkarin.chefbot.enums.UserAnswerOption.SEARCH_DISH_OPTIONS;
 import static io.github.enkarin.chefbot.enums.UserAnswerOption.YES_NO_OR_ANY;
 import static io.github.enkarin.chefbot.enums.UserAnswerOption.YES_OR_NO;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -78,11 +79,13 @@ class ProcessingFacadeTest extends TestBase {
     @ParameterizedTest
     @MethodSource("provideStatusAndAnswer")
     void goToStatusShouldWork(final ChatStatus status, final String messageText, final UserAnswerOption userAnswerOption) {
+        final SearchFilter searchFilter = new SearchFilter();
+        searchFilter.setSpicy(false);
         userRepository.save(User.builder()
                 .id(USER_ID)
                 .chatId(CHAT_ID)
                 .chatStatus(ChatStatus.MAIN_MENU)
-                .searchFilter(searchFilterRepository.save(new SearchFilter()))
+                .searchFilter(searchFilterRepository.save(searchFilter))
                 .build());
         initDishes();
 
@@ -93,11 +96,12 @@ class ProcessingFacadeTest extends TestBase {
 
     static Stream<Arguments> provideStatusAndAnswer() {
         return Stream.of(
-                Arguments.of(ChatStatus.SELECT_DISH_PUBLISHED, "Включить блюда других пользователей при поиске?", YES_OR_NO),
+                Arguments.of(ChatStatus.SELECT_DISH_PUBLISHED, "Выберите режим поиска", SEARCH_DISH_OPTIONS),
                 Arguments.of(ChatStatus.SELECT_DISH_TYPE, "Выберете тип искомого блюда", DISH_TYPES_WITH_ANY_CASE),
                 Arguments.of(ChatStatus.SELECT_DISH_SPICY, "Острое блюдо?", YES_NO_OR_ANY),
                 Arguments.of(ChatStatus.SELECT_DISH_KITCHEN, "Выберите кухню мира:", UserAnswerOption.CUISINES_WITH_ANY_CASE),
-                Arguments.of(ChatStatus.EXECUTE_SEARCH, "*fifth:*\n-fifthProduct\n\n*sixth:*\n-sixthProduct", UserAnswerOption.MORE_OR_STOP)
+                Arguments.of(ChatStatus.EXECUTE_RANDOM_SEARCH, "*fifth:*\n-fifthProduct", UserAnswerOption.MORE_OR_STOP),
+                Arguments.of(ChatStatus.EXECUTE_SEARCH, "*fifth:*\n-fifthProduct", UserAnswerOption.MORE_OR_STOP)
         );
     }
 
@@ -107,10 +111,29 @@ class ProcessingFacadeTest extends TestBase {
         userService.switchToNewStatus(USER_ID, ChatStatus.SELECT_DISH_TYPE);
         initDishes();
 
-        processingFacade.execute(USER_ID, "да"); //select soup
+        processingFacade.execute(USER_ID, "Закуска"); //select soup
         processingFacade.execute(USER_ID, "нет"); //select spicy
         processingFacade.execute(USER_ID, "Славянская"); //select cuisine
-        final BotAnswer userMessage = processingFacade.execute(USER_ID, "да"); //select published
+        final BotAnswer userMessage = processingFacade.execute(USER_ID, "все блюда"); //select published
+
+        assertThat(userMessage)
+                .isNotNull()
+                .extracting(BotAnswer::messageText)
+                .isEqualTo("""
+                        *third:*
+                        -thirdProduct""");
+    }
+
+    @Test
+    void searchRandomDishPipeline() {
+        userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        userService.switchToNewStatus(USER_ID, ChatStatus.SELECT_DISH_TYPE);
+        initDishes();
+
+        processingFacade.execute(USER_ID, "Любое"); //select type
+        processingFacade.execute(USER_ID, "нет"); //select spicy
+        processingFacade.execute(USER_ID, "Славянская"); //select cuisine
+        final BotAnswer userMessage = processingFacade.execute(USER_ID, "случайное блюдо"); //select published
 
         assertThat(userMessage)
                 .isNotNull()
@@ -128,7 +151,7 @@ class ProcessingFacadeTest extends TestBase {
         processingFacade.execute(USER_ID, "да"); //select soup
         processingFacade.execute(USER_ID, "нет"); //select spicy
         processingFacade.execute(USER_ID, "Славянская"); //select cuisine
-        assertThatThrownBy(() -> processingFacade.execute(USER_ID, "да")) //select published
+        assertThatThrownBy(() -> processingFacade.execute(USER_ID, "все блюда")) //select published
                 .isInstanceOf(DishesNotFoundException.class)
                 .hasMessage("Подходящие блюда не найдены. Вы возвращены в главное меню.");
     }

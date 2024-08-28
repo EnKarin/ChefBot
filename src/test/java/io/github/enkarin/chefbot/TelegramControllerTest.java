@@ -152,10 +152,10 @@ class TelegramControllerTest extends ModerationTest {
     @Test
     void processingNonCommandInputShouldWorkWithDishNotFoundEx() {
         createUser(ChatStatus.SELECT_DISH_TYPE);
-        telegramController.processingNonCommandInput(USER_ID, "да");
+        telegramController.processingNonCommandInput(USER_ID, "Суп");
         userService.switchToNewStatus(USER_ID, ChatStatus.SELECT_DISH_PUBLISHED);
 
-        assertThat(telegramController.processingNonCommandInput(USER_ID, "да"))
+        assertThat(telegramController.processingNonCommandInput(USER_ID, "все блюда"))
                 .extracting(BotAnswer::messageText)
                 .isEqualTo("Подходящие блюда не найдены. Вы возвращены в главное меню.");
         assertThat(userRepository.findById(USER_ID))

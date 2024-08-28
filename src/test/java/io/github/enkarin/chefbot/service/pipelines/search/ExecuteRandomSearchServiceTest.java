@@ -6,16 +6,13 @@ import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.repository.SearchFilterRepository;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ProcessingExecuteSearchServiceTest extends TestBase {
-
+class ExecuteRandomSearchServiceTest extends TestBase {
     @Autowired
-    private ProcessingExecuteSearchService executeSearchService;
+    private ExecuteRandomSearchService randomSearchService;
 
     @Autowired
     private SearchFilterRepository searchFilterRepository;
@@ -29,7 +26,7 @@ class ProcessingExecuteSearchServiceTest extends TestBase {
                 .searchFilter(searchFilterRepository.save(new SearchFilter()))
                 .build());
 
-        assertThat(executeSearchService.execute(USER_ID, "вернуться в главное меню")).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(randomSearchService.execute(USER_ID, "вернуться в главное меню")).isEqualTo(ChatStatus.MAIN_MENU);
         assertThat(searchFilterRepository.count()).isEqualTo(0);
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
@@ -38,9 +35,8 @@ class ProcessingExecuteSearchServiceTest extends TestBase {
                 .isNull();
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"unknown", "more", "Вывести еще"})
-    void executeShouldWork(final String text) {
-        assertThat(executeSearchService.execute(USER_ID, text)).isEqualTo(ChatStatus.EXECUTE_SEARCH);
+    @Test
+    void executeShouldWork() {
+        assertThat(randomSearchService.execute(USER_ID, "Вывести ещё")).isEqualTo(ChatStatus.EXECUTE_RANDOM_SEARCH);
     }
 }
