@@ -16,6 +16,7 @@ public final class FormatedReplyKeyboardMarkup extends ReplyKeyboardMarkup {
     public FormatedReplyKeyboardMarkup(final UserAnswerOption answerOptions) {
         setOneTimeKeyboard(true);
         setResizeKeyboard(true);
+        setIsPersistent(true);
         final List<KeyboardRow> keyboardRowList = new LinkedList<>();
         final String[] answers = answerOptions.getAnswers();
         final List<KeyboardButton> keyboardButtons = new LinkedList<>();
