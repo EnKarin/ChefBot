@@ -88,7 +88,7 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
 
     private void sendDeclineResultToOwner(final long chatId, final String dishName) {
         try {
-            execute(defaultConfigurationMessage(chatId, "Блюдо ".concat(dishName).concat(" не прошло модерацию")));
+            execute(defaultConfigurationMessage(chatId, "Блюдо ".concat(dishName).concat(" не прошло модерацию, однако оно останется доступным для вас")));
         } catch (Exception e) {
             log.error(e.toString());
         }
