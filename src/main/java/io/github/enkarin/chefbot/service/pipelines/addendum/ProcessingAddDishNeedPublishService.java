@@ -29,7 +29,11 @@ public class ProcessingAddDishNeedPublishService implements ProcessingService {
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return new BotAnswer("Хотите опубликовать это блюдо, чтобы оно было доступно всем пользователям?", UserAnswerOption.YES_OR_NO);
+        return new BotAnswer("""
+                Хотите опубликовать это блюдо?
+                Когда оно пройдёт модерацию, то станет доступно всем пользователям.
+                Блюдо останется доступно вам вне зависимости от результата модерации.
+                """, UserAnswerOption.YES_OR_NO);
     }
 
     @Override
