@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ModerationRequestRepository extends JpaRepository<ModerationRequest, Long> {
     List<ModerationRequest> findByFreshIsTrue();
+    List<ModerationRequest> findByDeclineCauseIsNotNull();
+    List<ModerationRequest> findByDeclineCauseIsNull();
 }

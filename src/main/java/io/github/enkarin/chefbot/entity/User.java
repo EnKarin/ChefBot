@@ -7,6 +7,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -48,7 +49,7 @@ public class User implements Serializable {
     @JoinColumn(name = "editable_dish_id")
     private Dish editabledDish;
 
-    @OneToMany(mappedBy = "owner", orphanRemoval = true)
+    @OneToMany(mappedBy = "owner")
     private Set<Dish> dishes;
 
     @Enumerated(EnumType.STRING)
@@ -60,4 +61,8 @@ public class User implements Serializable {
     @OneToOne(orphanRemoval = true)
     @JoinColumn(name = "search_filter_id")
     private SearchFilter searchFilter;
+
+    @ManyToOne
+    @JoinColumn(name = "moderate_dish")
+    private Dish moderableDish;
 }

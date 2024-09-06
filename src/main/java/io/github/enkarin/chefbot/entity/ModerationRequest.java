@@ -13,6 +13,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
@@ -21,10 +23,13 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ModerationRequest {
+public class ModerationRequest implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 6481956836432875498L;
+
     @Id
     @GeneratedValue
-    @Column(name = "mq_id")
+    @Column(name = "mr_id")
     private long id;
 
     @OneToOne
@@ -36,4 +41,7 @@ public class ModerationRequest {
 
     @Column(name = "fresh")
     private boolean fresh;
+
+    @Column(name = "decline_cause")
+    private String declineCause;
 }

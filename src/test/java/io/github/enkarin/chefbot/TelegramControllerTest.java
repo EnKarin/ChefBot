@@ -94,7 +94,7 @@ class TelegramControllerTest extends ModerationTest {
         moderationInit();
 
         assertThat(telegramController.approveModerationRequest(Long.toString(moderationRequestsId[0]))).satisfies(moderationResultDto -> {
-            assertThat(moderationResultDto.approve()).isTrue();
+            assertThat(moderationResultDto.isApprove()).isTrue();
             assertThat(moderationResultDto.dishName()).isEqualTo("firstDish");
             assertThat(moderationResultDto.messageForRemove()).extracting(ModerationRequestMessageDto::chatId).contains(10L, 11L);
         });
@@ -109,16 +109,8 @@ class TelegramControllerTest extends ModerationTest {
     void declineModerationRequest() {
         moderationInit();
 
-        assertThat(telegramController.declineModerationRequest(Long.toString(moderationRequestsId[1]))).satisfies(moderationResultDto -> {
-            assertThat(moderationResultDto.approve()).isFalse();
-            assertThat(moderationResultDto.dishName()).isEqualTo("secondDish");
-            assertThat(moderationResultDto.messageForRemove()).extracting(ModerationRequestMessageDto::chatId).contains(20L, 22L);
-        });
-        assertThat(moderationRequestRepository.existsById(moderationRequestsId[1])).isFalse();
-        assertThat(dishRepository.findAll()).anySatisfy(dish -> {
-            assertThat(dish.getDishName()).isEqualTo("secondDish");
-            assertThat(dish.isPublished()).isFalse();
-        });
+        telegramController.declineModerationRequest(USER_ID, Long.toString(moderationRequestsId[1]));
+        assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.WRITE_DECLINE_MODERATION_REQUEST);
     }
 
     @Test

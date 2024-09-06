@@ -12,13 +12,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Entity
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ModerationRequestMessage {
+public class ModerationRequestMessage implements Serializable {
+    @Serial
+    private static final long serialVersionUID = -722848898398934290L;
+
     @Id
     @GeneratedValue
     private long id;

@@ -6,19 +6,17 @@ import io.github.enkarin.chefbot.entity.ModerationRequestMessage;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.repository.ModerationRequestMessageRepository;
 import io.github.enkarin.chefbot.repository.ModerationRequestRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 public abstract class ModerationTest extends TestBase {
     @Autowired
+    protected ModerationRequestMessageRepository moderationRequestMessageRepository;
+    @Autowired
     protected ModerationRequestRepository moderationRequestRepository;
 
-    @Autowired
-    protected ModerationRequestMessageRepository moderationRequestMessageRepository;
-
-    protected final long[] moderationRequestsId = new long[4];
+    protected final long[] moderationRequestsId = new long[5];
 
     protected void moderationInit() {
         final User user = userRepository.save(User.builder().id(USER_ID).chatId(CHAT_ID).username(USERNAME).build());
@@ -52,10 +50,12 @@ public abstract class ModerationTest extends TestBase {
         moderationRequestMessageRepository.saveAll(List.of(ModerationRequestMessage.builder().messageId(4).chatId(40).currentModerationRequest(fourthModerationRequest).build(),
                 ModerationRequestMessage.builder().messageId(4).chatId(44).currentModerationRequest(fourthModerationRequest).build()));
         moderationRequestsId[3] = fourthModerationRequest.getId();
-    }
-
-    @AfterEach
-    void moderationClean() {
-        moderationRequestRepository.deleteAll();
+        final ModerationRequest fifthModerationRequest = moderationRequestRepository.save(ModerationRequest.builder()
+                .moderationDish(dishRepository.save(Dish.builder().owner(user).dishName("fifthDish").build()))
+                .declineCause("Bad dish")
+                .build());
+        moderationRequestMessageRepository.saveAll(List.of(ModerationRequestMessage.builder().messageId(5).chatId(50).currentModerationRequest(fourthModerationRequest).build(),
+                ModerationRequestMessage.builder().messageId(4).chatId(44).currentModerationRequest(fourthModerationRequest).build()));
+        moderationRequestsId[4] = fifthModerationRequest.getId();
     }
 }
