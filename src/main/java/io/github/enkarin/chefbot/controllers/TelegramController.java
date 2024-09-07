@@ -31,6 +31,7 @@ public class TelegramController {
                 return switch (text) {
                     case "/back_to_main_menu" -> new BotAnswer("Вы уже в главном меню");
                     case "/search_dish" -> processingFacade.goToStatus(userId, ChatStatus.SELECT_DISH_TYPE);
+                    case "/search_recipe" -> processingFacade.goToStatus(userId, ChatStatus.SELECT_DISH_TYPE_WITH_RECIPE_SEARCH);
                     case "/add_dish" -> processingFacade.goToStatus(userId, ChatStatus.NEW_DISH_NAME);
                     case "/undo" -> new BotAnswer("Эта команда не доступна в главном меню");
                     default -> new BotAnswer("Указанной команды не существует");

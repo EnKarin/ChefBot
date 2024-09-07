@@ -41,6 +41,13 @@ public class SearchFilterService {
     }
 
     @Transactional
+    public void createSearchFilterForFindRecipe(final long ownerId) {
+        final SearchFilter searchFilter = new SearchFilter();
+        searchFilter.setNeedGetRecipe(true);
+        userService.findUser(ownerId).setSearchFilter(searchFilterRepository.save(searchFilter));
+    }
+
+    @Transactional
     public void deleteSearchFilter(final long ownerId) {
         final User user = userService.findUser(ownerId);
         final SearchFilter searchFilter = user.getSearchFilter();
@@ -113,9 +120,7 @@ public class SearchFilterService {
     }
 
     private Dish getRandomPrivateDishWithCurrentFilter(final User currentUser, final SearchFilter searchFilter) {
-        final Dish[] dishes = currentUser.getDishes().stream()
-                .filter(d -> dishMatchesWithSpecifiedFilter(d, searchFilter))
-                .toArray(Dish[]::new);
+        final Dish[] dishes = currentUser.getDishes().stream().filter(d -> dishMatchesWithSpecifiedFilter(d, searchFilter)).toArray(Dish[]::new);
         if (dishes.length > 0) {
             return dishes[random.nextInt(dishes.length)];
         } else {

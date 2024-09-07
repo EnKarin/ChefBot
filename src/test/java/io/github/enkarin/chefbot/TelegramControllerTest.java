@@ -128,6 +128,20 @@ class TelegramControllerTest extends ModerationTest {
     }
 
     @Test
+    void searchRecipeShouldUpdateChatStatus() {
+        createUser(ChatStatus.MAIN_MENU);
+
+        assertThat(telegramController.executeWorkerCommand(USER_ID, "/search_recipe"))
+                .extracting(BotAnswer::messageText, BotAnswer::userAnswerOption)
+                .containsOnly("Выберете тип искомого блюда", UserAnswerOption.DISH_TYPES_WITH_ANY_CASE);
+        assertThat(userRepository.findById(USER_ID))
+                .isPresent()
+                .get()
+                .extracting(User::getChatStatus)
+                .isEqualTo(ChatStatus.SELECT_DISH_TYPE_WITH_RECIPE_SEARCH);
+    }
+
+    @Test
     void addDishShouldUpdateShatStatus() {
         createUser(ChatStatus.MAIN_MENU);
 

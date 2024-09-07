@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ProcessingSearchDishTypeService implements ProcessingService {
+public class ProcessingSearchDishTypeWithFindRecipe implements ProcessingService {
     private final SearchFilterService filterService;
 
     @Override
-    public ChatStatus execute(final long userId, final String text) {
-        filterService.createSearchFilter(userId);
+    public ChatStatus execute(long userId, String text) {
+        filterService.createSearchFilterForFindRecipe(userId);
         try {
             filterService.putDishType(userId, DishType.parse(text));
             return ChatStatus.SELECT_DISH_SPICY;
@@ -26,12 +26,12 @@ public class ProcessingSearchDishTypeService implements ProcessingService {
     }
 
     @Override
-    public BotAnswer getMessageForUser(final long userId) {
+    public BotAnswer getMessageForUser(long userId) {
         return new BotAnswer("Выберете тип искомого блюда", UserAnswerOption.DISH_TYPES_WITH_ANY_CASE);
     }
 
     @Override
     public ChatStatus getCurrentStatus() {
-        return ChatStatus.SELECT_DISH_TYPE;
+        return ChatStatus.SELECT_DISH_TYPE_WITH_RECIPE_SEARCH;
     }
 }

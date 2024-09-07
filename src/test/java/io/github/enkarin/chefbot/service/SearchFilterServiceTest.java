@@ -35,6 +35,7 @@ class SearchFilterServiceTest extends TestBase {
             assertThat(searchFilter.getSpicy()).isNull();
             assertThat(searchFilter.isSearchFromPublicDish()).isFalse();
             assertThat(searchFilter.getCuisine()).isNull();
+            assertThat(searchFilter.isNeedGetRecipe()).isFalse();
         });
     }
 
@@ -271,5 +272,18 @@ class SearchFilterServiceTest extends TestBase {
         initDishes();
 
         assertThatThrownBy(() -> searchFilterService.searchRandomDishWithCurrentFilter(USER_ID)).isInstanceOf(DishesNotFoundException.class);
+    }
+
+    @Test
+    void createSearchFilterForFindRecipe() {
+        searchFilterService.createSearchFilterForFindRecipe(USER_ID);
+
+        assertThat(userService.findUser(USER_ID).getSearchFilter()).satisfies(searchFilter -> {
+            assertThat(searchFilter.getDishType()).isNull();
+            assertThat(searchFilter.getSpicy()).isNull();
+            assertThat(searchFilter.isSearchFromPublicDish()).isFalse();
+            assertThat(searchFilter.getCuisine()).isNull();
+            assertThat(searchFilter.isNeedGetRecipe()).isTrue();
+        });
     }
 }
