@@ -138,4 +138,11 @@ class DishServiceTest extends TestBase {
                 dishId)).containsOnly("Овсянка", "Три ведра укропа");
         assertThat(productRepository.count()).isEqualTo(2);
     }
+
+    @Test
+    void putRecipe() {
+        dishService.putDishRecipe(USER_ID, "Тушить два часа");
+
+        assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish().getRecipe()).isEqualTo("Тушить два часа");
+    }
 }

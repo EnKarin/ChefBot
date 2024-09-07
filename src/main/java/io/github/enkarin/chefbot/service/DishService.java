@@ -42,6 +42,17 @@ public class DishService {
         }
     }
 
+    private void renameCreatingDish(final String name, final User owner) {
+        owner.getEditabledDish().setDishName(name);
+    }
+
+    private void initNewDish(final String name, final User owner) {
+        owner.setEditabledDish(dishRepository.save(Dish.builder()
+                .dishName(name)
+                .owner(owner)
+                .build()));
+    }
+
     private boolean currentUserContainDishWithSpecifiedName(final String name, final User user) {
         return user.getDishes().stream().map(Dish::getDishName).noneMatch(n -> n.equals(name));
     }
@@ -86,18 +97,13 @@ public class DishService {
         dish.setProducts(products);
     }
 
+    @Transactional
+    public void putDishRecipe(final long userId, final String recipe) {
+        final Dish dish = findEditableDish(userId);
+        dish.setRecipe(recipe);
+    }
+
     private Dish findEditableDish(final long userId) {
         return userService.findUser(userId).getEditabledDish();
-    }
-
-    private void renameCreatingDish(final String name, final User owner) {
-        owner.getEditabledDish().setDishName(name);
-    }
-
-    private void initNewDish(final String name, final User owner) {
-        owner.setEditabledDish(dishRepository.save(Dish.builder()
-                .dishName(name)
-                .owner(owner)
-                .build()));
     }
 }
