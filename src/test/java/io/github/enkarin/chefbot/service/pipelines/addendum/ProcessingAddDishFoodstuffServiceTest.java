@@ -27,7 +27,7 @@ class ProcessingAddDishFoodstuffServiceTest extends TestBase {
         searchFilterService.createSearchFilter(USER_ID);
 
         assertThat(foodstuffService.execute(USER_ID, "")).isEqualTo(NEW_DISH_FOODSTUFF);
-        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID).stream().flatMap(displayDishDto -> displayDishDto.productsName().stream()))
+        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID).stream().flatMap(displayDishDto -> displayDishDto.getProductsName().stream()))
                 .isEmpty();
     }
 
@@ -41,7 +41,7 @@ class ProcessingAddDishFoodstuffServiceTest extends TestBase {
                 Три ведра укропа
                 чесночёк
                 Рис""")).isEqualTo(GET_NEED_DISH_RECIPE);
-        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID).stream().flatMap(displayDishDto -> displayDishDto.productsName().stream()))
+        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID).stream().flatMap(displayDishDto -> displayDishDto.getProductsName().stream()))
                 .containsOnly("Три ведра укропа", "Чесночёк", "Рис");
     }
 
@@ -52,7 +52,7 @@ class ProcessingAddDishFoodstuffServiceTest extends TestBase {
         searchFilterService.createSearchFilter(USER_ID);
 
         assertThat(foodstuffService.execute(USER_ID, "Охапка дров, плюмбус")).isEqualTo(GET_NEED_DISH_RECIPE);
-        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID).stream().flatMap(displayDishDto -> displayDishDto.productsName().stream()))
+        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID).stream().flatMap(displayDishDto -> displayDishDto.getProductsName().stream()))
                 .containsOnly("Охапка дров", "Плюмбус");
     }
 }

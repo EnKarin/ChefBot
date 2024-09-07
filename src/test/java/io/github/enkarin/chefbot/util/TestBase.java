@@ -60,6 +60,7 @@ public class TestBase {
                 .cuisine(WorldCuisine.ASIA)
                 .products(Set.of(productRepository.save(Product.builder().productName("firstProduct").build())))
                 .published(true)
+                .recipe("Тушить в казане")
                 .build());
         dishRepository.save(Dish.builder()
                 .dishName("second")
@@ -100,6 +101,15 @@ public class TestBase {
                 .cuisine(WorldCuisine.MEDITERRANEAN)
                 .products(Set.of(productRepository.save(Product.builder().productName("sixthProduct").build())))
                 .owner(userRepository.findById(USER_ID).orElseThrow())
+                .build());
+        dishRepository.save(Dish.builder()
+                .dishName("seventh")
+                .type(DishType.SALAD)
+                .spicy(false)
+                .cuisine(WorldCuisine.OTHER)
+                .products(Set.of(productRepository.save(Product.builder().productName("seventhProduct").build())))
+                .owner(userRepository.findById(USER_ID).orElseThrow())
+                .recipe("Дать настояться месяцок")
                 .build());
     }
 }

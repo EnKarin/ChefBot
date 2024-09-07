@@ -90,6 +90,7 @@ class ProcessingFacadeTest extends TestBase {
         createUser(status);
         searchFilterService.createSearchFilter(USER_ID);
         searchFilterService.putSpicySign(USER_ID, false);
+        searchFilterService.putDishType(USER_ID, DishType.SOUP);
         initDishes();
 
         assertThat(processingFacade.goToStatus(USER_ID, status))
