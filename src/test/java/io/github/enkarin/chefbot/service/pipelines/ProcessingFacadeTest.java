@@ -86,11 +86,12 @@ class ProcessingFacadeTest extends TestBase {
     void goToStatusShouldWork(final ChatStatus status, final String messageText, final UserAnswerOption userAnswerOption) {
         final SearchFilter searchFilter = new SearchFilter();
         searchFilter.setSpicy(false);
+        final SearchFilter filter = searchFilterRepository.save(searchFilter);
         userRepository.save(User.builder()
                 .id(USER_ID)
                 .chatId(CHAT_ID)
                 .chatStatus(ChatStatus.MAIN_MENU)
-                .searchFilter(searchFilterRepository.save(searchFilter))
+                .searchFilter(filter)
                 .build());
         initDishes();
 
