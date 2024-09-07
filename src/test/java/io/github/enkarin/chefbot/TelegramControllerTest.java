@@ -24,7 +24,7 @@ class TelegramControllerTest extends ModerationTest {
         final BotAnswer botAnswer = telegramController.executeStartCommand(USER_ID, CHAT_ID, USERNAME);
 
         assertThat(botAnswer.messageText()).isEqualTo("Приветствую! Здесь вы можете найти блюдо по вашим предпочтениям и поделиться своими рецептами с другими пользователями");
-        assertThat(botAnswer.userAnswerOption().orElseThrow()).hasSize(0);
+        assertThat(botAnswer.userAnswerOptions().orElseThrow()).hasSize(0);
         assertThat(userRepository.existsById(USER_ID)).isTrue();
     }
 
@@ -34,7 +34,7 @@ class TelegramControllerTest extends ModerationTest {
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/change_moderator_status")).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Указанной команды не существует");
-            assertThat(botAnswer.userAnswerOption().orElseThrow()).hasSize(0);
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).hasSize(0);
         });
     }
 
@@ -44,7 +44,7 @@ class TelegramControllerTest extends ModerationTest {
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/back_to_main_menu")).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Вы уже в главном меню");
-            assertThat(botAnswer.userAnswerOption().orElseThrow()).hasSize(0);
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).hasSize(0);
         });
     }
 
@@ -55,7 +55,7 @@ class TelegramControllerTest extends ModerationTest {
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/back_to_main_menu")).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Вы хотите вернуться в главное меню? Весь прогресс текущей операции будет утерян.");
-            assertThat(botAnswer.userAnswerOption()).isEqualTo(Optional.of(StandardUserAnswerOption.YES_OR_NO.getAnswers()));
+            assertThat(botAnswer.userAnswerOptions()).isEqualTo(Optional.of(StandardUserAnswerOption.YES_OR_NO.getAnswers()));
         });
     }
 
@@ -65,7 +65,7 @@ class TelegramControllerTest extends ModerationTest {
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/change_moderator_status")).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Эта команда не доступна вне главного меню");
-            assertThat(botAnswer.userAnswerOption().orElseThrow()).hasSize(0);
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).hasSize(0);
         });
     }
 
@@ -73,7 +73,7 @@ class TelegramControllerTest extends ModerationTest {
     void callCommandThrowException() {
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/change_moderator_status")).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Произошла непредвиденная ошибка");
-            assertThat(botAnswer.userAnswerOption().orElseThrow()).hasSize(0);
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).hasSize(0);
         });
     }
 
@@ -120,7 +120,7 @@ class TelegramControllerTest extends ModerationTest {
         createUser(ChatStatus.MAIN_MENU);
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/search_dish"))
-                .extracting(BotAnswer::messageText, BotAnswer::userAnswerOption)
+                .extracting(BotAnswer::messageText, BotAnswer::userAnswerOptions)
                 .containsOnly("Выберете тип искомого блюда", Optional.of(StandardUserAnswerOption.DISH_TYPES_WITH_ANY_CASE.getAnswers()));
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
@@ -134,7 +134,7 @@ class TelegramControllerTest extends ModerationTest {
         createUser(ChatStatus.MAIN_MENU);
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/search_recipe"))
-                .extracting(BotAnswer::messageText, BotAnswer::userAnswerOption)
+                .extracting(BotAnswer::messageText, BotAnswer::userAnswerOptions)
                 .containsOnly("Выберете тип искомого блюда", Optional.of(StandardUserAnswerOption.DISH_TYPES_WITH_ANY_CASE.getAnswers()));
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
@@ -148,7 +148,7 @@ class TelegramControllerTest extends ModerationTest {
         createUser(ChatStatus.MAIN_MENU);
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/add_dish"))
-                .extracting(BotAnswer::messageText, BotAnswer::userAnswerOption)
+                .extracting(BotAnswer::messageText, BotAnswer::userAnswerOptions)
                 .containsOnly("Введите название блюда", Optional.empty());
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()

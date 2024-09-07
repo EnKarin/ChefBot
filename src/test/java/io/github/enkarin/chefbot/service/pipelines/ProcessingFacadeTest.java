@@ -65,7 +65,7 @@ class ProcessingFacadeTest extends TestBase {
 
         assertThat(processingFacade.goToStatus(USER_ID, ChatStatus.APPROVE_BACK_TO_MAIN_MENU)).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Вы хотите вернуться в главное меню? Весь прогресс текущей операции будет утерян.");
-            assertThat(botAnswer.userAnswerOption().orElseThrow()).isEqualTo(YES_OR_NO.getAnswers());
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).isEqualTo(YES_OR_NO.getAnswers());
         });
 
         assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.APPROVE_BACK_TO_MAIN_MENU);
@@ -95,7 +95,7 @@ class ProcessingFacadeTest extends TestBase {
         initDishes();
 
         assertThat(processingFacade.goToStatus(USER_ID, status))
-                .extracting(BotAnswer::messageText, BotAnswer::userAnswerOption)
+                .extracting(BotAnswer::messageText, BotAnswer::userAnswerOptions)
                 .containsOnly(messageText, Optional.of(userAnswerOption.getAnswers()));
     }
 

@@ -119,6 +119,11 @@ public class DishService {
                 .orElseThrow(DishesNotFoundException::new));
     }
 
+    @Transactional
+    public void putNonPublishFlagForEditableDish(final long userId) {
+        findEditableDish(userId).setPublished(false);
+    }
+
     private Dish findEditableDish(final long userId) {
         return userService.findUser(userId).getEditabledDish();
     }

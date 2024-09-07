@@ -12,7 +12,7 @@ public final class FormatedReplyKeyboardMarkup extends ReplyKeyboardMarkup {
     @Serial
     private static final long serialVersionUID = 3790890795798913977L;
 
-    public FormatedReplyKeyboardMarkup(final String[] answers) {
+    public FormatedReplyKeyboardMarkup(final String... answers) {
         setOneTimeKeyboard(true);
         setResizeKeyboard(true);
         setIsPersistent(true);

@@ -28,26 +28,34 @@ public class TelegramController {
     public BotAnswer executeWorkerCommand(final long userId, final String text) {
         try {
             if (userService.getChatStatus(userId) == ChatStatus.MAIN_MENU) {
-                return switch (text) {
-                    case "/back_to_main_menu" -> new BotAnswer("Вы уже в главном меню");
-                    case "/search_dish" -> processingFacade.goToStatus(userId, ChatStatus.SELECT_DISH_TYPE);
-                    case "/search_recipe" -> processingFacade.goToStatus(userId, ChatStatus.SELECT_DISH_TYPE_WITH_RECIPE_SEARCH);
-                    case "/add_dish" -> processingFacade.goToStatus(userId, ChatStatus.NEW_DISH_NAME);
-                    case "/undo" -> new BotAnswer("Эта команда не доступна в главном меню");
-                    case "/enriching_recipes" -> processingFacade.goToStatus(userId, ChatStatus.ENRICHING_RECIPES);
-                    default -> new BotAnswer("Указанной команды не существует");
-                };
+                return executeCommandFromMainMenu(userId, text);
             } else {
-                return switch (text) {
-                    case "/back_to_main_menu" -> processingFacade.goToStatus(userId, ChatStatus.APPROVE_BACK_TO_MAIN_MENU);
-                    case "/undo" -> processingFacade.undo(userId);
-                    default -> new BotAnswer("Эта команда не доступна вне главного меню");
-                };
+                return executeCommandNotFromMainMenu(userId, text);
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             log.error(e.toString());
             return new BotAnswer("Произошла непредвиденная ошибка");
         }
+    }
+
+    private BotAnswer executeCommandNotFromMainMenu(final long userId, final String text) {
+        return switch (text) {
+            case "/back_to_main_menu" -> processingFacade.goToStatus(userId, ChatStatus.APPROVE_BACK_TO_MAIN_MENU);
+            case "/undo" -> processingFacade.undo(userId);
+            default -> new BotAnswer("Эта команда не доступна вне главного меню");
+        };
+    }
+
+    private BotAnswer executeCommandFromMainMenu(final long userId, final String text) {
+        return switch (text) {
+            case "/back_to_main_menu" -> new BotAnswer("Вы уже в главном меню");
+            case "/search_dish" -> processingFacade.goToStatus(userId, ChatStatus.SELECT_DISH_TYPE);
+            case "/search_recipe" -> processingFacade.goToStatus(userId, ChatStatus.SELECT_DISH_TYPE_WITH_RECIPE_SEARCH);
+            case "/add_dish" -> processingFacade.goToStatus(userId, ChatStatus.NEW_DISH_NAME);
+            case "/undo" -> new BotAnswer("Эта команда не доступна в главном меню");
+            case "/enriching_recipes" -> processingFacade.goToStatus(userId, ChatStatus.ENRICHING_RECIPES);
+            default -> new BotAnswer("Указанной команды не существует");
+        };
     }
 
     public BotAnswer processingNonCommandInput(final long userId, final String text) {

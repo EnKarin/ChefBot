@@ -15,7 +15,7 @@ public class ProcessingSearchDishTypeWithFindRecipe implements ProcessingService
     private final SearchFilterService filterService;
 
     @Override
-    public ChatStatus execute(long userId, String text) {
+    public ChatStatus execute(final long userId, final String text) {
         filterService.createSearchFilterForFindRecipe(userId);
         try {
             filterService.putDishType(userId, DishType.parse(text));
@@ -26,7 +26,7 @@ public class ProcessingSearchDishTypeWithFindRecipe implements ProcessingService
     }
 
     @Override
-    public BotAnswer getMessageForUser(long userId) {
+    public BotAnswer getMessageForUser(final long userId) {
         return new BotAnswer("Выберете тип искомого блюда", StandardUserAnswerOption.DISH_TYPES_WITH_ANY_CASE);
     }
 
