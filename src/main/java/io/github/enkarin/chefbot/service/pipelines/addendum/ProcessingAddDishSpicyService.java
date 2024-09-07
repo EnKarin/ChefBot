@@ -2,7 +2,7 @@ package io.github.enkarin.chefbot.service.pipelines.addendum;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.enums.ChatStatus;
-import io.github.enkarin.chefbot.enums.UserAnswerOption;
+import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.service.pipelines.ProcessingService;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +30,7 @@ public class ProcessingAddDishSpicyService implements ProcessingService {
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return BotAnswer.builder()
-                .userAnswerOption(UserAnswerOption.YES_OR_NO)
-                .messageText("Блюдо острое?")
-                .build();
+        return new BotAnswer("Блюдо острое?", StandardUserAnswerOption.YES_OR_NO);
     }
 
     @Override

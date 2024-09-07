@@ -2,7 +2,7 @@ package io.github.enkarin.chefbot.service.pipelines.addendum;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.enums.ChatStatus;
-import io.github.enkarin.chefbot.enums.UserAnswerOption;
+import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.service.pipelines.ProcessingService;
@@ -28,10 +28,7 @@ public class ProcessingAddDishCuisineService implements ProcessingService {
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return BotAnswer.builder()
-                .userAnswerOption(UserAnswerOption.CUISINES)
-                .messageText("Блюдо какой кухни вы добавляете?")
-                .build();
+        return new BotAnswer("Блюдо какой кухни вы добавляете?", StandardUserAnswerOption.CUISINES);
     }
 
     @Override

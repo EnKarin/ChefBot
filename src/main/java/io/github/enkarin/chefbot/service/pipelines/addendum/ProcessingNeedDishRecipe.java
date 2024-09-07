@@ -2,7 +2,7 @@ package io.github.enkarin.chefbot.service.pipelines.addendum;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.enums.ChatStatus;
-import io.github.enkarin.chefbot.enums.UserAnswerOption;
+import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.service.pipelines.ProcessingService;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +21,7 @@ public class ProcessingNeedDishRecipe implements ProcessingService {
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return new BotAnswer("Желаете добавить рецепт приготовления блюда?", UserAnswerOption.YES_OR_NO);
+        return new BotAnswer("Желаете добавить рецепт приготовления блюда?", StandardUserAnswerOption.YES_OR_NO);
     }
 
     @Override

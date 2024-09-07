@@ -2,18 +2,18 @@ package io.github.enkarin.chefbot.service.pipelines.addendum;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.enums.ChatStatus;
-import io.github.enkarin.chefbot.enums.UserAnswerOption;
+import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.service.ModerationService;
 import io.github.enkarin.chefbot.service.pipelines.ProcessingService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
 
 @Service
+@RequiredArgsConstructor
 public class ProcessingAddDishNeedPublishService implements ProcessingService {
-    @Autowired
-    private ModerationService moderationService;
+    private final ModerationService moderationService;
 
     @Override
     public ChatStatus execute(final long userId, final String text) {
@@ -33,7 +33,7 @@ public class ProcessingAddDishNeedPublishService implements ProcessingService {
                 Хотите опубликовать это блюдо?
                 Когда оно пройдёт модерацию, то станет доступно всем пользователям.
                 Блюдо останется доступно вам вне зависимости от результата модерации.
-                """, UserAnswerOption.YES_OR_NO);
+                """, StandardUserAnswerOption.YES_OR_NO);
     }
 
     @Override

@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @RequiredArgsConstructor
-public enum UserAnswerOption {
+public enum StandardUserAnswerOption {
     NONE(null),
     DEFAULT(null),
     YES_OR_NO(new String[]{"Да", "Нет"}),

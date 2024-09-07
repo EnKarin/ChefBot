@@ -6,6 +6,7 @@ import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.exceptions.DishNameAlreadyExistsInCurrentUserException;
+import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
 import io.github.enkarin.chefbot.repository.DishRepository;
 import io.github.enkarin.chefbot.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -73,7 +74,6 @@ public class DishService {
         dish.setSpicy(true);
     }
 
-
     @Transactional
     public void putDishType(final long userId, final DishType dishType) {
         final Dish dish = findEditableDish(userId);
@@ -101,6 +101,22 @@ public class DishService {
     public void putDishRecipe(final long userId, final String recipe) {
         final Dish dish = findEditableDish(userId);
         dish.setRecipe(recipe);
+    }
+
+    public String[] findDishesWithoutRecipeForUser(final long userId) {
+        return userService.findUser(userId).getDishes().stream()
+                .limit(10)
+                .map(Dish::getDishName)
+                .toArray(String[]::new);
+    }
+
+    @Transactional
+    public void putEditableDish(final long userId, final String dishName) {
+        final User user = userService.findUser(userId);
+        user.setEditabledDish(user.getDishes().stream()
+                .filter(dish -> dish.getDishName().equalsIgnoreCase(dishName))
+                .findAny()
+                .orElseThrow(DishesNotFoundException::new));
     }
 
     private Dish findEditableDish(final long userId) {

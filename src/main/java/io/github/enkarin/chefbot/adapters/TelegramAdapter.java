@@ -5,7 +5,6 @@ import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.dto.ModerationDishDto;
 import io.github.enkarin.chefbot.dto.ModerationRequestMessageDto;
 import io.github.enkarin.chefbot.dto.ModerationResultDto;
-import io.github.enkarin.chefbot.enums.UserAnswerOption;
 import io.github.enkarin.chefbot.uicomponents.FormatedReplyKeyboardMarkup;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -109,11 +108,11 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
     private void send(final long chatId, final BotAnswer botAnswer) {
         try {
             final SendMessage sendMessage = defaultConfigurationMessage(chatId, botAnswer.messageText());
-            if (botAnswer.userAnswerOption() != UserAnswerOption.DEFAULT) {
-                sendMessage.setReplyMarkup(botAnswer.userAnswerOption() == UserAnswerOption.NONE
-                        ? new ReplyKeyboardRemove(true)
-                        : new FormatedReplyKeyboardMarkup(botAnswer.userAnswerOption()));
-            }
+            botAnswer.userAnswerOption().ifPresentOrElse(userAnswer -> {
+                if (userAnswer.length != 0) {
+                    sendMessage.setReplyMarkup(new FormatedReplyKeyboardMarkup(userAnswer));
+                }
+            }, () -> sendMessage.setReplyMarkup(new ReplyKeyboardRemove(true)));
             execute(sendMessage);
         } catch (Exception e) {
             log.error(e.toString());
