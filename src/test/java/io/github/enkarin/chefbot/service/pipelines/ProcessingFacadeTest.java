@@ -84,14 +84,14 @@ class ProcessingFacadeTest extends TestBase {
     @ParameterizedTest
     @MethodSource("provideStatusAndAnswer")
     void goToStatusShouldWork(final ChatStatus status, final String messageText, final UserAnswerOption userAnswerOption) {
-        final SearchFilter searchFilter = new SearchFilter();
+        SearchFilter searchFilter = new SearchFilter();
         searchFilter.setSpicy(false);
-        final SearchFilter filter = searchFilterRepository.save(searchFilter);
+        searchFilter = searchFilterRepository.save(searchFilter);
         userRepository.save(User.builder()
                 .id(USER_ID)
                 .chatId(CHAT_ID)
                 .chatStatus(ChatStatus.MAIN_MENU)
-                .searchFilter(filter)
+                .searchFilter(searchFilter)
                 .build());
         initDishes();
 
