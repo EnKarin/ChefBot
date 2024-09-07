@@ -16,9 +16,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static io.github.enkarin.chefbot.enums.UserAnswerOption.DISH_TYPES_WITH_ANY_CASE;
@@ -83,19 +81,16 @@ class ProcessingFacadeTest extends TestBase {
         assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
     }
 
-    @Transactional
     @ParameterizedTest
     @MethodSource("provideStatusAndAnswer")
     void goToStatusShouldWork(final ChatStatus status, final String messageText, final UserAnswerOption userAnswerOption) {
         SearchFilter searchFilter = new SearchFilter();
         searchFilter.setSpicy(false);
-        searchFilter = searchFilterRepository.save(searchFilter);
         userRepository.save(User.builder()
                 .id(USER_ID)
                 .chatId(CHAT_ID)
                 .chatStatus(ChatStatus.MAIN_MENU)
-                .searchFilter(searchFilter)
-                .dishes(Set.of())
+                .searchFilter(searchFilterRepository.save(searchFilter))
                 .build());
         initDishes();
 
