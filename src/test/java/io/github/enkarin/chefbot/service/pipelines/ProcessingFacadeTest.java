@@ -18,6 +18,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static io.github.enkarin.chefbot.enums.UserAnswerOption.DISH_TYPES_WITH_ANY_CASE;
@@ -49,10 +50,10 @@ class ProcessingFacadeTest extends TestBase {
 
         assertThat(processingFacade.execute(USER_ID, "aboba").messageText())
                 .isEqualTo("""
-                Хотите опубликовать это блюдо?
-                Когда оно пройдёт модерацию, то станет доступно всем пользователям.
-                Блюдо останется доступно вам вне зависимости от результата модерации.
-                """);
+                        Хотите опубликовать это блюдо?
+                        Когда оно пройдёт модерацию, то станет доступно всем пользователям.
+                        Блюдо останется доступно вам вне зависимости от результата модерации.
+                        """);
         assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.NEW_DISH_NEED_PUBLISH);
     }
 
@@ -94,6 +95,7 @@ class ProcessingFacadeTest extends TestBase {
                 .chatId(CHAT_ID)
                 .chatStatus(ChatStatus.MAIN_MENU)
                 .searchFilter(searchFilter)
+                .dishes(Set.of())
                 .build());
         initDishes();
 
