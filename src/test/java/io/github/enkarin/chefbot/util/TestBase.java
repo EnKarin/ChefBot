@@ -14,6 +14,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -39,12 +40,12 @@ public class TestBase {
     protected DishRepository dishRepository;
     @Autowired
     protected ProductRepository productRepository;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @AfterEach
     void clear() {
-        userRepository.deleteAll();
-        dishRepository.deleteAll();
-        productRepository.deleteAll();
+        jdbcTemplate.execute("TRUNCATE t_user, t_dish, t_product, moderation_request, search_filter, moderation_request_message, t_dish_product CASCADE");
     }
 
     protected void createUser(final ChatStatus status) {

@@ -2,14 +2,17 @@ package io.github.enkarin.chefbot.service;
 
 import io.github.enkarin.chefbot.dto.ModerationDishDto;
 import io.github.enkarin.chefbot.dto.ModerationRequestMessageDto;
+import io.github.enkarin.chefbot.dto.ModerationResultDto;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.ModerationRequest;
 import io.github.enkarin.chefbot.entity.ModerationRequestMessage;
+import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.mappers.ModerationRequestMessageEntityDtoMapper;
 import io.github.enkarin.chefbot.util.ModerationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
 import java.util.Set;
@@ -26,6 +29,9 @@ class ModerationServiceTest extends ModerationTest {
 
     @Autowired
     private DishService dishService;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void init() {
@@ -52,8 +58,6 @@ class ModerationServiceTest extends ModerationTest {
         moderationService.addRequestMessages(moderationRequestsId[0], messageDtoSet);
 
         assertThat(moderationRequestMessageRepository.findAll()).extracting(ModerationRequestMessage::getChatId).contains(130L, 133L, 10L, 11L);
-        assertThat(moderationService.declineRequest(moderationRequestsId[0]).messageForRemove()).extracting(ModerationRequestMessageDto::chatId)
-                .containsOnly(130L, 133L, 10L, 11L);
     }
 
     @Test
@@ -83,7 +87,7 @@ class ModerationServiceTest extends ModerationTest {
     @Test
     void approveRequest() {
         assertThat(moderationService.approveRequest(moderationRequestsId[1])).satisfies(moderationResultDto -> {
-            assertThat(moderationResultDto.approve()).isTrue();
+            assertThat(moderationResultDto.isApprove()).isTrue();
             assertThat(moderationResultDto.dishName()).isEqualTo("secondDish");
             assertThat(moderationResultDto.ownerChat()).isEqualTo(CHAT_ID);
             assertThat(moderationResultDto.messageForRemove()).extracting(ModerationRequestMessageDto::chatId).containsOnly(20L, 22L);
@@ -97,16 +101,31 @@ class ModerationServiceTest extends ModerationTest {
 
     @Test
     void declineRequest() {
-        assertThat(moderationService.declineRequest(moderationRequestsId[2])).satisfies(moderationResultDto -> {
-            assertThat(moderationResultDto.approve()).isFalse();
-            assertThat(moderationResultDto.dishName()).isEqualTo("thirdDish");
-            assertThat(moderationResultDto.ownerChat()).isEqualTo(CHAT_ID);
-            assertThat(moderationResultDto.messageForRemove()).extracting(ModerationRequestMessageDto::chatId).containsOnly(30L, 33L);
-        });
-        assertThat(moderationRequestRepository.existsById(moderationRequestsId[2])).isFalse();
+        createUser(ChatStatus.MAIN_MENU);
+        moderationService.startModerate(USER_ID, moderationRequestsId[2]);
+
+        moderationService.declineRequest(USER_ID, "Bad request");
+
+        assertThat(userService.findUser(USER_ID).getModerableDish()).isNull();
+        assertThat(moderationRequestRepository.findById(moderationRequestsId[2]).orElseThrow().getDeclineCause()).isEqualTo("Bad request");
         assertThat(dishRepository.findAll()).anySatisfy(dish -> {
             assertThat(dish.getDishName()).isEqualTo("thirdDish");
             assertThat(dish.isPublished()).isFalse();
         });
+    }
+
+    @Test
+    void startModerate() {
+        createUser(ChatStatus.MAIN_MENU);
+        moderationService.startModerate(USER_ID, moderationRequestsId[3]);
+
+        assertThat(jdbcTemplate.queryForObject("select dish_name from moderation_request inner join t_dish on moderation_dish=dish_id where mr_id=?",
+                String.class,
+                moderationRequestsId[3])).isEqualTo("fourthDish");
+    }
+
+    @Test
+    void finaAndRemoveDeclineRequests() {
+        assertThat(moderationService.findAndRemoveDeclinedRequests()).extracting(ModerationResultDto::declineCause).containsOnly("Bad dish");
     }
 }

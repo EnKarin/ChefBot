@@ -2,7 +2,6 @@ package io.github.enkarin.chefbot.service.pipelines;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.entity.Product;
-import io.github.enkarin.chefbot.entity.SearchFilter;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.DishType;
@@ -10,6 +9,7 @@ import io.github.enkarin.chefbot.enums.UserAnswerOption;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
 import io.github.enkarin.chefbot.repository.SearchFilterRepository;
+import io.github.enkarin.chefbot.service.SearchFilterService;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,6 +33,9 @@ class ProcessingFacadeTest extends TestBase {
     @Autowired
     private SearchFilterRepository searchFilterRepository;
 
+    @Autowired
+    private SearchFilterService searchFilterService;
+
     @Test
     void execute() {
         userRepository.save(User.builder().id(USER_ID).chatId(CHAT_ID).username(USERNAME).chatStatus(ChatStatus.APPROVE_BACK_TO_MAIN_MENU).build());
@@ -48,10 +51,10 @@ class ProcessingFacadeTest extends TestBase {
 
         assertThat(processingFacade.execute(USER_ID, "aboba").messageText())
                 .isEqualTo("""
-                Хотите опубликовать это блюдо?
-                Когда оно пройдёт модерацию, то станет доступно всем пользователям.
-                Блюдо останется доступно вам вне зависимости от результата модерации.
-                """);
+                        Хотите опубликовать это блюдо?
+                        Когда оно пройдёт модерацию, то станет доступно всем пользователям.
+                        Блюдо останется доступно вам вне зависимости от результата модерации.
+                        """);
         assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.NEW_DISH_NEED_PUBLISH);
     }
 
@@ -84,14 +87,9 @@ class ProcessingFacadeTest extends TestBase {
     @ParameterizedTest
     @MethodSource("provideStatusAndAnswer")
     void goToStatusShouldWork(final ChatStatus status, final String messageText, final UserAnswerOption userAnswerOption) {
-        final SearchFilter searchFilter = new SearchFilter();
-        searchFilter.setSpicy(false);
-        userRepository.save(User.builder()
-                .id(USER_ID)
-                .chatId(CHAT_ID)
-                .chatStatus(ChatStatus.MAIN_MENU)
-                .searchFilter(searchFilterRepository.save(searchFilter))
-                .build());
+        createUser(status);
+        searchFilterService.createSearchFilter(USER_ID);
+        searchFilterService.putSpicySign(USER_ID, false);
         initDishes();
 
         assertThat(processingFacade.goToStatus(USER_ID, status))

@@ -5,6 +5,7 @@ import io.github.enkarin.chefbot.dto.ModerationRequestMessageDto;
 import io.github.enkarin.chefbot.dto.ModerationResultDto;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.ModerationRequest;
+import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.mappers.DishEntityDtoMapper;
 import io.github.enkarin.chefbot.mappers.ModerationRequestMessageEntityDtoMapper;
 import io.github.enkarin.chefbot.repository.ModerationRequestMessageRepository;
@@ -47,7 +48,7 @@ public class ModerationService {
     }
 
     Set<ModerationDishDto> findAllRequests() {
-        return findAllRequests(moderationRequestRepository.findAll());
+        return findAllRequests(moderationRequestRepository.findByDeclineCauseIsNull());
     }
 
     private Set<ModerationDishDto> findAllRequests(final List<ModerationRequest> moderationRequests) {
@@ -70,12 +71,27 @@ public class ModerationService {
         return resultDto;
     }
 
-    public ModerationResultDto declineRequest(final long requestId) {
-        final ModerationRequest moderationRequest = moderationRequestRepository.findById(requestId).orElseThrow();
-        final ModerationResultDto resultDto = ModerationResultDto.createDeclineResult(moderationRequest.getModerationDish().getDishName(),
-                moderationRequest.getModerationDish().getOwner().getChatId(),
-                moderationRequest.getModerationRequestMessages().stream().map(moderationRequestMessageEntityDtoMapper::entityToDto).collect(Collectors.toSet()));
-        moderationRequestRepository.delete(moderationRequest);
-        return resultDto;
+    public void declineRequest(final long userId, final String cause) {
+        final User user = userService.findUser(userId);
+        final ModerationRequest moderationRequest = user.getModerableDish().getModerationRequest();
+        moderationRequest.setDeclineCause(cause);
+        user.setModerableDish(null);
+    }
+
+    public List<ModerationResultDto> findAndRemoveDeclinedRequests() {
+        final List<ModerationRequest> declinedRequest = moderationRequestRepository.findByDeclineCauseIsNotNull();
+        final List<ModerationResultDto> result = declinedRequest.stream()
+                .map(moderationRequest -> ModerationResultDto.createDeclineResult(moderationRequest.getModerationDish().getDishName(),
+                        moderationRequest.getModerationDish().getOwner().getChatId(),
+                        moderationRequest.getModerationRequestMessages().stream().map(moderationRequestMessageEntityDtoMapper::entityToDto).collect(Collectors.toSet()),
+                        moderationRequest.getDeclineCause()))
+                .toList();
+        moderationRequestRepository.deleteAll(declinedRequest);
+        return result;
+    }
+
+    public void startModerate(final long userId, final long requestId) {
+        final User user = userService.findUser(userId);
+        user.setModerableDish(moderationRequestRepository.findById(requestId).orElseThrow().getModerationDish());
     }
 }

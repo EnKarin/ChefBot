@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.MessageEntity;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.List;
 import java.util.Set;
@@ -43,7 +44,7 @@ class TelegramAdapterTest extends ModerationTest {
         final Message message = new Message();
         message.setText("Да");
         message.setChat(new Chat(USER_ID, "test chat"));
-        final org.telegram.telegrambots.meta.api.objects.User user = new org.telegram.telegrambots.meta.api.objects.User();
+        final User user = new User();
         user.setId(USER_ID);
         user.setUserName(USERNAME);
         message.setFrom(user);
@@ -60,7 +61,7 @@ class TelegramAdapterTest extends ModerationTest {
         message.setChat(new Chat(USER_ID, "test"));
         message.setText(text);
         message.setEntities(List.of(new MessageEntity("bot_command", 0, 0)));
-        final org.telegram.telegrambots.meta.api.objects.User user = new org.telegram.telegrambots.meta.api.objects.User();
+        final User user = new User();
         user.setId(USER_ID);
         user.setUserName(USERNAME);
         message.setFrom(user);
@@ -93,7 +94,8 @@ class TelegramAdapterTest extends ModerationTest {
 
         telegramAdapter.onUpdateReceived(createUpdateWithCallbackQuery("D" + moderationRequestsId[1]));
 
-        assertThat(moderationRequestRepository.existsById(moderationRequestsId[1])).isFalse();
+        assertThat(moderationRequestRepository.existsById(moderationRequestsId[1])).isTrue();
+        assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.WRITE_DECLINE_MODERATION_REQUEST);
         assertThat(dishRepository.findAll()).anySatisfy(dish -> {
             assertThat(dish.getDishName()).isEqualTo("secondDish");
             assertThat(dish.isPublished()).isFalse();
@@ -104,6 +106,9 @@ class TelegramAdapterTest extends ModerationTest {
         final Update update = new Update();
         final CallbackQuery callbackQuery = new CallbackQuery();
         callbackQuery.setData(data);
+        final User user = new User();
+        user.setId(USER_ID);
+        callbackQuery.setFrom(user);
         update.setCallbackQuery(callbackQuery);
         return update;
     }

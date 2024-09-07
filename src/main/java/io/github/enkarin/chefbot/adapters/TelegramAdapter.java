@@ -15,6 +15,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -65,30 +66,33 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
                 }
             }
         } else {
-            final String callbackData = update.getCallbackQuery().getData();
-            final ModerationResultDto moderationResultDto = callbackData.startsWith("A")
-                    ? telegramController.approveModerationRequest(callbackData.substring(1))
-                    : telegramController.declineModerationRequest(callbackData.substring(1));
-            if (moderationResultDto.approve()) {
-                sendApproveResultToOwner(moderationResultDto.ownerChat(), moderationResultDto.dishName());
+            final CallbackQuery callbackQuery = update.getCallbackQuery();
+            final String callbackData = callbackQuery.getData();
+            if (callbackData.startsWith("A")) {
+                final ModerationResultDto moderationResultDto = telegramController.approveModerationRequest(callbackData.substring(1));
+                sendApproveResultToOwner(moderationResultDto);
+                moderationResultDto.messageForRemove().forEach(this::deleteOddRequestMessage);
             } else {
-                sendDeclineResultToOwner(moderationResultDto.ownerChat(), moderationResultDto.dishName());
+                telegramController.declineModerationRequest(callbackQuery.getFrom().getId(), callbackData.substring(1));
             }
-            moderationResultDto.messageForRemove().forEach(this::deleteOddRequestMessage);
         }
     }
 
-    private void sendApproveResultToOwner(final long chatId, final String dishName) {
+    private void sendApproveResultToOwner(final ModerationResultDto moderationResultDto) {
         try {
-            execute(defaultConfigurationMessage(chatId, "Блюдо ".concat(dishName).concat(" прошло модерацию и успешно опубликовано!")));
+            execute(defaultConfigurationMessage(moderationResultDto.ownerChat(),
+                    "Блюдо ".concat(moderationResultDto.dishName()).concat(" прошло модерацию и успешно опубликовано!")));
         } catch (Exception e) {
             log.error(e.toString());
         }
     }
 
-    private void sendDeclineResultToOwner(final long chatId, final String dishName) {
+    public void sendDeclineResultToOwner(final ModerationResultDto moderationResultDto) {
         try {
-            execute(defaultConfigurationMessage(chatId, "Блюдо ".concat(dishName).concat(" не прошло модерацию, однако оно останется доступным для вас")));
+            execute(defaultConfigurationMessage(moderationResultDto.ownerChat(), "Блюдо "
+                    .concat(moderationResultDto.dishName())
+                    .concat(" не прошло модерацию по причине:\n")
+                    .concat(moderationResultDto.declineCause())));
         } catch (Exception e) {
             log.error(e.toString());
         }
