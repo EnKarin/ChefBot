@@ -1,7 +1,9 @@
 package io.github.enkarin.chefbot.service.pipelines;
 
 import io.github.enkarin.chefbot.enums.ChatStatus;
+import io.github.enkarin.chefbot.repository.SearchFilterRepository;
 import io.github.enkarin.chefbot.service.DishService;
+import io.github.enkarin.chefbot.service.SearchFilterService;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,12 @@ class ApproveBackToMainMenuServiceTest extends TestBase {
 
     @Autowired
     private DishService dishService;
+
+    @Autowired
+    private SearchFilterService searchFilterService;
+
+    @Autowired
+    private SearchFilterRepository searchFilterRepository;
 
     @BeforeEach
     void initUser() {
@@ -47,5 +55,14 @@ class ApproveBackToMainMenuServiceTest extends TestBase {
         userService.switchToNewStatus(USER_ID, ChatStatus.APPROVE_BACK_TO_MAIN_MENU);
 
         assertThat(approveBackToMainMenuService.execute(USER_ID, "Нет")).isEqualTo(ChatStatus.NEW_DISH_NAME);
+    }
+
+    @Test
+    void executeWithExistsSearchFilter() {
+        createUser(ChatStatus.APPROVE_BACK_TO_MAIN_MENU);
+        searchFilterService.createSearchFilter(USER_ID);
+
+        assertThat(approveBackToMainMenuService.execute(USER_ID, "да")).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(searchFilterRepository.count()).isEqualTo(0);
     }
 }
