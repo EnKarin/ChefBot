@@ -16,12 +16,16 @@ public class ExistsDishPutRecipeService implements ProcessingService {
 
     @Override
     public ChatStatus execute(final long userId, final String text) {
-        dishService.putDishRecipe(userId, text);
-        if (dishService.editableDishWasPublish(userId)) {
-            dishService.putNonPublishFlagForEditableDish(userId);
-            moderationService.createModerationRequest(userId);
+        if(text.length() <= 2048) {
+            dishService.putDishRecipe(userId, text);
+            if (dishService.editableDishWasPublish(userId)) {
+                dishService.putNonPublishFlagForEditableDish(userId);
+                moderationService.createModerationRequest(userId);
+            }
+            return ChatStatus.MAIN_MENU;
+        } else {
+            return getCurrentStatus();
         }
-        return ChatStatus.MAIN_MENU;
     }
 
     @Override
