@@ -160,4 +160,25 @@ class DishServiceTest extends TestBase {
 
         assertThat(userService.findUser(USER_ID).getEditabledDish().getDishName()).isEqualTo("fifth");
     }
+
+    @Test
+    void putNonPublishFlag() {
+        dishService.putNonPublishFlagForEditableDish(USER_ID);
+
+        assertThat(userService.findUser(USER_ID).getEditabledDish().isPublished()).isFalse();
+    }
+
+    @Test
+    void findFalsePublishFlag() {
+        assertThat(dishService.editableDishWasPublish(USER_ID)).isFalse();
+    }
+
+    @Test
+    void findTruePublishFlag() {
+        final Dish dish = userService.findUser(USER_ID).getEditabledDish();
+        dish.setPublished(true);
+        dishRepository.save(dish);
+
+        assertThat(dishService.editableDishWasPublish(USER_ID)).isTrue();
+    }
 }
