@@ -20,6 +20,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @Service
 @Transactional(readOnly = true)
@@ -51,8 +52,10 @@ public class SearchFilterService {
     public void deleteSearchFilter(final long ownerId) {
         final User user = userService.findUser(ownerId);
         final SearchFilter searchFilter = user.getSearchFilter();
-        user.setSearchFilter(null);
-        searchFilterRepository.delete(searchFilter);
+        if (nonNull(searchFilter)) {
+            user.setSearchFilter(null);
+            searchFilterRepository.delete(searchFilter);
+        }
     }
 
     @Transactional
