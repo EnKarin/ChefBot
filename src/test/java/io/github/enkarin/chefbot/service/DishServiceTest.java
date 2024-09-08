@@ -145,4 +145,19 @@ class DishServiceTest extends TestBase {
 
         assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish().getRecipe()).isEqualTo("Тушить два часа");
     }
+
+    @Test
+    void findDishesWithoutRecipeForUser() {
+        initDishes();
+
+        assertThat(dishService.findDishNamesWithoutRecipeForUser(USER_ID)).containsOnly("fifth", "sixth", "Рагу");
+    }
+
+    @Test
+    void putEditableDish() {
+        initDishes();
+        dishService.putEditableDish(USER_ID, "fifth");
+
+        assertThat(userService.findUser(USER_ID).getEditabledDish().getDishName()).isEqualTo("fifth");
+    }
 }

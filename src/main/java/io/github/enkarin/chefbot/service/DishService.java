@@ -103,8 +103,9 @@ public class DishService {
         dish.setRecipe(recipe);
     }
 
-    public String[] findDishesWithoutRecipeForUser(final long userId) {
+    public String[] findDishNamesWithoutRecipeForUser(final long userId) {
         return userService.findUser(userId).getDishes().stream()
+                .filter(dish -> isNull(dish.getRecipe()))
                 .limit(10)
                 .map(Dish::getDishName)
                 .toArray(String[]::new);

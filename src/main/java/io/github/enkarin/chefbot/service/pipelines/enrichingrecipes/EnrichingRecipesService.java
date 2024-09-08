@@ -26,7 +26,7 @@ public class EnrichingRecipesService implements ProcessingService {
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return new BotAnswer("Выберете добавленное вами ранее блюдо для добавления рецепта", dishService.findDishesWithoutRecipeForUser(userId));
+        return new BotAnswer("Выберете добавленное вами ранее блюдо для добавления рецепта", dishService.findDishNamesWithoutRecipeForUser(userId));
     }
 
     @Override
