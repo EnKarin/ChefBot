@@ -307,4 +307,86 @@ class SearchFilterServiceTest extends TestBase {
             assertThat(searchFilter.isNeedGetRecipe()).isTrue();
         });
     }
+
+    @Test
+    void searchPublishDishWithNeedRecipeFlagReturnDishOnlyWithRecipe() {
+        searchFilterService.createSearchFilter(USER_ID);
+        final SearchFilter searchFilter = searchFilterRepository.findAll().get(0);
+        searchFilter.setSearchFromPublicDish(true);
+        searchFilter.setNeedGetRecipe(true);
+        searchFilter.setCuisine(WorldCuisine.ASIA);
+        searchFilterRepository.save(searchFilter);
+        initDishes();
+
+        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).allSatisfy(displayDishDto -> {
+            assertThat(displayDishDto).extracting(DisplayDishDto::getDishName).isEqualTo("first");
+            assertThat(displayDishDto.getProductsName()).containsOnly("firstProduct");
+            assertThat(displayDishDto.toString()).isEqualTo("""
+                    *first:*
+                    -firstProduct
+                    Рецепт приготовления:
+                    Тушить в казане""");
+        });
+    }
+
+    @Test
+    void searchPersonalDishWithNeedRecipeFlagReturnDishOnlyWithRecipe() {
+        searchFilterService.createSearchFilter(USER_ID);
+        final SearchFilter searchFilter = searchFilterRepository.findAll().get(0);
+        searchFilter.setSearchFromPublicDish(false);
+        searchFilter.setNeedGetRecipe(true);
+        searchFilterRepository.save(searchFilter);
+        initDishes();
+
+        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).allSatisfy(displayDishDto -> {
+            assertThat(displayDishDto).extracting(DisplayDishDto::getDishName).isEqualTo("seventh");
+            assertThat(displayDishDto.getProductsName()).containsOnly("seventhProduct");
+            assertThat(displayDishDto.toString()).isEqualTo("""
+                    *seventh:*
+                    -seventhProduct
+                    Рецепт приготовления:
+                    Дать настояться месяцок""");
+        });
+    }
+
+    @Test
+    void searchRandomPublishDishWithNeedRecipeFlagReturnDishOnlyWithRecipe() {
+        searchFilterService.createSearchFilter(USER_ID);
+        final SearchFilter searchFilter = searchFilterRepository.findAll().get(0);
+        searchFilter.setSearchFromPublicDish(true);
+        searchFilter.setNeedGetRecipe(true);
+        searchFilter.setCuisine(WorldCuisine.ASIA);
+        searchFilterRepository.save(searchFilter);
+        initDishes();
+
+        assertThat(searchFilterService.searchRandomDishWithCurrentFilter(USER_ID)).satisfies(displayDishDto -> {
+            assertThat(displayDishDto).extracting(DisplayDishDto::getDishName).isEqualTo("first");
+            assertThat(displayDishDto.getProductsName()).containsOnly("firstProduct");
+            assertThat(displayDishDto.toString()).isEqualTo("""
+                    *first:*
+                    -firstProduct
+                    Рецепт приготовления:
+                    Тушить в казане""");
+        });
+    }
+
+    @Test
+    void searchRandomPersonalDishWithNeedRecipeFlagReturnDishOnlyWithRecipe() {
+        searchFilterService.createSearchFilter(USER_ID);
+        final SearchFilter searchFilter = searchFilterRepository.findAll().get(0);
+        searchFilter.setSearchFromPublicDish(false);
+        searchFilter.setNeedGetRecipe(true);
+        searchFilterRepository.save(searchFilter);
+        initDishes();
+
+        assertThat(searchFilterService.searchRandomDishWithCurrentFilter(USER_ID)).satisfies(displayDishDto -> {
+            assertThat(displayDishDto).extracting(DisplayDishDto::getDishName).isEqualTo("seventh");
+            assertThat(displayDishDto.getProductsName()).containsOnly("seventhProduct");
+            assertThat(displayDishDto.toString()).isEqualTo("""
+                    *seventh:*
+                    -seventhProduct
+                    Рецепт приготовления:
+                    Дать настояться месяцок""");
+        });
+    }
 }

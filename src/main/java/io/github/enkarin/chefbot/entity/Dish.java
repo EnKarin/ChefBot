@@ -52,7 +52,7 @@ public class Dish implements Serializable {
     @Enumerated(EnumType.STRING)
     private WorldCuisine cuisine;
 
-    @Column(name = "recipe")
+    @Column(name = "recipe", length = 2048)
     private String recipe;
 
     @ManyToMany

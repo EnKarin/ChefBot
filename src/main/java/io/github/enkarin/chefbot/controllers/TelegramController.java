@@ -73,8 +73,8 @@ public class TelegramController {
         return moderationService.approveRequest(Long.parseLong(callbackData));
     }
 
-    public void declineModerationRequest(final long userId, final String callbackData) {
+    public BotAnswer declineModerationRequest(final long userId, final String callbackData) {
         moderationService.startModerate(userId, Long.parseLong(callbackData));
-        processingFacade.goToStatus(userId, ChatStatus.WRITE_DECLINE_MODERATION_REQUEST);
+        return processingFacade.goToStatus(userId, ChatStatus.WRITE_DECLINE_MODERATION_REQUEST);
     }
 }

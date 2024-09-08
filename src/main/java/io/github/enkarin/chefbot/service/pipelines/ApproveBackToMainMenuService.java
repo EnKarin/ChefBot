@@ -4,6 +4,7 @@ import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.service.DishService;
+import io.github.enkarin.chefbot.service.SearchFilterService;
 import io.github.enkarin.chefbot.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,12 +16,14 @@ import java.util.Locale;
 public class ApproveBackToMainMenuService implements ProcessingService {
     private final UserService userService;
     private final DishService dishService;
+    private final SearchFilterService searchFilterService;
 
     @Override
     public ChatStatus execute(final long userId, final String text) {
         return switch (text.toLowerCase(Locale.ROOT)) {
             case "да" -> {
-                dishService.deleteEditableDish(userId);
+                dishService.deleteEditableDishWhereBackToMainMenu(userId);
+                searchFilterService.deleteSearchFilter(userId);
                 yield ChatStatus.MAIN_MENU;
             }
             case "нет" -> userService.getPreviousChatStatus(userId);
