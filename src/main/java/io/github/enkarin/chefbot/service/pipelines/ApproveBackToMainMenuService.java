@@ -22,7 +22,7 @@ public class ApproveBackToMainMenuService implements ProcessingService {
     public ChatStatus execute(final long userId, final String text) {
         return switch (text.toLowerCase(Locale.ROOT)) {
             case "да" -> {
-                dishService.deleteEditableDish(userId);
+                dishService.deleteEditableDishWhereBackToMainMenu(userId);
                 searchFilterService.deleteSearchFilter(userId);
                 yield ChatStatus.MAIN_MENU;
             }

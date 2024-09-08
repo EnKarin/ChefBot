@@ -59,12 +59,14 @@ public class DishService {
     }
 
     @Transactional
-    public void deleteEditableDish(final long userId) {
+    public void deleteEditableDishWhereBackToMainMenu(final long userId) {
         final User user = userService.findUser(userId);
         final Dish deletedDish = user.getEditabledDish();
         if (Objects.nonNull(deletedDish)) {
             user.setEditabledDish(null);
-            dishRepository.delete(deletedDish);
+            if (user.getPreviousChatStatus().isNewDishStatus()) {
+                dishRepository.delete(deletedDish);
+            }
         }
     }
 

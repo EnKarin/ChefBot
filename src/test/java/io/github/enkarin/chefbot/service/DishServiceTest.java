@@ -1,7 +1,6 @@
 package io.github.enkarin.chefbot.service;
 
 import io.github.enkarin.chefbot.entity.Dish;
-import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
@@ -84,24 +83,35 @@ class DishServiceTest extends TestBase {
 
     @Test
     void deleteEditableDishShouldWork() {
-        dishService.deleteEditableDish(USER_ID);
+        userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_NAME);
+        userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_SPICY);
 
-        assertThat(userRepository.findById(USER_ID))
-                .isPresent()
-                .get()
-                .extracting(User::getEditabledDish, User::getChatStatus)
-                .containsOnly(null, ChatStatus.MAIN_MENU);
+        dishService.deleteEditableDishWhereBackToMainMenu(USER_ID);
+
+        assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish()).isNull();
         assertThat(dishRepository.count()).isEqualTo(0);
     }
 
     @Test
     void deleteEditableDishWithoutEditableDishShouldWork() {
-        dishService.deleteEditableDish(USER_ID);
+        userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_SPICY);
+        userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_NAME);
+        dishService.deleteEditableDishWhereBackToMainMenu(USER_ID);
 
-        dishService.deleteEditableDish(USER_ID);
+        dishService.deleteEditableDishWhereBackToMainMenu(USER_ID);
 
         assertThat(userService.findUser(USER_ID).getEditabledDish()).isNull();
         assertThat(dishRepository.count()).isEqualTo(0);
+    }
+
+    @Test
+    void deleteEditableDishForEditDishShouldNotDeleteDish() {
+        userService.switchToNewStatus(USER_ID, ChatStatus.ENRICHING_RECIPES);
+
+        dishService.deleteEditableDishWhereBackToMainMenu(USER_ID);
+
+        assertThat(userService.findUser(USER_ID).getEditabledDish()).isNull();
+        assertThat(dishRepository.count()).isEqualTo(1);
     }
 
     @Test

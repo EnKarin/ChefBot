@@ -43,6 +43,7 @@ class ApproveBackToMainMenuServiceTest extends TestBase {
     void executeWithYesShouldRemoveEditableDish() {
         userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
         dishService.initDishName(USER_ID, "Рагу");
+        userService.switchToNewStatus(USER_ID, ChatStatus.APPROVE_BACK_TO_MAIN_MENU);
 
         approveBackToMainMenuService.execute(USER_ID, "Да");
 
