@@ -16,7 +16,7 @@ public class ExistsDishPutRecipeService implements ProcessingService {
 
     @Override
     public ChatStatus execute(final long userId, final String text) {
-        if(text.length() <= 2048) {
+        if (text.length() <= 2048) {
             dishService.putDishRecipe(userId, text);
             if (dishService.editableDishWasPublish(userId)) {
                 dishService.putNonPublishFlagForEditableDish(userId);
