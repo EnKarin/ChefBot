@@ -33,10 +33,9 @@ public class ModerationRequestSender {
     private void sendRequests(final Set<ModerationDishDto> moderationDishDtoSet) {
         moderationDishDtoSet.forEach(moderationDishDto -> moderationService.addRequestMessages(moderationDishDto.getRequestId(),
                 adapter.sendModerationRequests(userService.getAllModeratorsWithoutCurrentUser(moderationDishDto.getOwnerChatId()), moderationDishDto)));
-        log.info("Was send " + moderationDishDtoSet.size() + " requests");
     }
 
-    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.MINUTES)
+    @Scheduled(fixedRate = 10, timeUnit = TimeUnit.SECONDS)
     void sendDeclineMessages() {
         moderationService.findAndRemoveDeclinedRequests().forEach(adapter::sendDeclineResultToOwner);
     }
