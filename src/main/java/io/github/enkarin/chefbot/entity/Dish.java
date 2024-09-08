@@ -52,6 +52,9 @@ public class Dish implements Serializable {
     @Enumerated(EnumType.STRING)
     private WorldCuisine cuisine;
 
+    @Column(name = "recipe")
+    private String recipe;
+
     @ManyToMany
     @JoinTable(
             name = "t_dish_product",

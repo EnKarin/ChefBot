@@ -3,7 +3,7 @@ package io.github.enkarin.chefbot.service.pipelines.search;
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.dto.DisplayDishDto;
 import io.github.enkarin.chefbot.enums.ChatStatus;
-import io.github.enkarin.chefbot.enums.UserAnswerOption;
+import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
 import io.github.enkarin.chefbot.service.SearchFilterService;
 import io.github.enkarin.chefbot.service.UserService;
@@ -41,10 +41,7 @@ public class ProcessingExecuteSearchService implements ProcessingService {
         if (StringUtils.isEmpty(dishes)) {
             throw new DishesNotFoundException();
         }
-        return BotAnswer.builder()
-                .userAnswerOption(UserAnswerOption.MORE_OR_STOP)
-                .messageText(dishes)
-                .build();
+        return new BotAnswer(dishes, StandardUserAnswerOption.MORE_OR_STOP);
     }
 
     @Override

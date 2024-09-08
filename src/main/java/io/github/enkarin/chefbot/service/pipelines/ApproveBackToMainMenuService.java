@@ -2,7 +2,7 @@ package io.github.enkarin.chefbot.service.pipelines;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.enums.ChatStatus;
-import io.github.enkarin.chefbot.enums.UserAnswerOption;
+import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class ApproveBackToMainMenuService implements ProcessingService {
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return new BotAnswer("Вы хотите вернуться в главное меню? Весь прогресс текущей операции будет утерян.", UserAnswerOption.YES_OR_NO);
+        return new BotAnswer("Вы хотите вернуться в главное меню? Весь прогресс текущей операции будет утерян.", StandardUserAnswerOption.YES_OR_NO);
     }
 
     @Override

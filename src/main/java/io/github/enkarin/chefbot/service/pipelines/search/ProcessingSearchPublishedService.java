@@ -2,7 +2,7 @@ package io.github.enkarin.chefbot.service.pipelines.search;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.enums.ChatStatus;
-import io.github.enkarin.chefbot.enums.UserAnswerOption;
+import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.service.SearchFilterService;
 import io.github.enkarin.chefbot.service.pipelines.ProcessingService;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ public class ProcessingSearchPublishedService implements ProcessingService {
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return new BotAnswer("Выберите режим поиска", UserAnswerOption.SEARCH_DISH_OPTIONS);
+        return new BotAnswer("Выберите режим поиска", StandardUserAnswerOption.SEARCH_DISH_OPTIONS);
     }
 
     @Override

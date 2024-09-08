@@ -35,6 +35,7 @@ class SearchFilterServiceTest extends TestBase {
             assertThat(searchFilter.getSpicy()).isNull();
             assertThat(searchFilter.isSearchFromPublicDish()).isFalse();
             assertThat(searchFilter.getCuisine()).isNull();
+            assertThat(searchFilter.isNeedGetRecipe()).isFalse();
         });
     }
 
@@ -96,8 +97,8 @@ class SearchFilterServiceTest extends TestBase {
         initDishes();
 
         assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).satisfies(displayDishDtos -> {
-            assertThat(displayDishDtos).extracting(DisplayDishDto::dishName).containsOnly("first");
-            assertThat(displayDishDtos).extracting(DisplayDishDto::productsName).allMatch(set -> set.contains("firstProduct"));
+            assertThat(displayDishDtos).extracting(DisplayDishDto::getDishName).containsOnly("first");
+            assertThat(displayDishDtos).extracting(DisplayDishDto::getProductsName).allMatch(set -> set.contains("firstProduct"));
         });
     }
 
@@ -111,8 +112,29 @@ class SearchFilterServiceTest extends TestBase {
         initDishes();
 
         assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).satisfies(displayDishDtos -> {
-            assertThat(displayDishDtos).extracting(DisplayDishDto::dishName).containsOnly("second");
-            assertThat(displayDishDtos).extracting(DisplayDishDto::productsName).allMatch(set -> set.contains("secondProduct"));
+            assertThat(displayDishDtos).extracting(DisplayDishDto::getDishName).containsOnly("second");
+            assertThat(displayDishDtos).extracting(DisplayDishDto::getProductsName).allMatch(set -> set.contains("secondProduct"));
+        });
+    }
+
+    @Test
+    void searchPublicRecipeWithPartialFilter() {
+        searchFilterService.createSearchFilter(USER_ID);
+        final SearchFilter searchFilter = searchFilterRepository.findAll().get(0);
+        searchFilter.setSearchFromPublicDish(true);
+        searchFilter.setNeedGetRecipe(true);
+        searchFilter.setCuisine(WorldCuisine.ASIA);
+        searchFilterRepository.save(searchFilter);
+        initDishes();
+
+        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).anySatisfy(displayDishDto -> {
+            assertThat(displayDishDto.getDishName()).isEqualTo("first");
+            assertThat(displayDishDto.getProductsName()).contains("firstProduct");
+            assertThat(displayDishDto.toString()).isEqualTo("""
+                    *first:*
+                    -firstProduct
+                    Рецепт приготовления:
+                    Тушить в казане""");
         });
     }
 
@@ -126,8 +148,8 @@ class SearchFilterServiceTest extends TestBase {
         initDishes();
 
         assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).satisfies(displayDishDtos -> {
-            assertThat(displayDishDtos).extracting(DisplayDishDto::dishName).containsOnly("fifth");
-            assertThat(displayDishDtos).extracting(DisplayDishDto::productsName).allMatch(set -> set.contains("fifthProduct"));
+            assertThat(displayDishDtos).extracting(DisplayDishDto::getDishName).containsOnly("fifth");
+            assertThat(displayDishDtos).extracting(DisplayDishDto::getProductsName).allMatch(set -> set.contains("fifthProduct"));
         });
     }
 
@@ -141,8 +163,8 @@ class SearchFilterServiceTest extends TestBase {
         initDishes();
 
         assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).satisfies(displayDishDtos -> {
-            assertThat(displayDishDtos).extracting(DisplayDishDto::dishName).containsOnly("second", "sixth", "fourth");
-            assertThat(displayDishDtos.stream().flatMap(displayDishDto -> displayDishDto.productsName().stream()))
+            assertThat(displayDishDtos).extracting(DisplayDishDto::getDishName).containsOnly("second", "sixth", "fourth");
+            assertThat(displayDishDtos.stream().flatMap(displayDishDto -> displayDishDto.getProductsName().stream()))
                     .containsOnly("secondProduct", "sixthProduct", "fourthProduct");
         });
     }
@@ -153,8 +175,9 @@ class SearchFilterServiceTest extends TestBase {
         searchFilterService.putNeedPublicSearch(USER_ID, true);
         initDishes();
 
-        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).extracting(DisplayDishDto::dishName).containsOnly("first", "second", "third", "fourth", "fifth");
-        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).extracting(DisplayDishDto::dishName).containsOnly("sixth");
+        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).extracting(DisplayDishDto::getDishName)
+                .containsOnly("first", "second", "third", "fourth", "fifth");
+        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).extracting(DisplayDishDto::getDishName).containsOnly("sixth", "seventh");
     }
 
     @Test
@@ -163,7 +186,7 @@ class SearchFilterServiceTest extends TestBase {
         searchFilterService.putNeedPublicSearch(USER_ID, false);
         initDishes();
 
-        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).extracting(DisplayDishDto::dishName).containsOnly("fifth", "sixth");
+        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).extracting(DisplayDishDto::getDishName).containsOnly("fifth", "sixth", "seventh");
         assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).isEmpty();
     }
 
@@ -179,8 +202,31 @@ class SearchFilterServiceTest extends TestBase {
         initDishes();
 
         assertThat(searchFilterService.searchRandomDishWithCurrentFilter(USER_ID)).satisfies(displayDishDto -> {
-            assertThat(displayDishDto).extracting(DisplayDishDto::dishName).isEqualTo("first");
-            assertThat(displayDishDto.productsName()).containsOnly("firstProduct");
+            assertThat(displayDishDto).extracting(DisplayDishDto::getDishName).isEqualTo("first");
+            assertThat(displayDishDto.getProductsName()).containsOnly("firstProduct");
+        });
+    }
+
+    @Test
+    void searchPublicRandomDishWithCurrentFilterWithRecipe() {
+        searchFilterService.createSearchFilter(USER_ID);
+        final SearchFilter searchFilter = searchFilterRepository.findAll().get(0);
+        searchFilter.setSearchFromPublicDish(true);
+        searchFilter.setSpicy(false);
+        searchFilter.setDishType(DishType.SALAD);
+        searchFilter.setCuisine(WorldCuisine.ASIA);
+        searchFilter.setNeedGetRecipe(true);
+        searchFilterRepository.save(searchFilter);
+        initDishes();
+
+        assertThat(searchFilterService.searchRandomDishWithCurrentFilter(USER_ID)).satisfies(displayDishDto -> {
+            assertThat(displayDishDto).extracting(DisplayDishDto::getDishName).isEqualTo("first");
+            assertThat(displayDishDto.getProductsName()).containsOnly("firstProduct");
+            assertThat(displayDishDto.toString()).isEqualTo("""
+                    *first:*
+                    -firstProduct
+                    Рецепт приготовления:
+                    Тушить в казане""");
         });
     }
 
@@ -195,8 +241,30 @@ class SearchFilterServiceTest extends TestBase {
         initDishes();
 
         assertThat(searchFilterService.searchRandomDishWithCurrentFilter(USER_ID)).satisfies(displayDishDto -> {
-            assertThat(displayDishDto).extracting(DisplayDishDto::dishName).isEqualTo("fifth");
-            assertThat(displayDishDto.productsName()).containsOnly("fifthProduct");
+            assertThat(displayDishDto).extracting(DisplayDishDto::getDishName).isEqualTo("fifth");
+            assertThat(displayDishDto.getProductsName()).containsOnly("fifthProduct");
+        });
+    }
+
+    @Test
+    void searchPersonalRandomDishWithCurrentFilterWithRecipe() {
+        searchFilterService.createSearchFilter(USER_ID);
+        final SearchFilter searchFilter = searchFilterRepository.findAll().get(0);
+        searchFilter.setSearchFromPublicDish(false);
+        searchFilter.setSpicy(false);
+        searchFilter.setDishType(DishType.SALAD);
+        searchFilter.setNeedGetRecipe(true);
+        searchFilterRepository.save(searchFilter);
+        initDishes();
+
+        assertThat(searchFilterService.searchRandomDishWithCurrentFilter(USER_ID)).satisfies(displayDishDto -> {
+            assertThat(displayDishDto).extracting(DisplayDishDto::getDishName).isEqualTo("seventh");
+            assertThat(displayDishDto.getProductsName()).containsOnly("seventhProduct");
+            assertThat(displayDishDto.toString()).isEqualTo("""
+                    *seventh:*
+                    -seventhProduct
+                    Рецепт приготовления:
+                    Дать настояться месяцок""");
         });
     }
 
@@ -225,5 +293,18 @@ class SearchFilterServiceTest extends TestBase {
         initDishes();
 
         assertThatThrownBy(() -> searchFilterService.searchRandomDishWithCurrentFilter(USER_ID)).isInstanceOf(DishesNotFoundException.class);
+    }
+
+    @Test
+    void createSearchFilterForFindRecipe() {
+        searchFilterService.createSearchFilterForFindRecipe(USER_ID);
+
+        assertThat(userService.findUser(USER_ID).getSearchFilter()).satisfies(searchFilter -> {
+            assertThat(searchFilter.getDishType()).isNull();
+            assertThat(searchFilter.getSpicy()).isNull();
+            assertThat(searchFilter.isSearchFromPublicDish()).isFalse();
+            assertThat(searchFilter.getCuisine()).isNull();
+            assertThat(searchFilter.isNeedGetRecipe()).isTrue();
+        });
     }
 }

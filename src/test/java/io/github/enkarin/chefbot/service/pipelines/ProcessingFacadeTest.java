@@ -5,9 +5,10 @@ import io.github.enkarin.chefbot.entity.Product;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.DishType;
-import io.github.enkarin.chefbot.enums.UserAnswerOption;
+import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
+import io.github.enkarin.chefbot.repository.ModerationRequestRepository;
 import io.github.enkarin.chefbot.repository.SearchFilterRepository;
 import io.github.enkarin.chefbot.service.SearchFilterService;
 import io.github.enkarin.chefbot.util.TestBase;
@@ -17,12 +18,13 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
-import static io.github.enkarin.chefbot.enums.UserAnswerOption.DISH_TYPES_WITH_ANY_CASE;
-import static io.github.enkarin.chefbot.enums.UserAnswerOption.SEARCH_DISH_OPTIONS;
-import static io.github.enkarin.chefbot.enums.UserAnswerOption.YES_NO_OR_ANY;
-import static io.github.enkarin.chefbot.enums.UserAnswerOption.YES_OR_NO;
+import static io.github.enkarin.chefbot.enums.StandardUserAnswerOption.DISH_TYPES_WITH_ANY_CASE;
+import static io.github.enkarin.chefbot.enums.StandardUserAnswerOption.SEARCH_DISH_OPTIONS;
+import static io.github.enkarin.chefbot.enums.StandardUserAnswerOption.YES_NO_OR_ANY;
+import static io.github.enkarin.chefbot.enums.StandardUserAnswerOption.YES_OR_NO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -35,6 +37,9 @@ class ProcessingFacadeTest extends TestBase {
 
     @Autowired
     private SearchFilterService searchFilterService;
+
+    @Autowired
+    private ModerationRequestRepository moderationRequestRepository;
 
     @Test
     void execute() {
@@ -64,7 +69,7 @@ class ProcessingFacadeTest extends TestBase {
 
         assertThat(processingFacade.goToStatus(USER_ID, ChatStatus.APPROVE_BACK_TO_MAIN_MENU)).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Вы хотите вернуться в главное меню? Весь прогресс текущей операции будет утерян.");
-            assertThat(botAnswer.userAnswerOption()).isEqualTo(YES_OR_NO);
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).isEqualTo(YES_OR_NO.getAnswers());
         });
 
         assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.APPROVE_BACK_TO_MAIN_MENU);
@@ -86,15 +91,16 @@ class ProcessingFacadeTest extends TestBase {
 
     @ParameterizedTest
     @MethodSource("provideStatusAndAnswer")
-    void goToStatusShouldWork(final ChatStatus status, final String messageText, final UserAnswerOption userAnswerOption) {
+    void goToStatusShouldWork(final ChatStatus status, final String messageText, final StandardUserAnswerOption userAnswerOption) {
         createUser(status);
         searchFilterService.createSearchFilter(USER_ID);
         searchFilterService.putSpicySign(USER_ID, false);
+        searchFilterService.putDishType(USER_ID, DishType.SOUP);
         initDishes();
 
         assertThat(processingFacade.goToStatus(USER_ID, status))
-                .extracting(BotAnswer::messageText, BotAnswer::userAnswerOption)
-                .containsOnly(messageText, userAnswerOption);
+                .extracting(BotAnswer::messageText, BotAnswer::userAnswerOptions)
+                .containsOnly(messageText, Optional.of(userAnswerOption.getAnswers()));
     }
 
     static Stream<Arguments> provideStatusAndAnswer() {
@@ -102,9 +108,9 @@ class ProcessingFacadeTest extends TestBase {
                 Arguments.of(ChatStatus.SELECT_DISH_PUBLISHED, "Выберите режим поиска", SEARCH_DISH_OPTIONS),
                 Arguments.of(ChatStatus.SELECT_DISH_TYPE, "Выберете тип искомого блюда", DISH_TYPES_WITH_ANY_CASE),
                 Arguments.of(ChatStatus.SELECT_DISH_SPICY, "Острое блюдо?", YES_NO_OR_ANY),
-                Arguments.of(ChatStatus.SELECT_DISH_KITCHEN, "Выберите кухню мира:", UserAnswerOption.CUISINES_WITH_ANY_CASE),
-                Arguments.of(ChatStatus.EXECUTE_RANDOM_SEARCH, "*fifth:*\n-fifthProduct", UserAnswerOption.MORE_OR_STOP),
-                Arguments.of(ChatStatus.EXECUTE_SEARCH, "*fifth:*\n-fifthProduct", UserAnswerOption.MORE_OR_STOP)
+                Arguments.of(ChatStatus.SELECT_DISH_KITCHEN, "Выберите кухню мира:", StandardUserAnswerOption.CUISINES_WITH_ANY_CASE),
+                Arguments.of(ChatStatus.EXECUTE_RANDOM_SEARCH, "*fifth:*\n-fifthProduct", StandardUserAnswerOption.MORE_OR_STOP),
+                Arguments.of(ChatStatus.EXECUTE_SEARCH, "*fifth:*\n-fifthProduct", StandardUserAnswerOption.MORE_OR_STOP)
         );
     }
 
@@ -184,5 +190,22 @@ class ProcessingFacadeTest extends TestBase {
                 .hasSize(5)
                 .extracting(Product::getProductName)
                 .containsOnly("Кимчи", "Свинина", "Репчатый лук", "Перцовая паста кочудян", "Тофу");
+    }
+
+    @Test
+    void enrichingRecipesPipelineTest() {
+        createUser(ChatStatus.ENRICHING_RECIPES);
+        initDishes();
+
+        processingFacade.execute(USER_ID, "sixth");
+        processingFacade.execute(USER_ID, "Тушить долго");
+
+        assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(dishRepository.findAll()).anySatisfy(dish -> {
+            assertThat(dish.getRecipe()).isEqualTo("Тушить долго");
+            assertThat(dish.isPublished()).isFalse();
+            assertThat(dish.getDishName()).isEqualTo("sixth");
+        });
+        assertThat(moderationRequestRepository.findAll()).isEmpty();
     }
 }

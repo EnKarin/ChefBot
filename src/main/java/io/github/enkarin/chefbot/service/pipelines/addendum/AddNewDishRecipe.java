@@ -2,8 +2,6 @@ package io.github.enkarin.chefbot.service.pipelines.addendum;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.enums.ChatStatus;
-import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
-import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.service.pipelines.ProcessingService;
 import lombok.RequiredArgsConstructor;
@@ -11,28 +9,22 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ProcessingAddDishCuisineService implements ProcessingService {
-
+public class AddNewDishRecipe implements ProcessingService {
     private final DishService dishService;
 
     @Override
     public ChatStatus execute(final long userId, final String text) {
-        try {
-            final WorldCuisine cuisine = WorldCuisine.getCuisine(text);
-            dishService.putDishCuisine(userId, cuisine);
-            return ChatStatus.NEW_DISH_FOODSTUFF;
-        } catch (IllegalArgumentException e) {
-            return getCurrentStatus();
-        }
+        dishService.putDishRecipe(userId, text);
+        return ChatStatus.NEW_DISH_NEED_PUBLISH;
     }
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return new BotAnswer("Блюдо какой кухни вы добавляете?", StandardUserAnswerOption.CUISINES);
+        return BotAnswer.createBotAnswerWithoutKeyboard("Введите способ приготовления блюда");
     }
 
     @Override
     public ChatStatus getCurrentStatus() {
-        return ChatStatus.NEW_DISH_KITCHEN;
+        return ChatStatus.NEW_DISH_RECIPE;
     }
 }

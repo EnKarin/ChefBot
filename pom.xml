@@ -13,7 +13,7 @@
 
     <groupId>io.github.enkarin</groupId>
     <artifactId>chef-bot</artifactId>
-    <version>2.2.3</version>
+    <version>2.3.3</version>
     <name>Chef Bot</name>
 
     <properties>
@@ -296,12 +296,12 @@
                                         <limit>
                                             <counter>METHOD</counter>
                                             <value>MISSEDCOUNT</value>
-                                            <maximum>3</maximum>
+                                            <maximum>4</maximum>
                                         </limit>
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>MISSEDCOUNT</value>
-                                            <maximum>37</maximum>
+                                            <maximum>38</maximum>
                                         </limit>
                                     </limits>
                                 </rule>

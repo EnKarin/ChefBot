@@ -138,4 +138,47 @@ class DishServiceTest extends TestBase {
                 dishId)).containsOnly("Овсянка", "Три ведра укропа");
         assertThat(productRepository.count()).isEqualTo(2);
     }
+
+    @Test
+    void putRecipe() {
+        dishService.putDishRecipe(USER_ID, "Тушить два часа");
+
+        assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish().getRecipe()).isEqualTo("Тушить два часа");
+    }
+
+    @Test
+    void findDishesWithoutRecipeForUser() {
+        initDishes();
+
+        assertThat(dishService.findDishNamesWithoutRecipeForUser(USER_ID)).containsOnly("fifth", "sixth", "Рагу");
+    }
+
+    @Test
+    void putEditableDish() {
+        initDishes();
+        dishService.putEditableDish(USER_ID, "fifth");
+
+        assertThat(userService.findUser(USER_ID).getEditabledDish().getDishName()).isEqualTo("fifth");
+    }
+
+    @Test
+    void putNonPublishFlag() {
+        dishService.putNonPublishFlagForEditableDish(USER_ID);
+
+        assertThat(userService.findUser(USER_ID).getEditabledDish().isPublished()).isFalse();
+    }
+
+    @Test
+    void findFalsePublishFlag() {
+        assertThat(dishService.editableDishWasPublish(USER_ID)).isFalse();
+    }
+
+    @Test
+    void findTruePublishFlag() {
+        final Dish dish = userService.findUser(USER_ID).getEditabledDish();
+        dish.setPublished(true);
+        dishRepository.save(dish);
+
+        assertThat(dishService.editableDishWasPublish(USER_ID)).isTrue();
+    }
 }

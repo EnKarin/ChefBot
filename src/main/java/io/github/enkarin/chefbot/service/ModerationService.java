@@ -73,7 +73,9 @@ public class ModerationService {
 
     public void declineRequest(final long userId, final String cause) {
         final User user = userService.findUser(userId);
-        final ModerationRequest moderationRequest = user.getModerableDish().getModerationRequest();
+        final Dish moderableDish = user.getModerableDish();
+        moderableDish.setPublished(false);
+        final ModerationRequest moderationRequest = moderableDish.getModerationRequest();
         moderationRequest.setDeclineCause(cause);
         user.setModerableDish(null);
     }

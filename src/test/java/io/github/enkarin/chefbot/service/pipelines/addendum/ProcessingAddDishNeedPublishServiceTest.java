@@ -36,6 +36,9 @@ class ProcessingAddDishNeedPublishServiceTest extends TestBase {
 
     @Test
     void executeWithNo() {
+        userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        dishService.initDishName(USER_ID, "1 dish");
+
         assertThat(service.execute(USER_ID, "нет")).isEqualTo(ChatStatus.MAIN_MENU);
     }
 

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ProcessingAddDishFoodstuffService implements ProcessingService {
-
     private final DishService dishService;
 
     @Override
@@ -19,10 +18,8 @@ public class ProcessingAddDishFoodstuffService implements ProcessingService {
         if (StringUtils.isNoneBlank(text)) {
             final String[] foodstuffs = text.split("[,\n]");
             dishService.putDishFoodstuff(userId, foodstuffs);
-
-            return ChatStatus.NEW_DISH_NEED_PUBLISH;
+            return ChatStatus.GET_NEED_DISH_RECIPE;
         }
-
         return getCurrentStatus();
     }
 

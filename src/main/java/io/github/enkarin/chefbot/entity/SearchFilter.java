@@ -19,12 +19,13 @@ import java.io.Serializable;
 public class SearchFilter implements Serializable {
 
     @Serial
-    private static final long serialVersionUID = 7328055925213805550L;
+    private static final long serialVersionUID = 7328055925213805551L;
 
     @Id
     @GeneratedValue
     private long id;
 
+    private boolean needGetRecipe;
     private Boolean spicy;
     private boolean searchFromPublicDish;
     private int pageNumber;
