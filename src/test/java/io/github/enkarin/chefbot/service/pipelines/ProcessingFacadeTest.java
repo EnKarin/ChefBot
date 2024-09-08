@@ -8,6 +8,7 @@ import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
+import io.github.enkarin.chefbot.repository.ModerationRequestRepository;
 import io.github.enkarin.chefbot.repository.SearchFilterRepository;
 import io.github.enkarin.chefbot.service.SearchFilterService;
 import io.github.enkarin.chefbot.util.TestBase;
@@ -36,6 +37,9 @@ class ProcessingFacadeTest extends TestBase {
 
     @Autowired
     private SearchFilterService searchFilterService;
+
+    @Autowired
+    private ModerationRequestRepository moderationRequestRepository;
 
     @Test
     void execute() {
@@ -186,5 +190,22 @@ class ProcessingFacadeTest extends TestBase {
                 .hasSize(5)
                 .extracting(Product::getProductName)
                 .containsOnly("Кимчи", "Свинина", "Репчатый лук", "Перцовая паста кочудян", "Тофу");
+    }
+
+    @Test
+    void enrichingRecipesPipelineTest() {
+        createUser(ChatStatus.ENRICHING_RECIPES);
+        initDishes();
+
+        processingFacade.execute(USER_ID, "sixth");
+        processingFacade.execute(USER_ID, "Тушить долго");
+
+        assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(dishRepository.findAll()).anySatisfy(dish -> {
+            assertThat(dish.getRecipe()).isEqualTo("Тушить долго");
+            assertThat(dish.isPublished()).isFalse();
+            assertThat(dish.getDishName()).isEqualTo("sixth");
+        });
+        assertThat(moderationRequestRepository.findAll()).isEmpty();
     }
 }

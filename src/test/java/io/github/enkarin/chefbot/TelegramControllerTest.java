@@ -166,10 +166,20 @@ class TelegramControllerTest extends ModerationTest {
         assertThat(telegramController.processingNonCommandInput(USER_ID, "все блюда"))
                 .extracting(BotAnswer::messageText)
                 .isEqualTo("Подходящие блюда не найдены. Вы возвращены в главное меню.");
-        assertThat(userRepository.findById(USER_ID))
-                .isPresent()
-                .get()
+        assertThat(userRepository.findById(USER_ID)).isPresent().get()
                 .extracting(User::getChatStatus)
                 .isEqualTo(ChatStatus.MAIN_MENU);
+    }
+
+    @Test
+    void enrichingRecipesCommand() {
+        createUser(ChatStatus.MAIN_MENU);
+        initDishes();
+
+        assertThat(telegramController.executeWorkerCommand(USER_ID, "/enriching_recipes")).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).isEqualTo("Выберете добавленное вами ранее блюдо для добавления рецепта");
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("fifth", "sixth");
+        });
+        assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.ENRICHING_RECIPES);
     }
 }

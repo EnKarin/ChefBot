@@ -118,6 +118,27 @@ class SearchFilterServiceTest extends TestBase {
     }
 
     @Test
+    void searchPublicRecipeWithPartialFilter() {
+        searchFilterService.createSearchFilter(USER_ID);
+        final SearchFilter searchFilter = searchFilterRepository.findAll().get(0);
+        searchFilter.setSearchFromPublicDish(true);
+        searchFilter.setNeedGetRecipe(true);
+        searchFilter.setCuisine(WorldCuisine.ASIA);
+        searchFilterRepository.save(searchFilter);
+        initDishes();
+
+        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).anySatisfy(displayDishDto -> {
+            assertThat(displayDishDto.getDishName()).isEqualTo("first");
+            assertThat(displayDishDto.getProductsName()).contains("firstProduct");
+            assertThat(displayDishDto.toString()).isEqualTo("""
+                    *first:*
+                    -firstProduct
+                    Рецепт приготовления:
+                    Тушить в казане""");
+        });
+    }
+
+    @Test
     void searchCurrentUserDishWithCurrentFilter() {
         searchFilterService.createSearchFilter(USER_ID);
         final SearchFilter searchFilter = searchFilterRepository.findAll().get(0);
