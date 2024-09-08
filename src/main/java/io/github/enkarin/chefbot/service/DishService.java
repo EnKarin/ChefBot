@@ -124,6 +124,10 @@ public class DishService {
         findEditableDish(userId).setPublished(false);
     }
 
+    public boolean editableDishWasPublish(final long userId) {
+        return findEditableDish(userId).isPublished();
+    }
+
     private Dish findEditableDish(final long userId) {
         return userService.findUser(userId).getEditabledDish();
     }

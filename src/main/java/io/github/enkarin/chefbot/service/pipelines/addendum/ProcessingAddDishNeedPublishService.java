@@ -3,7 +3,6 @@ package io.github.enkarin.chefbot.service.pipelines.addendum;
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
-import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.service.ModerationService;
 import io.github.enkarin.chefbot.service.pipelines.ProcessingService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,6 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class ProcessingAddDishNeedPublishService implements ProcessingService {
     private final ModerationService moderationService;
-    private final DishService dishService;
 
     @Override
     public ChatStatus execute(final long userId, final String text) {
@@ -24,10 +22,7 @@ public class ProcessingAddDishNeedPublishService implements ProcessingService {
                 moderationService.createModerationRequest(userId);
                 yield ChatStatus.MAIN_MENU;
             }
-            case "нет" -> {
-                dishService.putNonPublishFlagForEditableDish(userId);
-                yield ChatStatus.MAIN_MENU;
-            }
+            case "нет" -> ChatStatus.MAIN_MENU;
             default -> getCurrentStatus();
         };
     }
