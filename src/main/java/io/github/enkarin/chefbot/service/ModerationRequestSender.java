@@ -3,7 +3,6 @@ package io.github.enkarin.chefbot.service;
 import io.github.enkarin.chefbot.adapters.TelegramAdapter;
 import io.github.enkarin.chefbot.dto.ModerationDishDto;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Component;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-@Log
 @EnableScheduling
 @Component
 @RequiredArgsConstructor
