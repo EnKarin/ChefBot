@@ -87,17 +87,14 @@ public class SearchFilterService {
                 ? dish -> new DisplayDishWithRecipeDto(dish.getDishName(), productNamesParser(dish), dish.getRecipe())
                 : dish -> new DisplayDishDto(dish.getDishName(), productNamesParser(dish));
         if (searchFilter.isSearchFromPublicDish()) {
-            result = dishRepository.findAllDishByFilterWithSpecifiedOffset(currentUser.getId(),
-                            searchFilter.getSpicy(),
-                            isNull(searchFilter.getDishType()) ? null : searchFilter.getDishType().name(),
-                            isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name(),
-                            searchFilter.getPageNumber())
+            result = findDishesWithSpecifiedFilter(searchFilter, currentUser.getId())
                     .stream()
                     .map(dishDisplayDtoFromEntityMapper)
                     .collect(Collectors.toSet());
         } else {
             result = currentUser.getDishes().stream()
                     .filter(dish -> dishMatchesWithSpecifiedFilter(dish, searchFilter))
+                    .filter(dish -> !searchFilter.isNeedGetRecipe() || nonNull(dish.getRecipe()))
                     .skip(searchFilter.getPageNumber() * 5L)
                     .limit(5)
                     .map(dishDisplayDtoFromEntityMapper)
@@ -105,6 +102,20 @@ public class SearchFilterService {
         }
         searchFilter.setPageNumber(searchFilter.getPageNumber() + 1);
         return result;
+    }
+
+    private Set<Dish> findDishesWithSpecifiedFilter(final SearchFilter searchFilter, final long currentUserId) {
+        return searchFilter.isNeedGetRecipe()
+                ? dishRepository.findAllDishByFilterWithSpecifiedOffsetAndRecipe(currentUserId,
+                searchFilter.getSpicy(),
+                isNull(searchFilter.getDishType()) ? null : searchFilter.getDishType().name(),
+                isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name(),
+                searchFilter.getPageNumber())
+                : dishRepository.findAllDishByFilterWithSpecifiedOffset(currentUserId,
+                searchFilter.getSpicy(),
+                isNull(searchFilter.getDishType()) ? null : searchFilter.getDishType().name(),
+                isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name(),
+                searchFilter.getPageNumber());
     }
 
     public DisplayDishDto searchRandomDishWithCurrentFilter(final long ownerId) {
@@ -123,7 +134,10 @@ public class SearchFilterService {
     }
 
     private Dish getRandomPrivateDishWithCurrentFilter(final User currentUser, final SearchFilter searchFilter) {
-        final Dish[] dishes = currentUser.getDishes().stream().filter(d -> dishMatchesWithSpecifiedFilter(d, searchFilter)).toArray(Dish[]::new);
+        final Dish[] dishes = currentUser.getDishes().stream()
+                .filter(d -> dishMatchesWithSpecifiedFilter(d, searchFilter))
+                .filter(dish -> !searchFilter.isNeedGetRecipe() || nonNull(dish.getRecipe()))
+                .toArray(Dish[]::new);
         if (dishes.length > 0) {
             return dishes[random.nextInt(dishes.length)];
         } else {
@@ -132,17 +146,34 @@ public class SearchFilterService {
     }
 
     private Dish getRandomPublishDishWithCurrentFilter(final long ownerId, final SearchFilter searchFilter) {
-        final int dishWithFilterCount = dishRepository.countDishWithFilter(ownerId, searchFilter.getSpicy(),
-                isNull(searchFilter.getDishType()) ? null : searchFilter.getDishType().name(),
-                isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name());
+        final int dishWithFilterCount = findDishWithFilterCount(ownerId, searchFilter);
         if (dishWithFilterCount > 0) {
-            return dishRepository.findDishByFilterWithSpecifiedOffset(ownerId, searchFilter.getSpicy(),
-                    isNull(searchFilter.getDishType()) ? null : searchFilter.getDishType().name(),
-                    isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name(),
-                    random.nextInt(dishWithFilterCount));
+            return findDishWithSpecifiedFilterAndOffset(ownerId, searchFilter, dishWithFilterCount);
         } else {
             throw new DishesNotFoundException();
         }
+    }
+
+    private Dish findDishWithSpecifiedFilterAndOffset(final long ownerId, final SearchFilter searchFilter, final int dishWithFilterCount) {
+        return searchFilter.isNeedGetRecipe()
+                ? dishRepository.findDishByFilterWithSpecifiedOffsetAndRecipe(ownerId, searchFilter.getSpicy(),
+                isNull(searchFilter.getDishType()) ? null : searchFilter.getDishType().name(),
+                isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name(),
+                random.nextInt(dishWithFilterCount))
+                : dishRepository.findDishByFilterWithSpecifiedOffset(ownerId, searchFilter.getSpicy(),
+                isNull(searchFilter.getDishType()) ? null : searchFilter.getDishType().name(),
+                isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name(),
+                random.nextInt(dishWithFilterCount));
+    }
+
+    private int findDishWithFilterCount(final long ownerId, final SearchFilter searchFilter) {
+        return searchFilter.isNeedGetRecipe()
+                ? dishRepository.countDishWithFilterAndRecipe(ownerId, searchFilter.getSpicy(),
+                isNull(searchFilter.getDishType()) ? null : searchFilter.getDishType().name(),
+                isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name())
+                : dishRepository.countDishWithFilter(ownerId, searchFilter.getSpicy(),
+                isNull(searchFilter.getDishType()) ? null : searchFilter.getDishType().name(),
+                isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name());
     }
 
     private boolean dishMatchesWithSpecifiedFilter(final Dish dish, final SearchFilter searchFilter) {
