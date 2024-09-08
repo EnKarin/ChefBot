@@ -109,6 +109,11 @@ class TelegramAdapterTest extends ModerationTest {
         final User user = new User();
         user.setId(USER_ID);
         callbackQuery.setFrom(user);
+        final Message message = new Message();
+        final Chat chat = new Chat();
+        chat.setId(666L);
+        message.setChat(chat);
+        callbackQuery.setMessage(message);
         update.setCallbackQuery(callbackQuery);
         return update;
     }

@@ -70,9 +70,8 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
             if (callbackData.startsWith("A")) {
                 final ModerationResultDto moderationResultDto = telegramController.approveModerationRequest(callbackData.substring(1));
                 sendApproveResultToOwner(moderationResultDto);
-                moderationResultDto.messageForRemove().forEach(this::deleteOddRequestMessage);
             } else {
-                telegramController.declineModerationRequest(callbackQuery.getFrom().getId(), callbackData.substring(1));
+                send(callbackQuery.getMessage().getChatId(), telegramController.declineModerationRequest(callbackQuery.getFrom().getId(), callbackData.substring(1)));
             }
         }
     }
@@ -81,6 +80,7 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
         try {
             execute(defaultConfigurationMessage(moderationResultDto.ownerChat(),
                     "Блюдо ".concat(moderationResultDto.dishName()).concat(" прошло модерацию и успешно опубликовано!")));
+            moderationResultDto.messageForRemove().forEach(this::deleteOddRequestMessage);
         } catch (Exception e) {
             log.error(e.toString());
         }
@@ -92,6 +92,7 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
                     .concat(moderationResultDto.dishName())
                     .concat(" не прошло модерацию по причине:\n")
                     .concat(moderationResultDto.declineCause())));
+            moderationResultDto.messageForRemove().forEach(this::deleteOddRequestMessage);
         } catch (Exception e) {
             log.error(e.toString());
         }

@@ -10,6 +10,7 @@ import io.github.enkarin.chefbot.mappers.DishEntityDtoMapper;
 import io.github.enkarin.chefbot.mappers.ModerationRequestMessageEntityDtoMapper;
 import io.github.enkarin.chefbot.repository.ModerationRequestMessageRepository;
 import io.github.enkarin.chefbot.repository.ModerationRequestRepository;
+import io.github.enkarin.chefbot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ public class ModerationService {
     private final ModerationRequestMessageRepository moderationRequestMessageRepository;
     private final ModerationRequestMessageEntityDtoMapper moderationRequestMessageEntityDtoMapper;
     private final DishEntityDtoMapper dishEntityDtoMapper;
+    private final UserRepository userRepository;
 
     public void createModerationRequest(final long userId) {
         moderationRequestRepository.save(ModerationRequest.builder()
@@ -78,6 +80,7 @@ public class ModerationService {
         final ModerationRequest moderationRequest = moderableDish.getModerationRequest();
         moderationRequest.setDeclineCause(cause);
         user.setModerableDish(null);
+        userRepository.save(user);
     }
 
     public List<ModerationResultDto> findAndRemoveDeclinedRequests() {
