@@ -14,6 +14,7 @@ import io.github.enkarin.chefbot.repository.SearchFilterRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
@@ -95,6 +96,7 @@ public class SearchFilterService {
             result = currentUser.getDishes().stream()
                     .filter(dish -> dishMatchesWithSpecifiedFilter(dish, searchFilter))
                     .filter(dish -> !searchFilter.isNeedGetRecipe() || nonNull(dish.getRecipe()))
+                    .sorted(Comparator.comparing(Dish::getDishName))
                     .skip(searchFilter.getPageNumber() * 5L)
                     .limit(5)
                     .map(dishDisplayDtoFromEntityMapper)
