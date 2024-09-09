@@ -33,7 +33,7 @@ public class ModerationRequestSender {
                 adapter.sendModerationRequests(userService.getAllModeratorsWithoutCurrentUser(moderationDishDto.getOwnerChatId()), moderationDishDto)));
     }
 
-    @Scheduled(fixedRate = 10, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(fixedDelay = 5, timeUnit = TimeUnit.SECONDS)
     void sendDeclineMessages() {
         moderationService.findAndRemoveDeclinedRequests().forEach(adapter::sendDeclineResultToOwner);
     }
