@@ -1,6 +1,8 @@
 package io.github.enkarin.chefbot.service;
 
 import io.github.enkarin.chefbot.dto.DisplayDishDto;
+import io.github.enkarin.chefbot.entity.Dish;
+import io.github.enkarin.chefbot.entity.Product;
 import io.github.enkarin.chefbot.entity.SearchFilter;
 import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
@@ -10,6 +12,9 @@ import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -188,6 +193,44 @@ class SearchFilterServiceTest extends TestBase {
 
         assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).extracting(DisplayDishDto::getDishName).containsOnly("fifth", "sixth", "seventh");
         assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).isEmpty();
+    }
+
+    @Test
+    void noRepetitionsInSearchCurrentUserDishWithCurrentFilter() {
+        searchFilterService.createSearchFilter(USER_ID);
+        searchFilterService.putNeedPublicSearch(USER_ID, false);
+        initDishes();
+        dishRepository.save(Dish.builder()
+                .dishName("eighth")
+                .type(DishType.SOUP)
+                .spicy(false)
+                .cuisine(WorldCuisine.MIDDLE_EASTERN)
+                .products(Set.of(productRepository.save(Product.builder().productName("eighthProduct").build())))
+                .owner(userRepository.findById(USER_ID).orElseThrow())
+                .build());
+        dishRepository.save(Dish.builder()
+                .dishName("ninth")
+                .type(DishType.MAIN_DISH)
+                .spicy(true)
+                .cuisine(WorldCuisine.MEDITERRANEAN)
+                .products(Set.of(productRepository.save(Product.builder().productName("ninthProduct").build())))
+                .owner(userRepository.findById(USER_ID).orElseThrow())
+                .build());
+        dishRepository.save(Dish.builder()
+                .dishName("tenth")
+                .type(DishType.SALAD)
+                .spicy(false)
+                .cuisine(WorldCuisine.OTHER)
+                .products(Set.of(productRepository.save(Product.builder().productName("tenthProduct").build())))
+                .owner(userRepository.findById(USER_ID).orElseThrow())
+                .build());
+
+        final Set<String> firstResult = searchFilterService.searchDishWithCurrentFilter(USER_ID).stream().map(DisplayDishDto::getDishName).collect(Collectors.toSet());
+        final Set<String> secondResult = searchFilterService.searchDishWithCurrentFilter(USER_ID).stream().map(DisplayDishDto::getDishName).collect(Collectors.toSet());
+        final int firstResultOriginSize = firstResult.size();
+        firstResult.removeAll(secondResult);
+
+        assertThat(firstResult).hasSize(firstResultOriginSize);
     }
 
     @Test
