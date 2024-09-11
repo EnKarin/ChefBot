@@ -1,6 +1,8 @@
 package io.github.enkarin.chefbot.service.pipelines;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
+import io.github.enkarin.chefbot.dto.ExecutionResult;
+import io.github.enkarin.chefbot.dto.OperationResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.service.UserService;
 import org.springframework.stereotype.Service;
@@ -20,8 +22,9 @@ public class ProcessingFacade {
         this.userService = userService;
     }
 
-    public BotAnswer execute(final long userId, final String text) {
-        return goToStatus(userId, processingServiceMap.get(userService.getChatStatus(userId)).execute(userId, text));
+    public OperationResult execute(final long userId, final String text) {
+        final ExecutionResult executionResult = processingServiceMap.get(userService.getChatStatus(userId)).execute(userId, text);
+        return new OperationResult(goToStatus(userId, executionResult.chatStatus()), executionResult.systemAction());
     }
 
     public BotAnswer goToStatus(final long userId, final ChatStatus newChatStatus) {

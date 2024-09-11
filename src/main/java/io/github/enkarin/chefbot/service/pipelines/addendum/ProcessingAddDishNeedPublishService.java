@@ -1,6 +1,7 @@
 package io.github.enkarin.chefbot.service.pipelines.addendum;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
+import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.service.ModerationService;
@@ -16,14 +17,14 @@ public class ProcessingAddDishNeedPublishService implements ProcessingService {
     private final ModerationService moderationService;
 
     @Override
-    public ChatStatus execute(final long userId, final String text) {
+    public ExecutionResult execute(final long userId, final String text) {
         return switch (text.toLowerCase(Locale.ROOT)) {
             case "да" -> {
                 moderationService.createModerationRequest(userId);
-                yield ChatStatus.MAIN_MENU;
+                yield new ExecutionResult(ChatStatus.MAIN_MENU);
             }
-            case "нет" -> ChatStatus.MAIN_MENU;
-            default -> getCurrentStatus();
+            case "нет" -> new ExecutionResult(ChatStatus.MAIN_MENU);
+            default -> new ExecutionResult(getCurrentStatus());
         };
     }
 

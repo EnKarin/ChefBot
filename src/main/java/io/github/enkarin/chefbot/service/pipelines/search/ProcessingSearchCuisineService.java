@@ -1,6 +1,7 @@
 package io.github.enkarin.chefbot.service.pipelines.search;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
+import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
@@ -16,13 +17,13 @@ public class ProcessingSearchCuisineService implements ProcessingService {
     private final SearchFilterService filterService;
 
     @Override
-    public ChatStatus execute(final long userId, final String text) {
+    public ExecutionResult execute(final long userId, final String text) {
         try {
             final WorldCuisine cuisine = WorldCuisine.getCuisine(text);
             filterService.putKitchen(userId, cuisine);
-            return ChatStatus.SELECT_DISH_PUBLISHED;
+            return new ExecutionResult(ChatStatus.SELECT_DISH_PUBLISHED);
         } catch (IllegalArgumentException e) {
-            return ChatStatus.SELECT_DISH_PUBLISHED;
+            return new ExecutionResult(ChatStatus.SELECT_DISH_PUBLISHED);
         }
     }
 

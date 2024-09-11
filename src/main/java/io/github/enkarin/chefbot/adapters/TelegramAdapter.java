@@ -5,6 +5,7 @@ import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.dto.ModerationDishDto;
 import io.github.enkarin.chefbot.dto.ModerationRequestMessageDto;
 import io.github.enkarin.chefbot.dto.ModerationResultDto;
+import io.github.enkarin.chefbot.dto.OperationResult;
 import io.github.enkarin.chefbot.uicomponents.FormatedReplyKeyboardMarkup;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +62,7 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
                 if (message.isCommand()) {
                     send(chatId, telegramController.executeWorkerCommand(userId, text));
                 } else {
-                    send(chatId, telegramController.processingNonCommandInput(userId, text));
+                    processingResponse(chatId, telegramController.processingNonCommandInput(userId, text));
                 }
             }
         } else {
@@ -104,6 +105,17 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
         } catch (Exception e) {
             log.error(e.toString());
         }
+    }
+
+    private void processingResponse(final long chatId, final OperationResult operationResult) {
+        operationResult.systemAction().ifPresent(action -> {
+            if(action instanceof ModerationResultDto) {
+                //todo
+            } else if(action instanceof ModerationDishDto) {
+                //todo
+            }
+        });
+        send(chatId, operationResult.botAnswer());
     }
 
     private void send(final long chatId, final BotAnswer botAnswer) {

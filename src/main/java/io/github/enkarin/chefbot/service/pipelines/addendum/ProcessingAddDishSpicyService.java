@@ -1,6 +1,7 @@
 package io.github.enkarin.chefbot.service.pipelines.addendum;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
+import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.service.DishService;
@@ -17,14 +18,14 @@ public class ProcessingAddDishSpicyService implements ProcessingService {
     private final DishService dishService;
 
     @Override
-    public ChatStatus execute(final long userId, final String text) {
+    public ExecutionResult execute(final long userId, final String text) {
         return switch (text.toLowerCase(Locale.ROOT)) {
             case "да" -> {
                 dishService.putDishIsSpicy(userId);
-                yield ChatStatus.NEW_DISH_KITCHEN;
+                yield new ExecutionResult(ChatStatus.NEW_DISH_KITCHEN);
             }
-            case "нет" -> ChatStatus.NEW_DISH_KITCHEN;
-            default -> getCurrentStatus();
+            case "нет" -> new ExecutionResult(ChatStatus.NEW_DISH_KITCHEN);
+            default -> new ExecutionResult(getCurrentStatus());
         };
     }
 

@@ -1,6 +1,7 @@
 package io.github.enkarin.chefbot.service.pipelines.search;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
+import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.service.SearchFilterService;
@@ -17,18 +18,18 @@ public class ProcessingSearchSpicyService implements ProcessingService {
     private final SearchFilterService filterService;
 
     @Override
-    public ChatStatus execute(final long userId, final String text) {
+    public ExecutionResult execute(final long userId, final String text) {
         return switch (text.toLowerCase(Locale.ROOT)) {
             case "да" -> {
                 filterService.putSpicySign(userId, true);
-                yield ChatStatus.SELECT_DISH_KITCHEN;
+                yield new ExecutionResult(ChatStatus.SELECT_DISH_KITCHEN);
             }
             case "нет" -> {
                 filterService.putSpicySign(userId, false);
-                yield ChatStatus.SELECT_DISH_KITCHEN;
+                yield new ExecutionResult(ChatStatus.SELECT_DISH_KITCHEN);
             }
-            case "любое" -> ChatStatus.SELECT_DISH_KITCHEN;
-            default -> getCurrentStatus();
+            case "любое" -> new ExecutionResult(ChatStatus.SELECT_DISH_KITCHEN);
+            default -> new ExecutionResult(getCurrentStatus());
         };
     }
 

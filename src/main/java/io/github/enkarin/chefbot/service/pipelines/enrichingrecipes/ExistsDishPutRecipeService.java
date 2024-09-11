@@ -1,6 +1,7 @@
 package io.github.enkarin.chefbot.service.pipelines.enrichingrecipes;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
+import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.service.ModerationService;
@@ -15,16 +16,16 @@ public class ExistsDishPutRecipeService implements ProcessingService {
     private final ModerationService moderationService;
 
     @Override
-    public ChatStatus execute(final long userId, final String text) {
+    public ExecutionResult execute(final long userId, final String text) {
         if (text.length() <= 2048) {
             dishService.putDishRecipe(userId, text);
             if (dishService.editableDishWasPublish(userId)) {
                 dishService.putNonPublishFlagForEditableDish(userId);
                 moderationService.createModerationRequest(userId);
             }
-            return ChatStatus.MAIN_MENU;
+            return new ExecutionResult(ChatStatus.MAIN_MENU);
         } else {
-            return getCurrentStatus();
+            return new ExecutionResult(getCurrentStatus());
         }
     }
 

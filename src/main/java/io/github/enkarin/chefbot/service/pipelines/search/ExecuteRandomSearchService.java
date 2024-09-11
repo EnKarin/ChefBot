@@ -1,6 +1,7 @@
 package io.github.enkarin.chefbot.service.pipelines.search;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
+import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.service.SearchFilterService;
@@ -16,13 +17,13 @@ public class ExecuteRandomSearchService implements ProcessingService {
     private final UserService userService;
 
     @Override
-    public ChatStatus execute(final long userId, final String text) {
+    public ExecutionResult execute(final long userId, final String text) {
         if ("вернуться в главное меню".equalsIgnoreCase(text)) {
             searchFilterService.deleteSearchFilter(userId);
             userService.switchToNewStatus(userId, ChatStatus.MAIN_MENU);
-            return ChatStatus.MAIN_MENU;
+            return new ExecutionResult(ChatStatus.MAIN_MENU);
         } else {
-            return getCurrentStatus();
+            return new ExecutionResult(getCurrentStatus());
         }
     }
 

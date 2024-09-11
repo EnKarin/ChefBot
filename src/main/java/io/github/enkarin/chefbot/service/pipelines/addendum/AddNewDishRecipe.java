@@ -1,6 +1,7 @@
 package io.github.enkarin.chefbot.service.pipelines.addendum;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
+import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.service.pipelines.ProcessingService;
@@ -13,9 +14,9 @@ public class AddNewDishRecipe implements ProcessingService {
     private final DishService dishService;
 
     @Override
-    public ChatStatus execute(final long userId, final String text) {
+    public ExecutionResult execute(final long userId, final String text) {
         dishService.putDishRecipe(userId, text);
-        return ChatStatus.NEW_DISH_NEED_PUBLISH;
+        return new ExecutionResult(ChatStatus.NEW_DISH_NEED_PUBLISH);
     }
 
     @Override
