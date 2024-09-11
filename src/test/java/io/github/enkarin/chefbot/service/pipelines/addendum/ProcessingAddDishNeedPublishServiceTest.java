@@ -30,7 +30,7 @@ class ProcessingAddDishNeedPublishServiceTest extends TestBase {
         userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
         dishService.initDishName(USER_ID, "1 dish");
 
-        assertThat(service.execute(USER_ID, "Да")).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(service.execute(USER_ID, "Да").chatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
         assertThat(moderationRequestRepository.count()).isEqualTo(1);
     }
 
@@ -39,11 +39,11 @@ class ProcessingAddDishNeedPublishServiceTest extends TestBase {
         userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
         dishService.initDishName(USER_ID, "1 dish");
 
-        assertThat(service.execute(USER_ID, "нет")).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(service.execute(USER_ID, "нет").chatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
     }
 
     @Test
     void executeWithIncorrectInput() {
-        assertThat(service.execute(USER_ID, "aboba")).isEqualTo(ChatStatus.NEW_DISH_NEED_PUBLISH);
+        assertThat(service.execute(USER_ID, "aboba").chatStatus()).isEqualTo(ChatStatus.NEW_DISH_NEED_PUBLISH);
     }
 }

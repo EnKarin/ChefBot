@@ -17,8 +17,7 @@ public class RequestDeclineCause implements ProcessingService {
 
     @Override
     public ExecutionResult execute(final long userId, final String text) {
-        moderationService.declineRequest(userId, text);
-        return new ExecutionResult(userService.getPreviousChatStatus(userId));
+        return new ExecutionResult(userService.getPreviousChatStatus(userId), moderationService.declineRequest(userId, text));
     }
 
     @Override

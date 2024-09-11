@@ -26,7 +26,7 @@ class ProcessingSearchDishTypeWithFindRecipeTest extends TestBase {
     @ParameterizedTest
     @EnumSource(DishType.class)
     void executeShouldWork(final DishType dishType) {
-        assertThat(searchDishTypeService.execute(USER_ID, dishType.getLocalisedName())).isEqualTo(SELECT_DISH_SPICY);
+        assertThat(searchDishTypeService.execute(USER_ID, dishType.getLocalisedName()).chatStatus()).isEqualTo(SELECT_DISH_SPICY);
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
                 .get()
@@ -39,7 +39,7 @@ class ProcessingSearchDishTypeWithFindRecipeTest extends TestBase {
 
     @Test
     void executeShouldWorkWithUnknownInput() {
-        assertThat(searchDishTypeService.execute(USER_ID, "unknown")).isEqualTo(SELECT_DISH_SPICY);
+        assertThat(searchDishTypeService.execute(USER_ID, "unknown").chatStatus()).isEqualTo(SELECT_DISH_SPICY);
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
                 .get()

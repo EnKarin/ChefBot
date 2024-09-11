@@ -16,7 +16,7 @@ class ProcessingAddDishNameServiceTest extends TestBase {
     void executeWithEmptyInput() {
         userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
-        assertThat(processingAddDishNameService.execute(USER_ID, "")).isEqualTo(NEW_DISH_NAME);
+        assertThat(processingAddDishNameService.execute(USER_ID, "").chatStatus()).isEqualTo(NEW_DISH_NAME);
         assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish()).isNull();
     }
 
@@ -24,7 +24,7 @@ class ProcessingAddDishNameServiceTest extends TestBase {
     void executeWithCorrectInput() {
         userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
-        assertThat(processingAddDishNameService.execute(USER_ID, "anyName")).isEqualTo(NEW_DISH_TYPE);
+        assertThat(processingAddDishNameService.execute(USER_ID, "anyName").chatStatus()).isEqualTo(NEW_DISH_TYPE);
         assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish().getDishName()).isEqualTo("anyName");
     }
 }

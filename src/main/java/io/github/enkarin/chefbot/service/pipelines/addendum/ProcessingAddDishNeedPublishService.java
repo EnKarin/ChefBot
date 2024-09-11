@@ -19,10 +19,7 @@ public class ProcessingAddDishNeedPublishService implements ProcessingService {
     @Override
     public ExecutionResult execute(final long userId, final String text) {
         return switch (text.toLowerCase(Locale.ROOT)) {
-            case "да" -> {
-                moderationService.createModerationRequest(userId);
-                yield new ExecutionResult(ChatStatus.MAIN_MENU);
-            }
+            case "да" -> new ExecutionResult(ChatStatus.MAIN_MENU, moderationService.createModerationRequest(userId));
             case "нет" -> new ExecutionResult(ChatStatus.MAIN_MENU);
             default -> new ExecutionResult(getCurrentStatus());
         };

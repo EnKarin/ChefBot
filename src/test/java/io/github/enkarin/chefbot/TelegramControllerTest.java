@@ -3,6 +3,7 @@ package io.github.enkarin.chefbot;
 import io.github.enkarin.chefbot.controllers.TelegramController;
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.dto.ModerationRequestMessageDto;
+import io.github.enkarin.chefbot.dto.OperationResult;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
@@ -164,6 +165,7 @@ class TelegramControllerTest extends ModerationTest {
         userService.switchToNewStatus(USER_ID, ChatStatus.SELECT_DISH_PUBLISHED);
 
         assertThat(telegramController.processingNonCommandInput(USER_ID, "все блюда"))
+                .extracting(OperationResult::botAnswer)
                 .extracting(BotAnswer::messageText)
                 .isEqualTo("Подходящие блюда не найдены. Вы возвращены в главное меню.");
         assertThat(userRepository.findById(USER_ID)).isPresent().get()

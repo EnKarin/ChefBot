@@ -1,6 +1,7 @@
 package io.github.enkarin.chefbot.controllers;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
+import io.github.enkarin.chefbot.dto.ModerationRequestMessageDto;
 import io.github.enkarin.chefbot.dto.ModerationResultDto;
 import io.github.enkarin.chefbot.dto.OperationResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
@@ -12,6 +13,8 @@ import io.github.enkarin.chefbot.service.pipelines.ProcessingFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -77,5 +80,13 @@ public class TelegramController {
     public BotAnswer declineModerationRequest(final long userId, final String callbackData) {
         moderationService.startModerate(userId, Long.parseLong(callbackData));
         return processingFacade.goToStatus(userId, ChatStatus.WRITE_DECLINE_MODERATION_REQUEST);
+    }
+
+    public Set<Long> findAvailableModeratorsId(final long chatId) {
+        return userService.getAllModeratorsWithoutCurrentUser(chatId);
+    }
+
+    public void addRequestMessages(final long requestId, final Set<ModerationRequestMessageDto> moderationRequestMessageDtoSet) {
+        moderationService.addRequestMessages(requestId, moderationRequestMessageDtoSet);
     }
 }

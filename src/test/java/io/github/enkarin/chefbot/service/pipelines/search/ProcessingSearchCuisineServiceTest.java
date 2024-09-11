@@ -32,7 +32,7 @@ class ProcessingSearchCuisineServiceTest extends TestBase {
     @ParameterizedTest
     @EnumSource(WorldCuisine.class)
     void executeShouldWork(final WorldCuisine cuisine) {
-        assertThat(searchCuisineService.execute(USER_ID, cuisine.getLocalizedValue())).isEqualTo(SELECT_DISH_PUBLISHED);
+        assertThat(searchCuisineService.execute(USER_ID, cuisine.getLocalizedValue()).chatStatus()).isEqualTo(SELECT_DISH_PUBLISHED);
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
                 .get()
@@ -43,7 +43,7 @@ class ProcessingSearchCuisineServiceTest extends TestBase {
 
     @Test
     void executeShouldWorkWithUnknownText() {
-        assertThat(searchCuisineService.execute(USER_ID, "unknown")).isEqualTo(SELECT_DISH_PUBLISHED);
+        assertThat(searchCuisineService.execute(USER_ID, "unknown").chatStatus()).isEqualTo(SELECT_DISH_PUBLISHED);
         assertThat(userRepository.findById(USER_ID).orElseThrow().getSearchFilter().getCuisine()).isNull();
     }
 }

@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,14 +29,16 @@ public class ModerationService {
     private final DishEntityDtoMapper dishEntityDtoMapper;
     private final UserRepository userRepository;
 
-    public void createModerationRequest(final long userId) {
-        moderationRequestRepository.save(ModerationRequest.builder()
+    public ModerationDishDto createModerationRequest(final long userId) {
+        final ModerationRequest moderationRequest = moderationRequestRepository.save(ModerationRequest.builder()
                 .moderationDish(userService.findUser(userId).getEditabledDish())
-                .fresh(true)
                 .build());
+        final ModerationDishDto result = dishEntityDtoMapper.entityToDto(moderationRequest.getModerationDish());
+        result.setRequestId(moderationRequest.getId());
+        return result;
     }
 
-    void addRequestMessages(final long moderationRequestId, final Set<ModerationRequestMessageDto> moderationRequestMessageDtoSet) {
+    public void addRequestMessages(final long moderationRequestId, final Set<ModerationRequestMessageDto> moderationRequestMessageDtoSet) {
         final ModerationRequest currentRequest = moderationRequestRepository.findById(moderationRequestId).orElseThrow();
         moderationRequestMessageRepository.saveAll(moderationRequestMessageDtoSet.stream()
                 .map(moderationRequestMessageEntityDtoMapper::dtoToEntity)
@@ -45,17 +46,8 @@ public class ModerationService {
                 .collect(Collectors.toSet()));
     }
 
-    Set<ModerationDishDto> findAllFreshRequests() {
-        return findAllRequests(moderationRequestRepository.findByFreshIsTrue());
-    }
-
     Set<ModerationDishDto> findAllRequests() {
-        return findAllRequests(moderationRequestRepository.findByDeclineCauseIsNull());
-    }
-
-    private Set<ModerationDishDto> findAllRequests(final List<ModerationRequest> moderationRequests) {
-        moderationRequests.forEach(moderationRequest -> moderationRequest.setFresh(false));
-        return moderationRequests.stream().map(moderationRequest -> {
+        return moderationRequestRepository.findAll().stream().map(moderationRequest -> {
             final ModerationDishDto dto = dishEntityDtoMapper.entityToDto(moderationRequest.getModerationDish());
             dto.setRequestId(moderationRequest.getId());
             return dto;
@@ -73,26 +65,19 @@ public class ModerationService {
         return resultDto;
     }
 
-    public void declineRequest(final long userId, final String cause) {
+    public ModerationResultDto declineRequest(final long userId, final String cause) {
         final User user = userService.findUser(userId);
         final Dish moderableDish = user.getModerableDish();
         moderableDish.setPublished(false);
         final ModerationRequest moderationRequest = moderableDish.getModerationRequest();
-        moderationRequest.setDeclineCause(cause);
+        final ModerationResultDto moderationResultDto = ModerationResultDto.createDeclineResult(moderableDish.getDishName(),
+                moderableDish.getOwner().getChatId(),
+                moderationRequest.getModerationRequestMessages().stream().map(moderationRequestMessageEntityDtoMapper::entityToDto).collect(Collectors.toSet()),
+                cause);
         user.setModerableDish(null);
+        moderationRequestRepository.delete(moderationRequest);
         userRepository.save(user);
-    }
-
-    public List<ModerationResultDto> findAndRemoveDeclinedRequests() {
-        final List<ModerationRequest> declinedRequest = moderationRequestRepository.findByDeclineCauseIsNotNull();
-        final List<ModerationResultDto> result = declinedRequest.stream()
-                .map(moderationRequest -> ModerationResultDto.createDeclineResult(moderationRequest.getModerationDish().getDishName(),
-                        moderationRequest.getModerationDish().getOwner().getChatId(),
-                        moderationRequest.getModerationRequestMessages().stream().map(moderationRequestMessageEntityDtoMapper::entityToDto).collect(Collectors.toSet()),
-                        moderationRequest.getDeclineCause()))
-                .toList();
-        moderationRequestRepository.deleteAll(declinedRequest);
-        return result;
+        return moderationResultDto;
     }
 
     public void startModerate(final long userId, final long requestId) {

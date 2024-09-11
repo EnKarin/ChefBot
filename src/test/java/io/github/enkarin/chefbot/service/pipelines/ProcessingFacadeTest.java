@@ -45,7 +45,7 @@ class ProcessingFacadeTest extends TestBase {
     void execute() {
         userRepository.save(User.builder().id(USER_ID).chatId(CHAT_ID).username(USERNAME).chatStatus(ChatStatus.APPROVE_BACK_TO_MAIN_MENU).build());
 
-        assertThat(processingFacade.execute(USER_ID, "Да").messageText()).isEqualTo("Вы в главном меню. Выберете следующую команду для выполнения.");
+        assertThat(processingFacade.execute(USER_ID, "Да").botAnswer().messageText()).isEqualTo("Вы в главном меню. Выберете следующую команду для выполнения.");
         assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
     }
 
@@ -54,7 +54,7 @@ class ProcessingFacadeTest extends TestBase {
         userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
         userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_NEED_PUBLISH);
 
-        assertThat(processingFacade.execute(USER_ID, "aboba").messageText())
+        assertThat(processingFacade.execute(USER_ID, "aboba").botAnswer().messageText())
                 .isEqualTo("""
                         Хотите опубликовать это блюдо?
                         Когда оно пройдёт модерацию, то станет доступно всем пользователям.
@@ -123,7 +123,7 @@ class ProcessingFacadeTest extends TestBase {
         processingFacade.execute(USER_ID, "Закуска"); //select soup
         processingFacade.execute(USER_ID, "нет"); //select spicy
         processingFacade.execute(USER_ID, "Славянская"); //select cuisine
-        final BotAnswer userMessage = processingFacade.execute(USER_ID, "все блюда"); //select published
+        final BotAnswer userMessage = processingFacade.execute(USER_ID, "все блюда").botAnswer(); //select published
 
         assertThat(userMessage)
                 .isNotNull()
@@ -142,7 +142,7 @@ class ProcessingFacadeTest extends TestBase {
         processingFacade.execute(USER_ID, "Любое"); //select type
         processingFacade.execute(USER_ID, "нет"); //select spicy
         processingFacade.execute(USER_ID, "Славянская"); //select cuisine
-        final BotAnswer userMessage = processingFacade.execute(USER_ID, "случайное блюдо"); //select published
+        final BotAnswer userMessage = processingFacade.execute(USER_ID, "случайное блюдо").botAnswer(); //select published
 
         assertThat(userMessage)
                 .isNotNull()

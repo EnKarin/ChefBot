@@ -16,7 +16,7 @@ class EnrichingRecipesServiceTest extends TestBase {
         createUser(ChatStatus.ENRICHING_RECIPES);
         initDishes();
 
-        assertThat(enrichingRecipesService.execute(USER_ID, "sixth")).isEqualTo(ChatStatus.EXISTS_DISH_PUT_RECIPE);
+        assertThat(enrichingRecipesService.execute(USER_ID, "sixth").chatStatus()).isEqualTo(ChatStatus.EXISTS_DISH_PUT_RECIPE);
         assertThat(userService.findUser(USER_ID).getEditabledDish().getDishName()).isEqualTo("sixth");
     }
 }

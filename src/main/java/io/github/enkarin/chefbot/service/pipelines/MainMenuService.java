@@ -1,14 +1,15 @@
 package io.github.enkarin.chefbot.service.pipelines;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
+import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MainMenuService implements ProcessingService {
     @Override
-    public ChatStatus execute(long userId, String text) {
-        return ChatStatus.MAIN_MENU;
+    public ExecutionResult execute(long userId, String text) {
+        return new ExecutionResult(ChatStatus.MAIN_MENU);
     }
 
     @Override

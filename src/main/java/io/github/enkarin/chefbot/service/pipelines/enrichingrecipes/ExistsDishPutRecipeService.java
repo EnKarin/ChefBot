@@ -21,9 +21,10 @@ public class ExistsDishPutRecipeService implements ProcessingService {
             dishService.putDishRecipe(userId, text);
             if (dishService.editableDishWasPublish(userId)) {
                 dishService.putNonPublishFlagForEditableDish(userId);
-                moderationService.createModerationRequest(userId);
+                return new ExecutionResult(ChatStatus.MAIN_MENU, moderationService.createModerationRequest(userId));
+            } else {
+                return new ExecutionResult(ChatStatus.MAIN_MENU);
             }
-            return new ExecutionResult(ChatStatus.MAIN_MENU);
         } else {
             return new ExecutionResult(getCurrentStatus());
         }

@@ -77,6 +77,18 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
         }
     }
 
+    private void processingResponse(final long chatId, final OperationResult operationResult) {
+        operationResult.systemAction().ifPresent(action -> {
+            if (action instanceof ModerationResultDto moderationResultDto) {
+                sendDeclineResultToOwner(moderationResultDto);
+            } else if (action instanceof ModerationDishDto moderationDishDto) {
+                telegramController.addRequestMessages(moderationDishDto.getRequestId(),
+                        sendModerationRequests(telegramController.findAvailableModeratorsId(moderationDishDto.getOwnerChatId()), moderationDishDto));
+            }
+        });
+        send(chatId, operationResult.botAnswer());
+    }
+
     private void sendApproveResultToOwner(final ModerationResultDto moderationResultDto) {
         try {
             execute(defaultConfigurationMessage(moderationResultDto.ownerChat(),
@@ -87,7 +99,7 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
         }
     }
 
-    public void sendDeclineResultToOwner(final ModerationResultDto moderationResultDto) {
+    private void sendDeclineResultToOwner(final ModerationResultDto moderationResultDto) {
         try {
             execute(defaultConfigurationMessage(moderationResultDto.ownerChat(), "Блюдо "
                     .concat(moderationResultDto.dishName())
@@ -105,17 +117,6 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
         } catch (Exception e) {
             log.error(e.toString());
         }
-    }
-
-    private void processingResponse(final long chatId, final OperationResult operationResult) {
-        operationResult.systemAction().ifPresent(action -> {
-            if(action instanceof ModerationResultDto) {
-                //todo
-            } else if(action instanceof ModerationDishDto) {
-                //todo
-            }
-        });
-        send(chatId, operationResult.botAnswer());
     }
 
     private void send(final long chatId, final BotAnswer botAnswer) {

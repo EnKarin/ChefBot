@@ -34,7 +34,7 @@ class ProcessingSearchSpicyServiceTest extends TestBase {
     @ParameterizedTest
     @MethodSource("provideTextAndResult")
     void executeShouldWork(final String text, final ChatStatus status, final Boolean isSpicy) {
-        assertThat(searchSpicyService.execute(USER_ID, text)).isEqualTo(status);
+        assertThat(searchSpicyService.execute(USER_ID, text).chatStatus()).isEqualTo(status);
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
                 .get()
@@ -54,7 +54,7 @@ class ProcessingSearchSpicyServiceTest extends TestBase {
 
     @Test
     void executeShouldWorkWithUnknownInput() {
-        assertThat(searchSpicyService.execute(USER_ID, "unknown")).isEqualTo(SELECT_DISH_SPICY);
+        assertThat(searchSpicyService.execute(USER_ID, "unknown").chatStatus()).isEqualTo(SELECT_DISH_SPICY);
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
                 .get()

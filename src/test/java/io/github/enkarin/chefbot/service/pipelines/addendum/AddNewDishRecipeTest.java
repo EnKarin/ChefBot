@@ -20,7 +20,7 @@ class AddNewDishRecipeTest extends TestBase {
         createUser(ChatStatus.NEW_DISH_RECIPE);
         dishService.initDishName(USER_ID, "Суп");
 
-        assertThat(addNewDishRecipe.execute(USER_ID, "Варить")).isEqualTo(ChatStatus.NEW_DISH_NEED_PUBLISH);
+        assertThat(addNewDishRecipe.execute(USER_ID, "Варить").chatStatus()).isEqualTo(ChatStatus.NEW_DISH_NEED_PUBLISH);
         assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish().getRecipe()).isEqualTo("Варить");
     }
 }
