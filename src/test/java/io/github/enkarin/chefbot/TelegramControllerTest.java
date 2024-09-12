@@ -5,20 +5,29 @@ import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.dto.ModerationRequestMessageDto;
 import io.github.enkarin.chefbot.dto.OperationResult;
 import io.github.enkarin.chefbot.entity.Dish;
+import io.github.enkarin.chefbot.entity.ModerationRequestMessage;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
+import io.github.enkarin.chefbot.mappers.ModerationRequestMessageEntityDtoMapper;
 import io.github.enkarin.chefbot.util.ModerationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TelegramControllerTest extends ModerationTest {
     @Autowired
     private TelegramController telegramController;
+
+    @Autowired
+    private ModerationRequestMessageEntityDtoMapper mapper;
 
     @Test
     void executeWorkerCommandStart() {
@@ -183,5 +192,35 @@ class TelegramControllerTest extends ModerationTest {
             assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("fifth", "sixth");
         });
         assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.ENRICHING_RECIPES);
+    }
+
+    @Test
+    void findAvailableModeratorsId() {
+        final long noModeratorId = USER_ID - 5;
+        userRepository.save(User.builder().id(USER_ID).chatId(CHAT_ID).username("a").moderator(true).build());
+        userRepository.save(User.builder().id(USER_ID - 1).chatId(CHAT_ID - 1).username("b").moderator(true).build());
+        userRepository.save(User.builder().id(USER_ID - 2).chatId(CHAT_ID - 2).username("c").moderator(true).build());
+        userService.createOrUpdateUser(noModeratorId, CHAT_ID - 5, USERNAME);
+
+        assertThat(telegramController.findAvailableModeratorsId(CHAT_ID))
+                .hasSize(2)
+                .doesNotContain(noModeratorId, USER_ID);
+    }
+
+    @Test
+    void addRequestMessages() {
+        moderationInit();
+        final Set<ModerationRequestMessageDto> messageDtoSet = moderationRequestMessageRepository
+            .saveAll(List.of(ModerationRequestMessage.builder().messageId(13).chatId(130).build(), ModerationRequestMessage.builder().messageId(13).chatId(133).build()))
+            .stream()
+            .map(mapper::entityToDto)
+            .collect(Collectors.toSet());
+
+        telegramController.addRequestMessages(moderationRequestsId[0], messageDtoSet);
+
+        assertThat(moderationRequestMessageRepository.findAll()).extracting(ModerationRequestMessage::getChatId).contains(130L, 133L, 10L, 11L);
+        assertThat(telegramController.approveModerationRequest(Long.toString(moderationRequestsId[0])).messageForRemove())
+                .flatExtracting(Function.identity())
+                .contains(messageDtoSet.toArray());
     }
 }
