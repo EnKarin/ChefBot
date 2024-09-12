@@ -2,7 +2,6 @@ package io.github.enkarin.chefbot.service;
 
 import io.github.enkarin.chefbot.adapters.TelegramAdapter;
 import io.github.enkarin.chefbot.dto.ModerationRequestMessageDto;
-import io.github.enkarin.chefbot.entity.ModerationRequest;
 import io.github.enkarin.chefbot.entity.ModerationRequestMessage;
 import io.github.enkarin.chefbot.util.ModerationTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,24 +31,12 @@ class ModerationRequestSenderTest extends ModerationTest {
     }
 
     @Test
-    void sendFreshRequests() {
-        when(adapter.sendModerationRequests(eq(Set.of(CHAT_ID - 1)), any())).thenReturn(Set.of(new ModerationRequestMessageDto(1000, 1111)));
-
-        moderationRequestSender.sendFreshRequests();
-
-        verify(adapter, times(2)).sendModerationRequests(eq(Set.of(CHAT_ID - 1)), any());
-        assertThat(moderationRequestRepository.findAll()).noneMatch(ModerationRequest::isFresh);
-        assertThat(moderationRequestMessageRepository.findAll()).extracting(ModerationRequestMessage::getChatId).filteredOn(chatId -> chatId == 1111).hasSize(2);
-    }
-
-    @Test
     void resendOldRequests() {
         when(adapter.sendModerationRequests(eq(Set.of(CHAT_ID - 1)), any())).thenReturn(Set.of(new ModerationRequestMessageDto(1000, 1111)));
 
         moderationRequestSender.resendOldRequests();
 
-        verify(adapter, times(4)).sendModerationRequests(eq(Set.of(CHAT_ID - 1)), any());
-        assertThat(moderationRequestRepository.findAll()).noneMatch(ModerationRequest::isFresh);
-        assertThat(moderationRequestMessageRepository.findAll()).extracting(ModerationRequestMessage::getChatId).filteredOn(chatId -> chatId == 1111).hasSize(4);
+        verify(adapter, times(5)).sendModerationRequests(eq(Set.of(CHAT_ID - 1)), any());
+        assertThat(moderationRequestMessageRepository.findAll()).extracting(ModerationRequestMessage::getChatId).filteredOn(chatId -> chatId == 1111).hasSize(5);
     }
 }

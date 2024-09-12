@@ -12,6 +12,6 @@ class MainMenuServiceTest extends TestBase {
 
     @Test
     void execute() {
-        Assertions.assertThat(mainMenuService.execute(0, null)).isEqualTo(ChatStatus.MAIN_MENU);
+        Assertions.assertThat(mainMenuService.execute(0, null).chatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
     }
 }

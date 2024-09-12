@@ -25,7 +25,7 @@ class ProcessingAddDishCuisineServiceTest extends TestBase {
         userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
         dishService.initDishName(USER_ID, "dish");
 
-        assertThat(cuisineService.execute(USER_ID, cuisine.getLocalizedValue())).isEqualTo(NEW_DISH_FOODSTUFF);
+        assertThat(cuisineService.execute(USER_ID, cuisine.getLocalizedValue()).chatStatus()).isEqualTo(NEW_DISH_FOODSTUFF);
         assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish().getCuisine()).isEqualTo(cuisine);
     }
 
@@ -34,7 +34,7 @@ class ProcessingAddDishCuisineServiceTest extends TestBase {
         createUser(NEW_DISH_KITCHEN);
         dishService.initDishName(USER_ID, "dish");
 
-        assertThat(cuisineService.execute(USER_ID, "aboba")).isEqualTo(NEW_DISH_KITCHEN);
+        assertThat(cuisineService.execute(USER_ID, "aboba").chatStatus()).isEqualTo(NEW_DISH_KITCHEN);
         assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish().getCuisine()).isNull();
     }
 }

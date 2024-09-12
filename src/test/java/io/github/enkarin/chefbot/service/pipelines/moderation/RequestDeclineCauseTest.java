@@ -1,6 +1,5 @@
 package io.github.enkarin.chefbot.service.pipelines.moderation;
 
-import io.github.enkarin.chefbot.dto.ModerationResultDto;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.service.ModerationService;
 import io.github.enkarin.chefbot.util.ModerationTest;
@@ -23,8 +22,7 @@ class RequestDeclineCauseTest extends ModerationTest {
         userService.switchToNewStatus(USER_ID, ChatStatus.WRITE_DECLINE_MODERATION_REQUEST);
         moderationService.startModerate(USER_ID, moderationRequestsId[0]);
 
-        assertThat(requestDeclineCause.execute(USER_ID, "Bad product")).isEqualTo(ChatStatus.NEW_DISH_NAME);
+        assertThat(requestDeclineCause.execute(USER_ID, "Bad product").chatStatus()).isEqualTo(ChatStatus.NEW_DISH_NAME);
         assertThat(userService.findUser(USER_ID).getModerableDish()).isNull();
-        assertThat(moderationService.findAndRemoveDeclinedRequests()).extracting(ModerationResultDto::declineCause).contains("Bad product");
     }
 }

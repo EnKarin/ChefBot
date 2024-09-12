@@ -31,8 +31,7 @@ class ProcessingSearchPublishedServiceTest extends TestBase {
         createUser(SELECT_DISH_PUBLISHED);
         searchFilterService.createSearchFilter(USER_ID);
 
-        assertThat(searchPublishedService.execute(USER_ID, text))
-                .isEqualTo(status);
+        assertThat(searchPublishedService.execute(USER_ID, text).chatStatus()).isEqualTo(status);
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
                 .get()

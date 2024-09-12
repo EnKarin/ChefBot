@@ -28,7 +28,7 @@ class ProcessingAddDishTypeServiceTest extends TestBase {
         createUser(NEW_DISH_TYPE);
         dishService.initDishName(USER_ID, "Кимчи");
 
-        assertThat(dishTypeService.execute(USER_ID, dishType.getLocalisedName())).isEqualTo(NEW_DISH_SPICY);
+        assertThat(dishTypeService.execute(USER_ID, dishType.getLocalisedName()).chatStatus()).isEqualTo(NEW_DISH_SPICY);
 
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
@@ -43,7 +43,7 @@ class ProcessingAddDishTypeServiceTest extends TestBase {
         createUser(NEW_DISH_TYPE);
         dishService.initDishName(USER_ID, "dish");
 
-        assertThat(dishTypeService.execute(USER_ID, "aboba")).isEqualTo(NEW_DISH_TYPE);
+        assertThat(dishTypeService.execute(USER_ID, "aboba").chatStatus()).isEqualTo(NEW_DISH_TYPE);
         assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish().getType()).isNull();
     }
 }

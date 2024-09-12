@@ -32,7 +32,7 @@ class ExistsDishPutRecipeServiceTest extends TestBase {
     void executeForPublish() {
         dishService.putEditableDish(USER_ID, "sixth");
 
-        assertThat(existsDishPutRecipeService.execute(USER_ID, "Жарить")).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(existsDishPutRecipeService.execute(USER_ID, "Жарить").chatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
         assertThat(dishRepository.findAll()).anySatisfy(dish -> {
             assertThat(dish.getRecipe()).isEqualTo("Жарить");
             assertThat(dish.isPublished()).isFalse();
@@ -52,7 +52,7 @@ class ExistsDishPutRecipeServiceTest extends TestBase {
         dishRepository.save(dish);
         dishService.putEditableDish(USER_ID, "fifth");
 
-        assertThat(existsDishPutRecipeService.execute(USER_ID, "Варить")).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(existsDishPutRecipeService.execute(USER_ID, "Варить").chatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
         assertThat(moderationRequestRepository.findAll()).extracting(ModerationRequest::getModerationDish).anySatisfy(d -> {
             assertThat(d.getDishName()).isEqualTo("fifth");
             assertThat(d.isPublished()).isFalse();
@@ -77,6 +77,6 @@ class ExistsDishPutRecipeServiceTest extends TestBase {
                 fafdsfjdsfjadsfjasdklfjasdfljdsfklasdjfkldsajfkasdjgaiowrjfn vqerjaiosnuifnrignifvnauiohqgiovnafvauhiwnfso[anvoihasinwjnuolsakndfsndfjasdnfkjaugnsjndsufahwunjsdn
                 fafdsfjdsfjadsfjasdklfjasdfljdsfklasdjfkldsajfkasdjgaiowrjfn vqerjaiosnuifnrignifvnauiohqgiovnafvauhiwnfso[anvoihasinwjnuolsakndfsndfjasdnfkjaugnsjndsufahwunjsdn
                 fafdsfjdsfjadsfjasdklfjasdfljdsfklasdjfkldsajfkasdjgaiowrjfn vqerjaiosnuifnrignifvnauiohqgiovnafvauhiwnfso[anvoihasinwjnuolsakndfsndfjasdnfkjaugnsjndsufahwunjsdn
-                """)).isEqualTo(ChatStatus.EXISTS_DISH_PUT_RECIPE);
+                """).chatStatus()).isEqualTo(ChatStatus.EXISTS_DISH_PUT_RECIPE);
     }
 }

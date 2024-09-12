@@ -22,7 +22,7 @@ class ProcessingNeedDishRecipeTest extends TestBase {
     void execute(final String text, final ChatStatus status) {
         createUser(GET_NEED_DISH_RECIPE);
 
-        assertThat(processingNeedDishRecipe.execute(USER_ID, text)).isEqualTo(status);
+        assertThat(processingNeedDishRecipe.execute(USER_ID, text).chatStatus()).isEqualTo(status);
     }
 
     static Stream<Arguments> provideTextAndResult() {

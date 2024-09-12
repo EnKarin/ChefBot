@@ -29,7 +29,7 @@ class ProcessingExecuteSearchServiceTest extends TestBase {
                 .searchFilter(searchFilterRepository.save(new SearchFilter()))
                 .build());
 
-        assertThat(executeSearchService.execute(USER_ID, "вернуться в главное меню")).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(executeSearchService.execute(USER_ID, "вернуться в главное меню").chatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
         assertThat(searchFilterRepository.count()).isEqualTo(0);
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
@@ -41,6 +41,6 @@ class ProcessingExecuteSearchServiceTest extends TestBase {
     @ParameterizedTest
     @ValueSource(strings = {"unknown", "more", "Вывести еще"})
     void executeShouldWork(final String text) {
-        assertThat(executeSearchService.execute(USER_ID, text)).isEqualTo(ChatStatus.EXECUTE_SEARCH);
+        assertThat(executeSearchService.execute(USER_ID, text).chatStatus()).isEqualTo(ChatStatus.EXECUTE_SEARCH);
     }
 }

@@ -26,7 +26,7 @@ class ExecuteRandomSearchServiceTest extends TestBase {
                 .searchFilter(searchFilterRepository.save(new SearchFilter()))
                 .build());
 
-        assertThat(randomSearchService.execute(USER_ID, "вернуться в главное меню")).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(randomSearchService.execute(USER_ID, "вернуться в главное меню").chatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
         assertThat(searchFilterRepository.count()).isEqualTo(0);
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
@@ -37,6 +37,6 @@ class ExecuteRandomSearchServiceTest extends TestBase {
 
     @Test
     void executeShouldWork() {
-        assertThat(randomSearchService.execute(USER_ID, "Вывести ещё")).isEqualTo(ChatStatus.EXECUTE_RANDOM_SEARCH);
+        assertThat(randomSearchService.execute(USER_ID, "Вывести ещё").chatStatus()).isEqualTo(ChatStatus.EXECUTE_RANDOM_SEARCH);
     }
 }

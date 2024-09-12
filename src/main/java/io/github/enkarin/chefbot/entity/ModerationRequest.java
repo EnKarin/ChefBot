@@ -38,10 +38,4 @@ public class ModerationRequest implements Serializable {
 
     @OneToMany(mappedBy = "currentModerationRequest", orphanRemoval = true)
     private List<ModerationRequestMessage> moderationRequestMessages;
-
-    @Column(name = "fresh")
-    private boolean fresh;
-
-    @Column(name = "decline_cause")
-    private String declineCause;
 }

@@ -31,12 +31,12 @@ class ApproveBackToMainMenuServiceTest extends TestBase {
 
     @Test
     void executeWithYes() {
-        assertThat(approveBackToMainMenuService.execute(USER_ID, "Да")).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(approveBackToMainMenuService.execute(USER_ID, "Да").chatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
     }
 
     @Test
     void executeWithUnexpectedInput() {
-        assertThat(approveBackToMainMenuService.execute(USER_ID, "Амогус")).isEqualTo(ChatStatus.APPROVE_BACK_TO_MAIN_MENU);
+        assertThat(approveBackToMainMenuService.execute(USER_ID, "Амогус").chatStatus()).isEqualTo(ChatStatus.APPROVE_BACK_TO_MAIN_MENU);
     }
 
     @Test
@@ -55,7 +55,7 @@ class ApproveBackToMainMenuServiceTest extends TestBase {
         userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_NAME);
         userService.switchToNewStatus(USER_ID, ChatStatus.APPROVE_BACK_TO_MAIN_MENU);
 
-        assertThat(approveBackToMainMenuService.execute(USER_ID, "Нет")).isEqualTo(ChatStatus.NEW_DISH_NAME);
+        assertThat(approveBackToMainMenuService.execute(USER_ID, "Нет").chatStatus()).isEqualTo(ChatStatus.NEW_DISH_NAME);
     }
 
     @Test
@@ -63,7 +63,7 @@ class ApproveBackToMainMenuServiceTest extends TestBase {
         createUser(ChatStatus.APPROVE_BACK_TO_MAIN_MENU);
         searchFilterService.createSearchFilter(USER_ID);
 
-        assertThat(approveBackToMainMenuService.execute(USER_ID, "да")).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(approveBackToMainMenuService.execute(USER_ID, "да").chatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
         assertThat(searchFilterRepository.count()).isEqualTo(0);
     }
 }

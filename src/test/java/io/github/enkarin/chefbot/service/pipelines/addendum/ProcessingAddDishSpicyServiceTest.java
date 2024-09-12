@@ -31,8 +31,7 @@ class ProcessingAddDishSpicyServiceTest extends TestBase {
         createUser(SELECT_DISH_SPICY);
         dishService.initDishName(USER_ID, "Кимчи");
 
-        assertThat(addDishSpicyService.execute(USER_ID, text))
-                .isEqualTo(status);
+        assertThat(addDishSpicyService.execute(USER_ID, text).chatStatus()).isEqualTo(status);
 
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()

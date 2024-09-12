@@ -1,6 +1,7 @@
 package io.github.enkarin.chefbot.service.pipelines.addendum;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
+import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.service.pipelines.ProcessingService;
@@ -14,13 +15,13 @@ public class ProcessingAddDishFoodstuffService implements ProcessingService {
     private final DishService dishService;
 
     @Override
-    public ChatStatus execute(final long userId, final String text) {
+    public ExecutionResult execute(final long userId, final String text) {
         if (StringUtils.isNoneBlank(text)) {
             final String[] foodstuffs = text.split("[,\n]");
             dishService.putDishFoodstuff(userId, foodstuffs);
-            return ChatStatus.GET_NEED_DISH_RECIPE;
+            return new ExecutionResult(ChatStatus.GET_NEED_DISH_RECIPE);
         }
-        return getCurrentStatus();
+        return new ExecutionResult(getCurrentStatus());
     }
 
     @Override
