@@ -13,9 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.capitalize;
@@ -37,6 +35,16 @@ public class DishService {
             } else {
                 renameCreatingDish(name, user);
             }
+        } else {
+            throw new DishNameAlreadyExistsInCurrentUserException(name);
+        }
+    }
+
+    @Transactional
+    public void renameCreatingDish(final long userId, final String name) {
+        final User user = userService.findUser(userId);
+        if (currentUserNotContainDishWithSpecifiedName(name, user)) {
+            renameCreatingDish(name, user);
         } else {
             throw new DishNameAlreadyExistsInCurrentUserException(name);
         }
@@ -84,12 +92,11 @@ public class DishService {
     @Transactional
     public void putDishFoodstuff(final long userId, final String... foodstuffNames) {
         final Dish dish = findEditableDish(userId);
-        final Set<Product> products = new HashSet<>();
+        dish.getProducts().clear();
         for (final String foodstuffName : foodstuffNames) {
             final String trimFoodstuff = capitalize(foodstuffName.trim().toLowerCase(Locale.ROOT));
-            products.add(productRepository.findById(trimFoodstuff).orElseGet(() -> productRepository.save(Product.builder().productName(trimFoodstuff).build())));
+            dish.getProducts().add(productRepository.findById(trimFoodstuff).orElseGet(() -> productRepository.save(Product.builder().productName(trimFoodstuff).build())));
         }
-        dish.setProducts(products);
     }
 
     @Transactional

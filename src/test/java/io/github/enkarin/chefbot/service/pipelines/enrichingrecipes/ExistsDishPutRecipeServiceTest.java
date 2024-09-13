@@ -62,6 +62,8 @@ class ExistsDishPutRecipeServiceTest extends TestBase {
 
     @Test
     void executeWithTooLargeRecipe() {
+        dishService.putEditableDish(USER_ID, "sixth");
+
         assertThat(existsDishPutRecipeService.execute(USER_ID, """
                 fafdsfjdsfjadsfjasdklfjasdfljdsfklasdjfkldsajfkasdjgaiowrjfn vqerjaiosnuifnrignifvnauiohqgiovnafvauhiwnfso[anvoihasinwjnuolsakndfsndfjasdnfkjaugnsjndsufahwunjsdn
                 fafdsfjdsfjadsfjasdklfjasdfljdsfklasdjfkldsajfkasdjgaiowrjfn vqerjaiosnuifnrignifvnauiohqgiovnafvauhiwnfso[anvoihasinwjnuolsakndfsndfjasdnfkjaugnsjndsufahwunjsdn
@@ -78,5 +80,6 @@ class ExistsDishPutRecipeServiceTest extends TestBase {
                 fafdsfjdsfjadsfjasdklfjasdfljdsfklasdjfkldsajfkasdjgaiowrjfn vqerjaiosnuifnrignifvnauiohqgiovnafvauhiwnfso[anvoihasinwjnuolsakndfsndfjasdnfkjaugnsjndsufahwunjsdn
                 fafdsfjdsfjadsfjasdklfjasdfljdsfklasdjfkldsajfkasdjgaiowrjfn vqerjaiosnuifnrignifvnauiohqgiovnafvauhiwnfso[anvoihasinwjnuolsakndfsndfjasdnfkjaugnsjndsufahwunjsdn
                 """).chatStatus()).isEqualTo(ChatStatus.EXISTS_DISH_PUT_RECIPE);
+        assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish().getRecipe()).isNull();
     }
 }

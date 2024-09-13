@@ -15,7 +15,7 @@ public class EditingNameService implements ProcessingService {
 
     @Override
     public ExecutionResult execute(final long userId, final String text) {
-        dishService.initDishName(userId, text);
+        dishService.renameCreatingDish(userId, text);
         dishService.dropPublishFlagForEditableDish(userId);
         return new ExecutionResult(ChatStatus.DISH_NEED_PUBLISH);
     }
