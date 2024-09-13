@@ -20,7 +20,7 @@ public class SelectEditingDishNameService implements ProcessingService {
     }
 
     @Override
-    public BotAnswer getMessageForUser(long userId) {
+    public BotAnswer getMessageForUser(final long userId) {
         return new BotAnswer("Введите название блюда, которое вы хотите отредактировать");
     }
 

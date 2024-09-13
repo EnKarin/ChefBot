@@ -1,21 +1,21 @@
-package io.github.enkarin.chefbot.service.pipelines.addendum;
+package io.github.enkarin.chefbot.service.pipelines.edit;
 
+import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static io.github.enkarin.chefbot.enums.ChatStatus.NEW_DISH_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ProcessingAddDishNameServiceTest extends TestBase {
+class EditingNameServiceTest extends TestBase {
     @Autowired
-    private ProcessingAddDishNameService processingAddDishNameService;
+    private EditingNameService editingNameService;
 
     @Test
     void executeWithCorrectInput() {
         userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
-        assertThat(processingAddDishNameService.execute(USER_ID, "anyName").chatStatus()).isEqualTo(NEW_DISH_TYPE);
+        assertThat(editingNameService.execute(USER_ID, "anyName").chatStatus()).isEqualTo(ChatStatus.DISH_NEED_PUBLISH);
         assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish().getDishName()).isEqualTo("anyName");
     }
 }

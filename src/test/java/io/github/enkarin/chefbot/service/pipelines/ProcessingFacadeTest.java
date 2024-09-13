@@ -68,7 +68,7 @@ class ProcessingFacadeTest extends TestBase {
         userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
         assertThat(processingFacade.goToStatus(USER_ID, ChatStatus.APPROVE_BACK_TO_MAIN_MENU)).satisfies(botAnswer -> {
-            assertThat(botAnswer.messageText()).isEqualTo("Вы хотите вернуться в главное меню? Весь прогресс текущей операции будет утерян.");
+            assertThat(botAnswer.messageText()).isEqualTo("Вы хотите вернуться в главное меню?");
             assertThat(botAnswer.userAnswerOptions().orElseThrow()).isEqualTo(YES_OR_NO.getAnswers());
         });
 
@@ -207,5 +207,29 @@ class ProcessingFacadeTest extends TestBase {
             assertThat(dish.getDishName()).isEqualTo("sixth");
         });
         assertThat(moderationRequestRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    void editDishSpicyPipelineTest() {
+        createUser(ChatStatus.SELECT_EDITING_DISH_NAME);
+        initDishes();
+
+        assertThat(processingFacade.execute(USER_ID, "fifth").botAnswer()).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).isEqualTo("Укажите поле, которое вы хотите отредактировать");
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
+        });
+        assertThat(processingFacade.execute(USER_ID, "Острота").botAnswer()).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).isEqualTo("Блюдо острое?");
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("Да", "Нет");
+        });
+        processingFacade.execute(USER_ID, "Да");
+        processingFacade.execute(USER_ID, "Нет");
+
+        assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(dishRepository.findAll()).anySatisfy(dish -> {
+            assertThat(dish.isSpicy()).isTrue();
+            assertThat(dish.isPublished()).isFalse();
+            assertThat(dish.getDishName()).isEqualTo("fifth");
+        });
     }
 }

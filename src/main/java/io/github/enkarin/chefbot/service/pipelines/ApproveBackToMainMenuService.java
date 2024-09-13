@@ -4,7 +4,6 @@ import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
-import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.service.SearchFilterService;
 import io.github.enkarin.chefbot.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class ApproveBackToMainMenuService implements ProcessingService {
     private final UserService userService;
-    private final DishService dishService;
     private final SearchFilterService searchFilterService;
 
     @Override

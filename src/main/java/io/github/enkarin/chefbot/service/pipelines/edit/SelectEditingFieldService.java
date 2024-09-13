@@ -13,19 +13,20 @@ public class SelectEditingFieldService implements ProcessingService {
     @Override
     public ExecutionResult execute(final long userId, final String text) {
         return new ExecutionResult(switch (text.toLowerCase(Locale.ROOT)) {
-            case "название" -> ChatStatus.EDITING_NAME;
-            case "острота" -> ChatStatus.EDITING_SPICY;
-            case "тип" -> ChatStatus.EDITING_TYPE;
-            case "кухня" -> ChatStatus.EDITING_KITCHEN;
-            case "список продуктов" -> ChatStatus.EDITING_FOODSTUFF;
-            case "рецепт" -> ChatStatus.EDITING_RECIPE;
-            default -> getCurrentStatus();
-        });
+                case "название" -> ChatStatus.EDITING_NAME;
+                case "острота" -> ChatStatus.EDITING_SPICY;
+                case "тип" -> ChatStatus.EDITING_TYPE;
+                case "кухня" -> ChatStatus.EDITING_KITCHEN;
+                case "список продуктов" -> ChatStatus.EDITING_FOODSTUFF;
+                case "рецепт" -> ChatStatus.EDITING_RECIPE;
+                default -> getCurrentStatus();
+            });
     }
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return new BotAnswer("Укажите поле, которое вы хотите отредактировать", "Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
+        return new BotAnswer("Укажите поле, которое вы хотите отредактировать",
+                "Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
     }
 
     @Override

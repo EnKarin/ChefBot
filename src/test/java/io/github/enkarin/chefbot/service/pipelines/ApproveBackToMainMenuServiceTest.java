@@ -47,7 +47,7 @@ class ApproveBackToMainMenuServiceTest extends TestBase {
 
         approveBackToMainMenuService.execute(USER_ID, "Да");
 
-        assertThat(userService.findUser(USER_ID).getEditabledDish()).isNull();
+        assertThat(dishService.findDishNamesWithoutRecipeForUser(USER_ID)).hasSize(1);
     }
 
     @Test

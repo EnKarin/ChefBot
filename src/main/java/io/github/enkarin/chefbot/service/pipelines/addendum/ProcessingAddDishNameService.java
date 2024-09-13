@@ -8,8 +8,6 @@ import io.github.enkarin.chefbot.service.pipelines.ProcessingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import static org.apache.commons.lang3.StringUtils.isNoneBlank;
-
 @Service
 @RequiredArgsConstructor
 public class ProcessingAddDishNameService implements ProcessingService {
@@ -18,12 +16,8 @@ public class ProcessingAddDishNameService implements ProcessingService {
 
     @Override
     public ExecutionResult execute(final long userId, final String text) {
-        if (isNoneBlank(text)) {
-            dishService.initDishName(userId, text);
-            return new ExecutionResult(ChatStatus.NEW_DISH_TYPE);
-        }
-
-        return new ExecutionResult(getCurrentStatus());
+        dishService.initDishName(userId, text);
+        return new ExecutionResult(ChatStatus.NEW_DISH_TYPE);
     }
 
     @Override
