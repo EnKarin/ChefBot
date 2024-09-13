@@ -3,6 +3,7 @@ package io.github.enkarin.chefbot.service.pipelines.addendum;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.repository.ModerationRequestRepository;
 import io.github.enkarin.chefbot.service.DishService;
+import io.github.enkarin.chefbot.service.pipelines.DishNeedPublishService;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -10,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ProcessingAddDishNeedPublishServiceTest extends TestBase {
+class DishNeedPublishServiceTest extends TestBase {
     @Autowired
-    private ProcessingAddDishNeedPublishService service;
+    private DishNeedPublishService service;
 
     @Autowired
     private DishService dishService;
@@ -44,6 +45,6 @@ class ProcessingAddDishNeedPublishServiceTest extends TestBase {
 
     @Test
     void executeWithIncorrectInput() {
-        assertThat(service.execute(USER_ID, "aboba").chatStatus()).isEqualTo(ChatStatus.NEW_DISH_NEED_PUBLISH);
+        assertThat(service.execute(USER_ID, "aboba").chatStatus()).isEqualTo(ChatStatus.DISH_NEED_PUBLISH);
     }
 }

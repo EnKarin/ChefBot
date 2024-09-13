@@ -52,7 +52,7 @@ class ProcessingFacadeTest extends TestBase {
     @Test
     void executeWithNewDishNeedPublish() {
         userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
-        userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_NEED_PUBLISH);
+        userService.switchToNewStatus(USER_ID, ChatStatus.DISH_NEED_PUBLISH);
 
         assertThat(processingFacade.execute(USER_ID, "aboba").botAnswer().messageText())
                 .isEqualTo("""
@@ -60,7 +60,7 @@ class ProcessingFacadeTest extends TestBase {
                         Когда оно пройдёт модерацию, то станет доступно всем пользователям.
                         Блюдо останется доступно вам вне зависимости от результата модерации.
                         """);
-        assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.NEW_DISH_NEED_PUBLISH);
+        assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.DISH_NEED_PUBLISH);
     }
 
     @Test

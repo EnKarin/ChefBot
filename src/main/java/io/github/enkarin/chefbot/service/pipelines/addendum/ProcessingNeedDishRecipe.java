@@ -15,7 +15,7 @@ public class ProcessingNeedDishRecipe implements ProcessingService {
     public ExecutionResult execute(final long userId, final String text) {
         return switch (text.toLowerCase(Locale.ROOT)) {
             case "да" -> new ExecutionResult(ChatStatus.NEW_DISH_RECIPE);
-            case "нет" -> new ExecutionResult(ChatStatus.NEW_DISH_NEED_PUBLISH);
+            case "нет" -> new ExecutionResult(ChatStatus.DISH_NEED_PUBLISH);
             default -> new ExecutionResult(getCurrentStatus());
         };
     }

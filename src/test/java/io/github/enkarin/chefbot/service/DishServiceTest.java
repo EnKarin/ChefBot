@@ -173,7 +173,7 @@ class DishServiceTest extends TestBase {
 
     @Test
     void putNonPublishFlag() {
-        dishService.putNonPublishFlagForEditableDish(USER_ID);
+        dishService.dropPublishFlagForEditableDish(USER_ID);
 
         assertThat(userService.findUser(USER_ID).getEditabledDish().isPublished()).isFalse();
     }

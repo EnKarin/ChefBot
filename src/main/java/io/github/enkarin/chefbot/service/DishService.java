@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Set;
 
 import static java.util.Objects.isNull;
@@ -32,7 +31,7 @@ public class DishService {
     @Transactional
     public void initDishName(final long userId, final String name) {
         final User user = userService.findUser(userId);
-        if (currentUserContainDishWithSpecifiedName(name, user)) {
+        if (currentUserNotContainDishWithSpecifiedName(name, user)) {
             if (isNull(user.getEditabledDish())) {
                 initNewDish(name, user);
             } else {
@@ -54,26 +53,20 @@ public class DishService {
                 .build()));
     }
 
-    private boolean currentUserContainDishWithSpecifiedName(final String name, final User user) {
+    private boolean currentUserNotContainDishWithSpecifiedName(final String name, final User user) {
         return user.getDishes().stream().map(Dish::getDishName).noneMatch(n -> n.equals(name));
-    }
-
-    @Transactional
-    public void deleteEditableDishWhereBackToMainMenu(final long userId) {
-        final User user = userService.findUser(userId);
-        final Dish deletedDish = user.getEditabledDish();
-        if (Objects.nonNull(deletedDish)) {
-            user.setEditabledDish(null);
-            if (user.getPreviousChatStatus().isNewDishStatus()) {
-                dishRepository.delete(deletedDish);
-            }
-        }
     }
 
     @Transactional
     public void putDishIsSpicy(final long userId) {
         final Dish dish = findEditableDish(userId);
         dish.setSpicy(true);
+    }
+
+    @Transactional
+    public void putDishIsNotSpicy(final long userId) {
+        final Dish dish = findEditableDish(userId);
+        dish.setSpicy(false);
     }
 
     @Transactional
@@ -123,7 +116,7 @@ public class DishService {
     }
 
     @Transactional
-    public void putNonPublishFlagForEditableDish(final long userId) {
+    public void dropPublishFlagForEditableDish(final long userId) {
         findEditableDish(userId).setPublished(false);
     }
 

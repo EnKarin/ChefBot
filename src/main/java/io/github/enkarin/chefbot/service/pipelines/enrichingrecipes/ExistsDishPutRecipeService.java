@@ -20,7 +20,7 @@ public class ExistsDishPutRecipeService implements ProcessingService {
         if (text.length() <= 2048) {
             dishService.putDishRecipe(userId, text);
             if (dishService.editableDishWasPublish(userId)) {
-                dishService.putNonPublishFlagForEditableDish(userId);
+                dishService.dropPublishFlagForEditableDish(userId);
                 return new ExecutionResult(ChatStatus.MAIN_MENU, moderationService.createModerationRequest(userId));
             } else {
                 return new ExecutionResult(ChatStatus.MAIN_MENU);

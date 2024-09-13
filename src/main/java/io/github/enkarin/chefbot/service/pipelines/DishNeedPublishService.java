@@ -1,11 +1,10 @@
-package io.github.enkarin.chefbot.service.pipelines.addendum;
+package io.github.enkarin.chefbot.service.pipelines;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.service.ModerationService;
-import io.github.enkarin.chefbot.service.pipelines.ProcessingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +12,7 @@ import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
-public class ProcessingAddDishNeedPublishService implements ProcessingService {
+public class DishNeedPublishService implements ProcessingService {
     private final ModerationService moderationService;
 
     @Override
@@ -36,6 +35,6 @@ public class ProcessingAddDishNeedPublishService implements ProcessingService {
 
     @Override
     public ChatStatus getCurrentStatus() {
-        return ChatStatus.NEW_DISH_NEED_PUBLISH;
+        return ChatStatus.DISH_NEED_PUBLISH;
     }
 }

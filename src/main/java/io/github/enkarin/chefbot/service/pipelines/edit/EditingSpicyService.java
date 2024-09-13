@@ -1,12 +1,11 @@
-package io.github.enkarin.chefbot.service.pipelines;
+package io.github.enkarin.chefbot.service.pipelines.edit;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.service.DishService;
-import io.github.enkarin.chefbot.service.SearchFilterService;
-import io.github.enkarin.chefbot.service.UserService;
+import io.github.enkarin.chefbot.service.pipelines.ProcessingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,30 +13,33 @@ import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
-public class ApproveBackToMainMenuService implements ProcessingService {
-    private final UserService userService;
+public class EditingSpicyService implements ProcessingService {
     private final DishService dishService;
-    private final SearchFilterService searchFilterService;
 
     @Override
     public ExecutionResult execute(final long userId, final String text) {
         return switch (text.toLowerCase(Locale.ROOT)) {
             case "да" -> {
-                searchFilterService.deleteSearchFilter(userId);
-                yield new ExecutionResult(ChatStatus.MAIN_MENU);
+                dishService.putDishIsSpicy(userId);
+                dishService.dropPublishFlagForEditableDish(userId);
+                yield new ExecutionResult(ChatStatus.DISH_NEED_PUBLISH);
             }
-            case "нет" -> new ExecutionResult(userService.getPreviousChatStatus(userId));
+            case "нет" -> {
+                dishService.putDishIsNotSpicy(userId);
+                dishService.dropPublishFlagForEditableDish(userId);
+                yield new ExecutionResult(ChatStatus.DISH_NEED_PUBLISH);
+            }
             default -> new ExecutionResult(getCurrentStatus());
         };
     }
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return new BotAnswer("Вы хотите вернуться в главное меню?", StandardUserAnswerOption.YES_OR_NO);
+        return new BotAnswer("Блюдо острое?", StandardUserAnswerOption.YES_OR_NO);
     }
 
     @Override
     public ChatStatus getCurrentStatus() {
-        return ChatStatus.APPROVE_BACK_TO_MAIN_MENU;
+        return ChatStatus.EDITING_SPICY;
     }
 }
