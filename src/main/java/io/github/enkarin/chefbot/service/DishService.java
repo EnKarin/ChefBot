@@ -14,8 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -130,9 +132,9 @@ public class DishService {
         findEditableDish(userId).setPublished(false);
     }
 
-    public List<DisplayDishDto> searchDishByName(final String nameSubstring) {
+    public List<DisplayDishDto> findDishByName(final String nameSubstring) {
         return dishRepository.findByDishNameContainingIgnoreCase(nameSubstring).stream()
-                .map(dish -> new DisplayDishDto(dish.getDishName(), dish.getProducts().stream().map(Product::getProductName).collect(Collectors.toSet())))
+                .map(dish -> new DisplayDishDto(dish.getDishName(), findProductsName(dish)))
                 .toList();
     }
 
@@ -140,7 +142,25 @@ public class DishService {
         return findEditableDish(userId).isPublished();
     }
 
+    public List<DisplayDishDto> findDishByProduct(final List<String> productNames) {
+        final Iterator<String> productIterator = productNames.iterator();
+        Set<Dish> prepareResult = productRepository.findByProductNameContainsIgnoreCase(productIterator.next()).stream()
+                .flatMap(product -> product.getDishes().stream())
+                .collect(Collectors.toSet());
+        while (productIterator.hasNext()) {
+            final String nowProductName = productIterator.next();
+            prepareResult = prepareResult.stream()
+                    .filter(dish -> dish.getProducts().stream().map(Product::getProductName).anyMatch(productName -> productName.contains(nowProductName)))
+                    .collect(Collectors.toSet());
+        }
+        return prepareResult.stream().map(dish -> new DisplayDishDto(dish.getDishName(), findProductsName(dish))).toList();
+    }
+
     private Dish findEditableDish(final long userId) {
         return userService.findUser(userId).getEditabledDish();
+    }
+
+    private Set<String> findProductsName(final Dish dish) {
+        return dish.getProducts().stream().map(Product::getProductName).collect(Collectors.toSet());
     }
 }

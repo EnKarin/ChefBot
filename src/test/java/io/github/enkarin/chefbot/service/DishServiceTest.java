@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -164,13 +166,23 @@ class DishServiceTest extends TestBase {
     void searchByName() {
         initDishes();
 
-        assertThat(dishService.searchDishByName("fi")).extracting(DisplayDishDto::getDishName).containsOnly("first", "fifth");
+        assertThat(dishService.findDishByName("fi")).extracting(DisplayDishDto::getDishName).containsOnly("first", "fifth");
     }
 
     @Test
     void searchByNameNotExistsDish() {
         initDishes();
 
-        assertThat(dishService.searchDishByName("dummy")).isEmpty();
+        assertThat(dishService.findDishByName("dummy")).isEmpty();
+    }
+
+    @Test
+    void findDishByProducts() {
+        initDishes();
+
+        assertThat(dishService.findDishByProduct(List.of("firstProduct"))).allSatisfy(displayDishDto -> {
+            assertThat(displayDishDto.getDishName()).isEqualTo("first");
+            assertThat(displayDishDto.getProductsName()).containsOnly("firstProduct");
+        });
     }
 }
