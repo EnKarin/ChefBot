@@ -234,4 +234,13 @@ class TelegramControllerTest extends ModerationTest {
         });
         assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.SELECT_EDITING_DISH_NAME);
     }
+
+    @Test
+    void searchByName() {
+        createUser(ChatStatus.MAIN_MENU);
+        initDishes();
+
+        assertThat(telegramController.executeWorkerCommand(USER_ID, "/search_by_name").messageText()).isEqualTo("Введите название искомого блюда");
+        assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.FIND_DISH_BY_NAME);
+    }
 }
