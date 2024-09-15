@@ -1,6 +1,7 @@
 package io.github.enkarin.chefbot.service.pipelines;
 
 import io.github.enkarin.chefbot.dto.BotAnswer;
+import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.Product;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
@@ -52,7 +53,7 @@ class ProcessingFacadeTest extends TestBase {
     @Test
     void executeWithNewDishNeedPublish() {
         userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
-        userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_NEED_PUBLISH);
+        userService.switchToNewStatus(USER_ID, ChatStatus.DISH_NEED_PUBLISH);
 
         assertThat(processingFacade.execute(USER_ID, "aboba").botAnswer().messageText())
                 .isEqualTo("""
@@ -60,7 +61,7 @@ class ProcessingFacadeTest extends TestBase {
                         Когда оно пройдёт модерацию, то станет доступно всем пользователям.
                         Блюдо останется доступно вам вне зависимости от результата модерации.
                         """);
-        assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.NEW_DISH_NEED_PUBLISH);
+        assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.DISH_NEED_PUBLISH);
     }
 
     @Test
@@ -68,7 +69,7 @@ class ProcessingFacadeTest extends TestBase {
         userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
 
         assertThat(processingFacade.goToStatus(USER_ID, ChatStatus.APPROVE_BACK_TO_MAIN_MENU)).satisfies(botAnswer -> {
-            assertThat(botAnswer.messageText()).isEqualTo("Вы хотите вернуться в главное меню? Весь прогресс текущей операции будет утерян.");
+            assertThat(botAnswer.messageText()).isEqualTo("Вы хотите вернуться в главное меню?");
             assertThat(botAnswer.userAnswerOptions().orElseThrow()).isEqualTo(YES_OR_NO.getAnswers());
         });
 
@@ -207,5 +208,151 @@ class ProcessingFacadeTest extends TestBase {
             assertThat(dish.getDishName()).isEqualTo("sixth");
         });
         assertThat(moderationRequestRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    void editDishSpicyPipelineTest() {
+        createUser(ChatStatus.SELECT_EDITING_DISH_NAME);
+        initDishes();
+
+        assertThat(processingFacade.execute(USER_ID, "fifth").botAnswer()).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).isEqualTo("Укажите поле, которое вы хотите отредактировать");
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
+        });
+        assertThat(processingFacade.execute(USER_ID, "Острота").botAnswer()).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).isEqualTo("Блюдо острое?");
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("Да", "Нет");
+        });
+        processingFacade.execute(USER_ID, "Да");
+        processingFacade.execute(USER_ID, "Нет");
+
+        assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(dishRepository.findAll()).anySatisfy(dish -> {
+            assertThat(dish.isSpicy()).isTrue();
+            assertThat(dish.isPublished()).isFalse();
+            assertThat(dish.getDishName()).isEqualTo("fifth");
+        });
+        assertThat(moderationRequestRepository.count()).isEqualTo(0);
+    }
+
+    @Test
+    void editDishNamePipelineTest() {
+        createUser(ChatStatus.SELECT_EDITING_DISH_NAME);
+        initDishes();
+
+        assertThat(processingFacade.execute(USER_ID, "sixth").botAnswer()).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).isEqualTo("Укажите поле, которое вы хотите отредактировать");
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
+        });
+        assertThat(processingFacade.execute(USER_ID, "название").botAnswer()).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).isEqualTo("Введите новое название блюда");
+            assertThat(botAnswer.userAnswerOptions()).isEmpty();
+        });
+        processingFacade.execute(USER_ID, "super dish!");
+        processingFacade.execute(USER_ID, "Нет");
+
+        assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(dishRepository.findAll()).extracting(Dish::getDishName).contains("super dish!");
+        assertThat(moderationRequestRepository.count()).isEqualTo(0);
+    }
+
+    @Test
+    void editDishTypePipelineTest() {
+        createUser(ChatStatus.SELECT_EDITING_DISH_NAME);
+        initDishes();
+
+        assertThat(processingFacade.execute(USER_ID, "fifth").botAnswer()).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).isEqualTo("Укажите поле, которое вы хотите отредактировать");
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
+        });
+        assertThat(processingFacade.execute(USER_ID, "Тип").botAnswer()).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).isEqualTo("Выберете новый тип блюда");
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly(StandardUserAnswerOption.DISH_TYPES.getAnswers());
+        });
+        processingFacade.execute(USER_ID, "Суп");
+        processingFacade.execute(USER_ID, "Нет");
+
+        assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(dishRepository.findAll()).anySatisfy(dish -> {
+            assertThat(dish.getType()).isEqualTo(DishType.SOUP);
+            assertThat(dish.isPublished()).isFalse();
+            assertThat(dish.getDishName()).isEqualTo("fifth");
+        });
+        assertThat(moderationRequestRepository.count()).isEqualTo(0);
+    }
+
+    @Test
+    void editDishKitchenPipelineTest() {
+        createUser(ChatStatus.SELECT_EDITING_DISH_NAME);
+        initDishes();
+
+        assertThat(processingFacade.execute(USER_ID, "sixth").botAnswer()).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).isEqualTo("Укажите поле, которое вы хотите отредактировать");
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
+        });
+        assertThat(processingFacade.execute(USER_ID, "Кухня").botAnswer()).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).isEqualTo("Введите кухню, к которой относится блюдо");
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly(StandardUserAnswerOption.CUISINES.getAnswers());
+        });
+        processingFacade.execute(USER_ID, "международная");
+        processingFacade.execute(USER_ID, "Да");
+
+        assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(dishRepository.findAll()).anySatisfy(dish -> {
+            assertThat(dish.getCuisine()).isEqualTo(WorldCuisine.INTERNATIONAL);
+            assertThat(dish.isPublished()).isFalse();
+            assertThat(dish.getDishName()).isEqualTo("sixth");
+        });
+        assertThat(moderationRequestRepository.count()).isEqualTo(1);
+    }
+
+    @Test
+    void editDishFoodstuffPipelineTest() {
+        createUser(ChatStatus.SELECT_EDITING_DISH_NAME);
+        initDishes();
+
+        assertThat(processingFacade.execute(USER_ID, "sixth").botAnswer()).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).isEqualTo("Укажите поле, которое вы хотите отредактировать");
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
+        });
+        assertThat(processingFacade.execute(USER_ID, "Список продуктов").botAnswer()).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).isEqualTo("Введите список продуктов");
+            assertThat(botAnswer.userAnswerOptions()).isEmpty();
+        });
+        processingFacade.execute(USER_ID, "Булочка, сосиска");
+        processingFacade.execute(USER_ID, "Нет");
+
+        assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(dishRepository.findAll()).anySatisfy(dish -> {
+            assertThat(dish.isPublished()).isFalse();
+            assertThat(dish.getDishName()).isEqualTo("sixth");
+        });
+        assertThat(productRepository.findAll()).extracting(Product::getProductName).contains("Булочка", "Сосиска");
+        assertThat(moderationRequestRepository.count()).isEqualTo(0);
+    }
+
+    @Test
+    void editDishRecipePipelineTest() {
+        createUser(ChatStatus.SELECT_EDITING_DISH_NAME);
+        initDishes();
+
+        assertThat(processingFacade.execute(USER_ID, "fifth").botAnswer()).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).isEqualTo("Укажите поле, которое вы хотите отредактировать");
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
+        });
+        assertThat(processingFacade.execute(USER_ID, "Рецепт").botAnswer()).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).isEqualTo("Введите рецепт");
+            assertThat(botAnswer.userAnswerOptions()).isEmpty();
+        });
+        processingFacade.execute(USER_ID, "Мощно прожарить");
+        processingFacade.execute(USER_ID, "Да");
+
+        assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
+        assertThat(dishRepository.findAll()).anySatisfy(dish -> {
+            assertThat(dish.getRecipe()).isEqualTo("Мощно прожарить");
+            assertThat(dish.isPublished()).isFalse();
+            assertThat(dish.getDishName()).isEqualTo("fifth");
+        });
+        assertThat(moderationRequestRepository.count()).isEqualTo(1);
     }
 }

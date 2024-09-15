@@ -4,7 +4,6 @@ import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
-import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.service.SearchFilterService;
 import io.github.enkarin.chefbot.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -16,14 +15,12 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class ApproveBackToMainMenuService implements ProcessingService {
     private final UserService userService;
-    private final DishService dishService;
     private final SearchFilterService searchFilterService;
 
     @Override
     public ExecutionResult execute(final long userId, final String text) {
         return switch (text.toLowerCase(Locale.ROOT)) {
             case "да" -> {
-                dishService.deleteEditableDishWhereBackToMainMenu(userId);
                 searchFilterService.deleteSearchFilter(userId);
                 yield new ExecutionResult(ChatStatus.MAIN_MENU);
             }
@@ -34,7 +31,7 @@ public class ApproveBackToMainMenuService implements ProcessingService {
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return new BotAnswer("Вы хотите вернуться в главное меню? Весь прогресс текущей операции будет утерян.", StandardUserAnswerOption.YES_OR_NO);
+        return new BotAnswer("Вы хотите вернуться в главное меню?", StandardUserAnswerOption.YES_OR_NO);
     }
 
     @Override

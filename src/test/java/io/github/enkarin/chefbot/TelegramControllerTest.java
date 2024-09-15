@@ -64,7 +64,7 @@ class TelegramControllerTest extends ModerationTest {
         userRepository.save(User.builder().id(USER_ID).chatStatus(ChatStatus.NEW_DISH_NAME).editabledDish(dish).build());
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/back_to_main_menu")).satisfies(botAnswer -> {
-            assertThat(botAnswer.messageText()).isEqualTo("Вы хотите вернуться в главное меню? Весь прогресс текущей операции будет утерян.");
+            assertThat(botAnswer.messageText()).isEqualTo("Вы хотите вернуться в главное меню?");
             assertThat(botAnswer.userAnswerOptions()).isEqualTo(Optional.of(StandardUserAnswerOption.YES_OR_NO.getAnswers()));
         });
     }
@@ -222,5 +222,16 @@ class TelegramControllerTest extends ModerationTest {
         assertThat(telegramController.approveModerationRequest(Long.toString(moderationRequestsId[0])).messageForRemove())
                 .flatExtracting(Function.identity())
                 .contains(messageDtoSet.toArray());
+    }
+
+    @Test
+    void editDish() {
+        createUser(ChatStatus.MAIN_MENU);
+
+        assertThat(telegramController.executeWorkerCommand(USER_ID, "/edit_dish")).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).isEqualTo("Введите название блюда, которое вы хотите отредактировать");
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).isEmpty();
+        });
+        assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.SELECT_EDITING_DISH_NAME);
     }
 }

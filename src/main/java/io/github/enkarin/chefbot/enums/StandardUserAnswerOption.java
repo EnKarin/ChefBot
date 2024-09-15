@@ -10,8 +10,6 @@ import java.util.stream.Collectors;
 @Getter
 @RequiredArgsConstructor
 public enum StandardUserAnswerOption {
-    NONE(null),
-    DEFAULT(null),
     YES_OR_NO(new String[]{"Да", "Нет"}),
     YES_NO_OR_ANY(new String[]{"Да", "Нет", "Любое"}),
     MORE_OR_STOP(new String[]{"Вывести еще", "Вернуться в главное меню"}),

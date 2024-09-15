@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.stream.Stream;
 
+import static io.github.enkarin.chefbot.enums.ChatStatus.DISH_NEED_PUBLISH;
 import static io.github.enkarin.chefbot.enums.ChatStatus.GET_NEED_DISH_RECIPE;
-import static io.github.enkarin.chefbot.enums.ChatStatus.NEW_DISH_NEED_PUBLISH;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ProcessingNeedDishRecipeTest extends TestBase {
@@ -28,7 +28,7 @@ class ProcessingNeedDishRecipeTest extends TestBase {
     static Stream<Arguments> provideTextAndResult() {
         return Stream.of(
                 Arguments.of("Да", ChatStatus.NEW_DISH_RECIPE),
-                Arguments.of("Нет", NEW_DISH_NEED_PUBLISH),
+                Arguments.of("Нет", DISH_NEED_PUBLISH),
                 Arguments.of("test", GET_NEED_DISH_RECIPE));
     }
 }

@@ -82,39 +82,6 @@ class DishServiceTest extends TestBase {
     }
 
     @Test
-    void deleteEditableDishShouldWork() {
-        userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_NAME);
-        userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_SPICY);
-
-        dishService.deleteEditableDishWhereBackToMainMenu(USER_ID);
-
-        assertThat(userRepository.findById(USER_ID).orElseThrow().getEditabledDish()).isNull();
-        assertThat(dishRepository.count()).isEqualTo(0);
-    }
-
-    @Test
-    void deleteEditableDishWithoutEditableDishShouldWork() {
-        userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_SPICY);
-        userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_NAME);
-        dishService.deleteEditableDishWhereBackToMainMenu(USER_ID);
-
-        dishService.deleteEditableDishWhereBackToMainMenu(USER_ID);
-
-        assertThat(userService.findUser(USER_ID).getEditabledDish()).isNull();
-        assertThat(dishRepository.count()).isEqualTo(0);
-    }
-
-    @Test
-    void deleteEditableDishForEditDishShouldNotDeleteDish() {
-        userService.switchToNewStatus(USER_ID, ChatStatus.ENRICHING_RECIPES);
-
-        dishService.deleteEditableDishWhereBackToMainMenu(USER_ID);
-
-        assertThat(userService.findUser(USER_ID).getEditabledDish()).isNull();
-        assertThat(dishRepository.count()).isEqualTo(1);
-    }
-
-    @Test
     void putDishSpicy() {
         dishService.putDishIsSpicy(USER_ID);
 
@@ -173,7 +140,7 @@ class DishServiceTest extends TestBase {
 
     @Test
     void putNonPublishFlag() {
-        dishService.putNonPublishFlagForEditableDish(USER_ID);
+        dishService.dropPublishFlagForEditableDish(USER_ID);
 
         assertThat(userService.findUser(USER_ID).getEditabledDish().isPublished()).isFalse();
     }

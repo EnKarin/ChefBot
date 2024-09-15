@@ -58,6 +58,7 @@ public class TelegramController {
             case "/add_dish" -> processingFacade.goToStatus(userId, ChatStatus.NEW_DISH_NAME);
             case "/undo" -> new BotAnswer("Эта команда не доступна в главном меню");
             case "/enriching_recipes" -> processingFacade.goToStatus(userId, ChatStatus.ENRICHING_RECIPES);
+            case "/edit_dish" -> processingFacade.goToStatus(userId, ChatStatus.SELECT_EDITING_DISH_NAME);
             default -> new BotAnswer("Указанной команды не существует");
         };
     }

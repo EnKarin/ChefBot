@@ -5,10 +5,6 @@ import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import java.util.Optional;
 
 public record BotAnswer(String messageText, Optional<String[]> userAnswerOptions) {
-    public BotAnswer(final String messageText) {
-        this(messageText, Optional.of(new String[]{}));
-    }
-
     public BotAnswer(final String messageText, final StandardUserAnswerOption userAnswerOptions) {
         this(messageText, Optional.of(userAnswerOptions.getAnswers()));
     }
