@@ -1,5 +1,6 @@
 package io.github.enkarin.chefbot.service;
 
+import io.github.enkarin.chefbot.dto.DisplayDishDto;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.Product;
 import io.github.enkarin.chefbot.entity.User;
@@ -13,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.capitalize;
@@ -125,6 +128,12 @@ public class DishService {
     @Transactional
     public void dropPublishFlagForEditableDish(final long userId) {
         findEditableDish(userId).setPublished(false);
+    }
+
+    public List<DisplayDishDto> searchDishByName(final String nameSubstring) {
+        return dishRepository.findByDishNameContainingIgnoreCase(nameSubstring).stream()
+                .map(dish -> new DisplayDishDto(dish.getDishName(), dish.getProducts().stream().map(Product::getProductName).collect(Collectors.toSet())))
+                .toList();
     }
 
     public boolean editableDishWasPublish(final long userId) {

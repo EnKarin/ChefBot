@@ -1,5 +1,6 @@
 package io.github.enkarin.chefbot.service;
 
+import io.github.enkarin.chefbot.dto.DisplayDishDto;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.DishType;
@@ -157,5 +158,19 @@ class DishServiceTest extends TestBase {
         dishRepository.save(dish);
 
         assertThat(dishService.editableDishWasPublish(USER_ID)).isTrue();
+    }
+
+    @Test
+    void searchByName() {
+        initDishes();
+
+        assertThat(dishService.searchDishByName("fi")).extracting(DisplayDishDto::getDishName).containsOnly("first", "fifth");
+    }
+
+    @Test
+    void searchByNameNotExistsDish() {
+        initDishes();
+
+        assertThat(dishService.searchDishByName("dummy")).isEmpty();
     }
 }
