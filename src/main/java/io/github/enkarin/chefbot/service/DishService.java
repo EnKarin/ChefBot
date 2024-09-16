@@ -148,9 +148,9 @@ public class DishService {
                 .flatMap(product -> product.getDishes().stream())
                 .collect(Collectors.toSet());
         while (productIterator.hasNext()) {
-            final String nowProductName = productIterator.next();
+            final String nowProductName = productIterator.next().toLowerCase(Locale.ROOT);
             prepareResult = prepareResult.stream()
-                    .filter(dish -> dish.getProducts().stream().map(Product::getProductName).anyMatch(productName -> productName.contains(nowProductName)))
+                    .filter(dish -> dish.getProducts().stream().map(Product::getProductName).map(String::toLowerCase).anyMatch(productName -> productName.contains(nowProductName)))
                     .collect(Collectors.toSet());
         }
         return prepareResult.stream().map(dish -> new DisplayDishDto(dish.getDishName(), findProductsName(dish))).toList();

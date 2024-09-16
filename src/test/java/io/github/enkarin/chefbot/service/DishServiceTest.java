@@ -177,12 +177,39 @@ class DishServiceTest extends TestBase {
     }
 
     @Test
-    void findDishByProducts() {
+    void findDishByProductsWithOneFilter() {
         initDishes();
 
         assertThat(dishService.findDishByProduct(List.of("firstProduct"))).allSatisfy(displayDishDto -> {
             assertThat(displayDishDto.getDishName()).isEqualTo("first");
             assertThat(displayDishDto.getProductsName()).containsOnly("firstProduct");
         });
+    }
+
+    @Test
+    void findDishByProductsIgnoreCase() {
+        initDishes();
+
+        assertThat(dishService.findDishByProduct(List.of("Second", "product"))).allSatisfy(displayDishDto -> {
+            assertThat(displayDishDto.getDishName()).isEqualTo("second");
+            assertThat(displayDishDto.getProductsName()).containsOnly("secondProduct");
+        });
+    }
+
+    @Test
+    void findDishByProductsWithManyFilters() {
+        initDishes();
+
+        assertThat(dishService.findDishByProduct(List.of("se", "th", "product"))).allSatisfy(displayDishDto -> {
+            assertThat(displayDishDto.getDishName()).isEqualTo("seventh");
+            assertThat(displayDishDto.getProductsName()).containsOnly("seventhProduct");
+        });
+    }
+
+    @Test
+    void findDishByProductsWithTooManyFilters() {
+        initDishes();
+
+        assertThat(dishService.findDishByProduct(List.of("firstProduct", "secondProduct"))).isEmpty();
     }
 }
