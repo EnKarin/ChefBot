@@ -5,16 +5,20 @@ import io.github.enkarin.chefbot.dto.DisplayDishWithRecipeDto;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.Product;
 import io.github.enkarin.chefbot.entity.SearchFilter;
+import io.github.enkarin.chefbot.entity.SearchProduct;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
 import io.github.enkarin.chefbot.repository.DishRepository;
 import io.github.enkarin.chefbot.repository.SearchFilterRepository;
+import io.github.enkarin.chefbot.repository.SearchProductRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
@@ -29,12 +33,17 @@ public class SearchFilterService {
     private final SearchFilterRepository searchFilterRepository;
     private final UserService userService;
     private final DishRepository dishRepository;
+    private final SearchProductRepository searchProductRepository;
     private final Random random = new Random();
 
-    public SearchFilterService(final SearchFilterRepository searchFilterRepository, final UserService userService, final DishRepository dishRepository) {
+    public SearchFilterService(final SearchFilterRepository searchFilterRepository,
+                               final UserService userService,
+                               final DishRepository dishRepository,
+                               final SearchProductRepository searchProductRepository) {
         this.searchFilterRepository = searchFilterRepository;
         this.userService = userService;
         this.dishRepository = dishRepository;
+        this.searchProductRepository = searchProductRepository;
     }
 
     @Transactional
@@ -182,5 +191,13 @@ public class SearchFilterService {
         return (isNull(searchFilter.getDishType()) || searchFilter.getDishType() == dish.getType())
                 && (isNull(searchFilter.getSpicy()) || searchFilter.getSpicy() == dish.isSpicy())
                 && (isNull(searchFilter.getCuisine()) || searchFilter.getCuisine() == dish.getCuisine());
+    }
+
+    @Transactional
+    public void saveProductsForCurrentSearchFilter(final long userId, final String... productsName) {
+        final SearchFilter searchFilter = userService.findUser(userId).getSearchFilter();
+        for (final String productName : productsName) {
+            searchProductRepository.save(new SearchProduct(StringUtils.capitalize(productName.trim().toLowerCase(Locale.ROOT)), searchFilter));
+        }
     }
 }

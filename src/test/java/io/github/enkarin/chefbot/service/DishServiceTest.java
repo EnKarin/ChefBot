@@ -12,8 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -23,6 +21,9 @@ class DishServiceTest extends TestBase {
 
     @Autowired
     private DishService dishService;
+
+    @Autowired
+    private SearchFilterService searchFilterService;
 
     @BeforeEach
     void init() {
@@ -179,8 +180,10 @@ class DishServiceTest extends TestBase {
     @Test
     void findDishByProductsWithOneFilter() {
         initDishes();
+        searchFilterService.createSearchFilter(USER_ID);
+        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID, "firstProduct");
 
-        assertThat(dishService.findDishByProduct(List.of("firstProduct"))).allSatisfy(displayDishDto -> {
+        assertThat(dishService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
             assertThat(displayDishDto.getDishName()).isEqualTo("first");
             assertThat(displayDishDto.getProductsName()).containsOnly("firstProduct");
         });
@@ -189,8 +192,10 @@ class DishServiceTest extends TestBase {
     @Test
     void findDishByProductsIgnoreCase() {
         initDishes();
+        searchFilterService.createSearchFilter(USER_ID);
+        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID, "Second", "product");
 
-        assertThat(dishService.findDishByProduct(List.of("Second", "product"))).allSatisfy(displayDishDto -> {
+        assertThat(dishService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
             assertThat(displayDishDto.getDishName()).isEqualTo("second");
             assertThat(displayDishDto.getProductsName()).containsOnly("secondProduct");
         });
@@ -199,8 +204,10 @@ class DishServiceTest extends TestBase {
     @Test
     void findDishByProductsWithManyFilters() {
         initDishes();
+        searchFilterService.createSearchFilter(USER_ID);
+        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID, "se", "th", "product");
 
-        assertThat(dishService.findDishByProduct(List.of("se", "th", "product"))).allSatisfy(displayDishDto -> {
+        assertThat(dishService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
             assertThat(displayDishDto.getDishName()).isEqualTo("seventh");
             assertThat(displayDishDto.getProductsName()).containsOnly("seventhProduct");
         });
@@ -209,7 +216,22 @@ class DishServiceTest extends TestBase {
     @Test
     void findDishByProductsWithTooManyFilters() {
         initDishes();
+        searchFilterService.createSearchFilter(USER_ID);
+        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID, "firstProduct", "secondProduct");
 
-        assertThat(dishService.findDishByProduct(List.of("firstProduct", "secondProduct"))).isEmpty();
+        assertThat(dishService.findDishByProduct(USER_ID)).isEmpty();
+    }
+
+    @Test
+    void manyFindDishByProduct() {
+        initDishes();
+        searchFilterService.createSearchFilter(USER_ID);
+        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID, "firstProduct");
+
+        assertThat(dishService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
+            assertThat(displayDishDto.getDishName()).isEqualTo("first");
+            assertThat(displayDishDto.getProductsName()).containsOnly("firstProduct");
+        });
+        assertThat(dishService.findDishByProduct(USER_ID)).isEmpty();
     }
 }

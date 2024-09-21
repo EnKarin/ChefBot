@@ -3,6 +3,7 @@ package io.github.enkarin.chefbot.service.pipelines.searchbyproduct;
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
+import io.github.enkarin.chefbot.service.SearchFilterService;
 import io.github.enkarin.chefbot.service.pipelines.ProcessingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,10 +11,13 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class RequestProductsForFindDishService implements ProcessingService {
+    private final SearchFilterService searchFilterService;
 
     @Override
     public ExecutionResult execute(final long userId, final String text) {
-        return new ExecutionResult(ChatStatus.MAIN_MENU); //todo: logic for save products
+        searchFilterService.createSearchFilter(userId);
+        searchFilterService.saveProductsForCurrentSearchFilter(userId, text.split("[,\n]"));
+        return new ExecutionResult(ChatStatus.FIND_DISH_BY_PRODUCTS_RESPONSE);
     }
 
     @Override

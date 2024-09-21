@@ -1,0 +1,46 @@
+package io.github.enkarin.chefbot.service.pipelines.searchbyproduct;
+
+import io.github.enkarin.chefbot.dto.ExecutionResult;
+import io.github.enkarin.chefbot.enums.ChatStatus;
+import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
+import io.github.enkarin.chefbot.service.DishService;
+import io.github.enkarin.chefbot.service.SearchFilterService;
+import io.github.enkarin.chefbot.util.TestBase;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class FindDishByProductsResponseServiceTest extends TestBase {
+    @Autowired
+    private FindDishByProductsResponseService findDishByProductsResponseService;
+
+    @Autowired
+    private SearchFilterService searchFilterService;
+
+    @Autowired
+    private DishService dishService;
+
+    @Test
+    void executeWithReturnToMainMenu() {
+        assertThat(findDishByProductsResponseService.execute(USER_ID, "Вернуться в главное меню")).extracting(ExecutionResult::chatStatus).isEqualTo(ChatStatus.MAIN_MENU);
+    }
+
+    @Test
+    void executeWithNextLoad() {
+        assertThat(findDishByProductsResponseService.execute(USER_ID, "Ещё")).extracting(ExecutionResult::chatStatus).isEqualTo(ChatStatus.FIND_DISH_BY_PRODUCTS_RESPONSE);
+    }
+
+    @Test
+    void getMessageUser() {
+        createUser(ChatStatus.FIND_DISH_BY_PRODUCTS_RESPONSE);
+        initDishes();
+        searchFilterService.createSearchFilter(USER_ID);
+        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID, "second", "product");
+
+        assertThat(findDishByProductsResponseService.getMessageForUser(USER_ID)).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).startsWith("*second:*\n-secondProduct");
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).isEqualTo(StandardUserAnswerOption.MORE_OR_STOP.getAnswers());
+        });
+    }
+}
