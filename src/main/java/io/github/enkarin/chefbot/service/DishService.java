@@ -1,8 +1,11 @@
 package io.github.enkarin.chefbot.service;
 
 import io.github.enkarin.chefbot.dto.DisplayDishDto;
+import io.github.enkarin.chefbot.dto.DisplayDishWithRecipeDto;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.Product;
+import io.github.enkarin.chefbot.entity.SearchFilter;
+import io.github.enkarin.chefbot.entity.SearchProduct;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
@@ -14,11 +17,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.capitalize;
 
 @Service
@@ -130,9 +137,9 @@ public class DishService {
         findEditableDish(userId).setPublished(false);
     }
 
-    public List<DisplayDishDto> searchDishByName(final String nameSubstring) {
+    public List<DisplayDishDto> findDishByName(final String nameSubstring) {
         return dishRepository.findByDishNameContainingIgnoreCase(nameSubstring).stream()
-                .map(dish -> new DisplayDishDto(dish.getDishName(), dish.getProducts().stream().map(Product::getProductName).collect(Collectors.toSet())))
+                .map(dish -> new DisplayDishDto(dish.getDishName(), findProductsName(dish)))
                 .toList();
     }
 
@@ -140,7 +147,41 @@ public class DishService {
         return findEditableDish(userId).isPublished();
     }
 
+    @Transactional
+    public List<? extends DisplayDishDto> findDishByProduct(final long userId) {
+        final SearchFilter searchFilter = userService.findUser(userId).getSearchFilter();
+        final List<? extends DisplayDishDto> result = findDishByProduct(searchFilter.getSearchProductList().stream().map(SearchProduct::getName).toList(),
+                searchFilter.getPageNumber());
+        searchFilter.setPageNumber(searchFilter.getPageNumber() + 1);
+        return result;
+    }
+
+    private List<? extends DisplayDishDto> findDishByProduct(final List<String> productNames, final int pageNumber) {
+        final Iterator<String> productIterator = productNames.iterator();
+        Set<Dish> prepareResult = productRepository.findByProductNameContainsIgnoreCase(productIterator.next()).stream()
+                .flatMap(product -> product.getDishes().stream())
+                .collect(Collectors.toSet());
+        while (productIterator.hasNext()) {
+            final String nowProductName = productIterator.next().toLowerCase(Locale.ROOT);
+            prepareResult = prepareResult.stream()
+                    .filter(dish -> dish.getProducts().stream().map(Product::getProductName).map(String::toLowerCase).anyMatch(productName -> productName.contains(nowProductName)))
+                    .collect(Collectors.toSet());
+        }
+        return prepareResult.stream()
+                .sorted(Comparator.comparing(Dish::getDishName))
+                .skip(pageNumber * 5L)
+                .limit(5)
+                .map(dish -> nonNull(dish.getRecipe())
+                        ? new DisplayDishWithRecipeDto(dish.getDishName(), findProductsName(dish), dish.getRecipe())
+                        : new DisplayDishDto(dish.getDishName(), findProductsName(dish)))
+                .toList();
+    }
+
     private Dish findEditableDish(final long userId) {
         return userService.findUser(userId).getEditabledDish();
+    }
+
+    private Set<String> findProductsName(final Dish dish) {
+        return dish.getProducts().stream().map(Product::getProductName).collect(Collectors.toSet());
     }
 }
