@@ -10,16 +10,16 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class FindDishByNameTest extends TestBase {
+class FindDishByNameServiceTest extends TestBase {
     @Autowired
-    private FindDishByName findDishByName;
+    private FindDishByNameService findDishByNameService;
 
     @Test
     void execute() {
         createUser(ChatStatus.FIND_DISH_BY_NAME);
         initDishes();
 
-        assertThat(findDishByName.execute(USER_ID, "Se")).satisfies(executionResult -> {
+        assertThat(findDishByNameService.execute(USER_ID, "Se")).satisfies(executionResult -> {
             assertThat(executionResult.chatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
             assertThat((List<DisplayDishDto>) executionResult.systemAction().orElseThrow())
                     .extracting(DisplayDishDto::getDishName)

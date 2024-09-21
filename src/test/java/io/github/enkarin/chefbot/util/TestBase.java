@@ -45,7 +45,7 @@ public class TestBase {
 
     @AfterEach
     void clear() {
-        jdbcTemplate.execute("TRUNCATE t_user, t_dish, t_product, moderation_request, search_filter, moderation_request_message, t_dish_product CASCADE");
+        jdbcTemplate.execute("TRUNCATE t_user, t_dish, t_product, moderation_request, search_filter, moderation_request_message, t_dish_product, search_product CASCADE");
     }
 
     protected void createUser(final ChatStatus status) {
