@@ -254,6 +254,8 @@ class DishServiceTest extends ModerationTest {
 
     @Test
     void deleteDish() {
+        userService.switchToNewStatus(USER_ID, ChatStatus.MAIN_MENU);
+
         dishService.deleteDish(USER_ID, "рагу");
 
         assertThat(dishRepository.findAll()).extracting(Dish::getDishName).doesNotContain("Рагу");
@@ -262,6 +264,7 @@ class DishServiceTest extends ModerationTest {
     @Test
     void deleteDishAfterCreateModerationRequest() {
         moderationService.createModerationRequest(USER_ID);
+        userService.switchToNewStatus(USER_ID, ChatStatus.MAIN_MENU);
 
         dishService.deleteDish(USER_ID, "Рагу");
 
