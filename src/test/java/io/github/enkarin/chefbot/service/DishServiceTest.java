@@ -1,6 +1,7 @@
 package io.github.enkarin.chefbot.service;
 
 import io.github.enkarin.chefbot.dto.DisplayDishDto;
+import io.github.enkarin.chefbot.dto.DisplayDishWithRecipeDto;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.DishType;
@@ -233,5 +234,18 @@ class DishServiceTest extends TestBase {
             assertThat(displayDishDto.getProductsName()).containsOnly("firstProduct");
         });
         assertThat(dishService.findDishByProduct(USER_ID)).isEmpty();
+    }
+
+    @Test
+    void findDishWithRecipeByProduct() {
+        initDishes();
+        searchFilterService.createSearchFilter(USER_ID);
+        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID, "seventhProduct");
+
+        assertThat(dishService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
+            assertThat(displayDishDto.getDishName()).isEqualTo("seventh");
+            assertThat(displayDishDto.getProductsName()).containsOnly("seventhProduct");
+            assertThat(((DisplayDishWithRecipeDto) displayDishDto).getRecipe()).isEqualTo("Дать настояться месяцок");
+        });
     }
 }

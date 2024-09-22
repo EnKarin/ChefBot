@@ -176,6 +176,7 @@ class ProcessingFacadeTest extends TestBase {
         processingFacade.execute(USER_ID, "Да"); //enter is spicy
         processingFacade.execute(USER_ID, "Азиатская"); //enter cuisine
         processingFacade.execute(USER_ID, "кимчи, свинина, репчатый лук, перцовая паста кочудян, тофу"); //enter foodstuff
+        processingFacade.execute(USER_ID, "нет"); //enter is need recipe
         processingFacade.execute(USER_ID, "нет"); //enter is need publish
 
         assertThat(dishRepository.findAll())
@@ -354,5 +355,51 @@ class ProcessingFacadeTest extends TestBase {
             assertThat(dish.getDishName()).isEqualTo("fifth");
         });
         assertThat(moderationRequestRepository.count()).isEqualTo(1);
+    }
+
+    @Test
+    void addDishWithRecipePipelineTest() {
+        createUser(ChatStatus.NEW_DISH_NAME);
+
+        final String dishName = "Сырник";
+        processingFacade.execute(USER_ID, dishName); //enter dish name
+        processingFacade.execute(USER_ID, "Закуска"); //enter is soup
+        processingFacade.execute(USER_ID, "Нет"); //enter is spicy
+        processingFacade.execute(USER_ID, "Международная"); //enter cuisine
+        processingFacade.execute(USER_ID, "Творог, сахар"); //enter foodstuff
+        processingFacade.execute(USER_ID, "да"); //enter is need recipe
+        processingFacade.execute(USER_ID, "Жарить на сковородке"); //enter is recipe
+        processingFacade.execute(USER_ID, "нет"); //enter is need publish
+
+        assertThat(dishRepository.findAll())
+                .hasSize(1)
+                .first()
+                .satisfies(d -> {
+                    assertThat(d.getDishName()).isEqualTo(dishName);
+                    assertThat(d.getType()).isEqualTo(DishType.SNACK);
+                    assertThat(d.isSpicy()).isFalse();
+                    assertThat(d.getCuisine()).isEqualTo(WorldCuisine.INTERNATIONAL);
+                    assertThat(d.getRecipe()).isEqualTo("Жарить на сковородке");
+                });
+        assertThat(productRepository.findAll()).extracting(Product::getProductName).containsOnly("Творог", "Сахар");
+    }
+
+    @Test
+    void searchByProductPipelineTest() {
+        createUser(ChatStatus.MAIN_MENU);
+        initDishes();
+
+        assertThat(processingFacade.goToStatus(USER_ID, ChatStatus.REQUEST_PRODUCTS_FOR_FIND_DISH)).satisfies(botAnswer -> {
+            assertThat(botAnswer.userAnswerOptions()).isEmpty();
+            assertThat(botAnswer.messageText()).isEqualTo("Введите список продуктов, которые должно содержать желаемое блюдо");
+        });
+        assertThat(processingFacade.execute(USER_ID, "secondProduct").botAnswer()).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).isEqualTo("*second:*\n-secondProduct");
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly(StandardUserAnswerOption.MORE_OR_STOP.getAnswers());
+        });
+        assertThat(processingFacade.execute(USER_ID, "Вернуться в главное меню").botAnswer()).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).isEqualTo("Вы в главном меню. Выберете следующую команду для выполнения.");
+            assertThat(botAnswer.userAnswerOptions()).isEmpty();
+        });
     }
 }
