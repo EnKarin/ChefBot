@@ -200,4 +200,9 @@ public class SearchFilterService {
             searchProductRepository.save(new SearchProduct(StringUtils.capitalize(productName.trim().toLowerCase(Locale.ROOT)), searchFilter));
         }
     }
+
+    @Transactional
+    public void dropPageNumberValue(final long userId) {
+        userService.findUser(userId).getSearchFilter().setPageNumber(0);
+    }
 }

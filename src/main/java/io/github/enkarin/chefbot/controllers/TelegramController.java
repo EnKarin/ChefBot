@@ -1,5 +1,6 @@
 package io.github.enkarin.chefbot.controllers;
 
+import io.github.enkarin.chefbot.controllers.mainmenucommands.MainMenuCommand;
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.dto.ModerationRequestMessageDto;
 import io.github.enkarin.chefbot.dto.ModerationResultDto;
@@ -10,19 +11,32 @@ import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
 import io.github.enkarin.chefbot.service.ModerationService;
 import io.github.enkarin.chefbot.service.UserService;
 import io.github.enkarin.chefbot.service.pipelines.ProcessingFacade;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class TelegramController {
     private final UserService userService;
     private final ProcessingFacade processingFacade;
     private final ModerationService moderationService;
+    private final Map<String, MainMenuCommand> mainMenuCommandMap;
+
+    public TelegramController(final UserService userService,
+                              final ProcessingFacade processingFacade,
+                              final ModerationService moderationService,
+                              final List<MainMenuCommand> mainMenuCommands) {
+        this.userService = userService;
+        this.processingFacade = processingFacade;
+        this.moderationService = moderationService;
+        mainMenuCommandMap = mainMenuCommands.stream().collect(Collectors.toMap(MainMenuCommand::getCommandName, Function.identity()));
+    }
 
     public BotAnswer executeStartCommand(final long userId, final long chatId, final String username) {
         userService.createOrUpdateUser(userId, chatId, username);
@@ -51,17 +65,7 @@ public class TelegramController {
     }
 
     private BotAnswer executeCommandFromMainMenu(final long userId, final String text) {
-        return switch (text) {
-            case "/back_to_main_menu" -> new BotAnswer("Вы уже в главном меню");
-            case "/search_dish" -> processingFacade.goToStatus(userId, ChatStatus.SELECT_DISH_TYPE);
-            case "/search_recipe" -> processingFacade.goToStatus(userId, ChatStatus.SELECT_DISH_TYPE_WITH_RECIPE_SEARCH);
-            case "/add_dish" -> processingFacade.goToStatus(userId, ChatStatus.NEW_DISH_NAME);
-            case "/undo" -> new BotAnswer("Эта команда не доступна в главном меню");
-            case "/enriching_recipes" -> processingFacade.goToStatus(userId, ChatStatus.ENRICHING_RECIPES);
-            case "/edit_dish" -> processingFacade.goToStatus(userId, ChatStatus.SELECT_EDITING_DISH_NAME);
-            case "/search_by_name" -> processingFacade.goToStatus(userId, ChatStatus.FIND_DISH_BY_NAME);
-            default -> new BotAnswer("Указанной команды не существует");
-        };
+        return mainMenuCommandMap.containsKey(text) ? mainMenuCommandMap.get(text).execute(userId) : new BotAnswer("Указанной команды не существует");
     }
 
     public OperationResult processingNonCommandInput(final long userId, final String text) {
