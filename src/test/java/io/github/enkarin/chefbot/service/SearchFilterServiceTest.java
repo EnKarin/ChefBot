@@ -455,4 +455,15 @@ class SearchFilterServiceTest extends TestBase {
 
         assertThat(searchProductRepository.findAll()).extracting(SearchProduct::getName).containsOnly("Три ведра укропа", "Ведро воды");
     }
+
+    @Test
+    void dropPageNumber() {
+        searchFilterService.createSearchFilter(USER_ID);
+        initDishes();
+        searchFilterService.searchRandomDishWithCurrentFilter(USER_ID);
+
+        searchFilterService.dropPageNumberValue(USER_ID);
+
+        assertThat(searchFilterRepository.findAll()).allMatch(searchFilter -> searchFilter.getPageNumber() == 0);
+    }
 }

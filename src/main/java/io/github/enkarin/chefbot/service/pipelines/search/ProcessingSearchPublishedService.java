@@ -14,11 +14,11 @@ import java.util.Locale;
 @Service
 @RequiredArgsConstructor
 public class ProcessingSearchPublishedService implements ProcessingService {
-
     private final SearchFilterService filterService;
 
     @Override
     public ExecutionResult execute(final long userId, final String text) {
+        filterService.dropPageNumberValue(userId);
         return switch (text.toLowerCase(Locale.ROOT).trim()) {
             case "все блюда" -> {
                 filterService.putNeedPublicSearch(userId, true);
