@@ -402,4 +402,22 @@ class ProcessingFacadeTest extends TestBase {
             assertThat(botAnswer.userAnswerOptions()).isEmpty();
         });
     }
+
+    @Test
+    void pageNumberShouldDropAfterUndoToProcessingSearchPublishedService() {
+        userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        userService.switchToNewStatus(USER_ID, ChatStatus.SELECT_DISH_TYPE);
+        initDishes();
+
+        processingFacade.execute(USER_ID, "Суп"); //select type
+        processingFacade.execute(USER_ID, "нет"); //select spicy
+        processingFacade.execute(USER_ID, "Ближневосточная"); //select cuisine
+        assertThat(processingFacade.execute(USER_ID, "Все блюда").botAnswer().messageText()).isEqualTo("""
+                        *fifth:*
+                        -fifthProduct""");
+        processingFacade.undo(USER_ID);
+        assertThat(processingFacade.execute(USER_ID, "Все личные блюда").botAnswer().messageText()).isEqualTo("""
+                        *fifth:*
+                        -fifthProduct""");
+    }
 }
