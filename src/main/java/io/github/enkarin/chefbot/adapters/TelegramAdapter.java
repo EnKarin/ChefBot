@@ -85,7 +85,11 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
                 telegramController.addRequestMessages(moderationDishDto.getRequestId(),
                         sendModerationRequests(telegramController.findAvailableModeratorsId(moderationDishDto.getOwnerChatId()), moderationDishDto));
             } else if (action instanceof List<?> dishDtoList) {
-                dishDtoList.forEach(displayDishDto -> send(chatId, new BotAnswer(displayDishDto.toString())));
+                if (dishDtoList.isEmpty()) {
+                    send(chatId, new BotAnswer("Подходящих блюд не найдено!"));
+                } else {
+                    dishDtoList.forEach(displayDishDto -> send(chatId, new BotAnswer(displayDishDto.toString())));
+                }
             }
         });
         send(chatId, operationResult.botAnswer());
