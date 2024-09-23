@@ -254,6 +254,7 @@ class DishServiceTest extends ModerationTest {
 
     @Test
     void deleteDish() {
+        userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_NAME);
         userService.switchToNewStatus(USER_ID, ChatStatus.MAIN_MENU);
 
         dishService.deleteDish(USER_ID, "рагу");
@@ -263,6 +264,7 @@ class DishServiceTest extends ModerationTest {
 
     @Test
     void deleteDishAfterCreateModerationRequest() {
+        userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_NAME);
         moderationService.createModerationRequest(USER_ID);
         userService.switchToNewStatus(USER_ID, ChatStatus.MAIN_MENU);
 
