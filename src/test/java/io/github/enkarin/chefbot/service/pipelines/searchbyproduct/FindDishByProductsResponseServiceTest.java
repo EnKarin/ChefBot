@@ -43,4 +43,21 @@ class FindDishByProductsResponseServiceTest extends TestBase {
             assertThat(botAnswer.userAnswerOptions().orElseThrow()).isEqualTo(StandardUserAnswerOption.MORE_OR_STOP.getAnswers());
         });
     }
+
+    @Test
+    void getMessageUserMustCorrectConcatDishes() {
+        createUser(ChatStatus.FIND_DISH_BY_PRODUCTS_RESPONSE);
+        initDishes();
+        searchFilterService.createSearchFilter(USER_ID);
+        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID, "se");
+
+        assertThat(findDishByProductsResponseService.getMessageForUser(USER_ID).messageText()).isEqualTo("""
+                *second:*
+                -secondProduct
+                
+                *seventh:*
+                -seventhProduct
+                Рецепт приготовления:
+                Дать настояться месяцок""");
+    }
 }

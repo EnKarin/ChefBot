@@ -5,11 +5,12 @@ import io.github.enkarin.chefbot.dto.DisplayDishDto;
 import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
-import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
 import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.service.pipelines.ProcessingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class FindDishByProductsResponseService implements ProcessingService {
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return new BotAnswer(dishService.findDishByProduct(userId).stream().map(DisplayDishDto::toString).reduce(String::concat).orElseThrow(DishesNotFoundException::new),
+        return new BotAnswer(dishService.findDishByProduct(userId).stream().map(DisplayDishDto::toString).collect(Collectors.joining("\n\n")),
                 StandardUserAnswerOption.MORE_OR_STOP);
     }
 
