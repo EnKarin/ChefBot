@@ -168,14 +168,22 @@ class DishServiceTest extends TestBase {
     void searchByName() {
         initDishes();
 
-        assertThat(dishService.findDishByName("fi")).extracting(DisplayDishDto::getDishName).containsOnly("first", "fifth");
+        assertThat(dishService.findDishByName(USER_ID, "fi")).extracting(DisplayDishDto::getDishName).containsOnly("first", "fifth");
     }
 
     @Test
     void searchByNameNotExistsDish() {
         initDishes();
 
-        assertThat(dishService.findDishByName("dummy")).isEmpty();
+        assertThat(dishService.findDishByName(USER_ID, "dummy")).isEmpty();
+    }
+
+    @Test
+    void searchByNameMustNotFoundOtherPrivateDish() {
+        userService.createOrUpdateUser(USER_ID - 1, CHAT_ID - 1, USERNAME + 1);
+        initDishes();
+
+        assertThat(dishService.findDishByName(USER_ID - 1, "fifth")).isEmpty();
     }
 
     @Test
@@ -247,5 +255,15 @@ class DishServiceTest extends TestBase {
             assertThat(displayDishDto.getProductsName()).containsOnly("seventhProduct");
             assertThat(((DisplayDishWithRecipeDto) displayDishDto).getRecipe()).isEqualTo("Дать настояться месяцок");
         });
+    }
+
+    @Test
+    void searchMustNotFoundOtherPrivateDish() {
+        userService.createOrUpdateUser(USER_ID - 1, CHAT_ID - 1, USERNAME + 1);
+        initDishes();
+        searchFilterService.createSearchFilter(USER_ID - 1);
+        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID - 1, "seventhProduct");
+
+        assertThat(dishService.findDishByProduct(USER_ID - 1)).isEmpty();
     }
 }
