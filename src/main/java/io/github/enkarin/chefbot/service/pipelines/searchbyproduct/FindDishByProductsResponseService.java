@@ -11,6 +11,9 @@ import io.github.enkarin.chefbot.service.pipelines.ProcessingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class FindDishByProductsResponseService implements ProcessingService {
@@ -27,8 +30,12 @@ public class FindDishByProductsResponseService implements ProcessingService {
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return new BotAnswer(dishService.findDishByProduct(userId).stream().map(DisplayDishDto::toString).reduce(String::concat).orElseThrow(DishesNotFoundException::new),
-                StandardUserAnswerOption.MORE_OR_STOP);
+        final List<? extends DisplayDishDto> dishByProduct = dishService.findDishByProduct(userId);
+        if (dishByProduct.isEmpty()) {
+            throw new DishesNotFoundException();
+        } else {
+            return new BotAnswer(dishByProduct.stream().map(DisplayDishDto::toString).collect(Collectors.joining("\n\n")), StandardUserAnswerOption.MORE_OR_STOP);
+        }
     }
 
     @Override

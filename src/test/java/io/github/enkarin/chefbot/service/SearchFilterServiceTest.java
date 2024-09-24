@@ -439,6 +439,15 @@ class SearchFilterServiceTest extends TestBase {
     }
 
     @Test
+    void searchMustNotFoundOtherPrivateDish() {
+        userService.createOrUpdateUser(USER_ID - 1, CHAT_ID - 1, USERNAME + 1);
+        initDishes();
+        searchFilterService.createSearchFilter(USER_ID - 1);
+
+        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID - 1)).extracting(DisplayDishDto::getDishName).doesNotContain("fifth", "sixth", "seventh");
+    }
+
+    @Test
     void saveProductsForCurrentSearchFilter() {
         searchFilterService.createSearchFilter(USER_ID);
 
