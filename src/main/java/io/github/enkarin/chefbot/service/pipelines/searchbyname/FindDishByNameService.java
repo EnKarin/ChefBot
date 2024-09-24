@@ -15,7 +15,7 @@ public class FindDishByNameService implements ProcessingService {
 
     @Override
     public ExecutionResult execute(final long userId, final String text) {
-        return new ExecutionResult(ChatStatus.MAIN_MENU, dishService.findDishByName(text));
+        return new ExecutionResult(ChatStatus.MAIN_MENU, dishService.findDishByName(userId, text));
     }
 
     @Override

@@ -137,8 +137,8 @@ public class DishService {
         findEditableDish(userId).setPublished(false);
     }
 
-    public List<DisplayDishDto> findDishByName(final String nameSubstring) {
-        return dishRepository.findByDishNameContainingIgnoreCase(nameSubstring).stream()
+    public List<DisplayDishDto> findDishByName(final long userId, final String nameSubstring) {
+        return dishRepository.findByDishName(nameSubstring, userId).stream()
                 .map(dish -> new DisplayDishDto(dish.getDishName(), findProductsName(dish)))
                 .toList();
     }
@@ -150,16 +150,17 @@ public class DishService {
     @Transactional
     public List<? extends DisplayDishDto> findDishByProduct(final long userId) {
         final SearchFilter searchFilter = userService.findUser(userId).getSearchFilter();
-        final List<? extends DisplayDishDto> result = findDishByProduct(searchFilter.getSearchProductList().stream().map(SearchProduct::getName).toList(),
+        final List<? extends DisplayDishDto> result = findDishByProduct(userId, searchFilter.getSearchProductList().stream().map(SearchProduct::getName).toList(),
                 searchFilter.getPageNumber());
         searchFilter.setPageNumber(searchFilter.getPageNumber() + 1);
         return result;
     }
 
-    private List<? extends DisplayDishDto> findDishByProduct(final List<String> productNames, final int pageNumber) {
+    private List<? extends DisplayDishDto> findDishByProduct(final long userId, final List<String> productNames, final int pageNumber) {
         final Iterator<String> productIterator = productNames.iterator();
         Set<Dish> prepareResult = productRepository.findByProductNameContainsIgnoreCase(productIterator.next()).stream()
                 .flatMap(product -> product.getDishes().stream())
+                .filter(dish -> dish.isPublished() || dish.getOwner().getId() == userId)
                 .collect(Collectors.toSet());
         while (productIterator.hasNext()) {
             final String nowProductName = productIterator.next().toLowerCase(Locale.ROOT);
