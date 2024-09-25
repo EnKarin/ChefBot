@@ -1,6 +1,6 @@
 package io.github.enkarin.chefbot.controllers.pipelines.searchbyname;
 
-import io.github.enkarin.chefbot.controllers.pipelines.ProcessingService;
+import io.github.enkarin.chefbot.controllers.pipelines.NonCommandInputHandler;
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class FindDishByNameService implements ProcessingService {
+public class FindDishByNameService implements NonCommandInputHandler {
     private final DishService dishService;
 
     @Override
