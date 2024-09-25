@@ -1,6 +1,6 @@
 package io.github.enkarin.chefbot.controllers.pipelines.search;
 
-import io.github.enkarin.chefbot.controllers.pipelines.ProcessingService;
+import io.github.enkarin.chefbot.controllers.pipelines.NonCommandInputHandler;
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.dto.DisplayDishDto;
 import io.github.enkarin.chefbot.dto.ExecutionResult;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ProcessingExecuteSearchService implements ProcessingService {
+public class ProcessingExecuteSearchService implements NonCommandInputHandler {
 
     private final SearchFilterService searchFilterService;
     private final UserService userService;

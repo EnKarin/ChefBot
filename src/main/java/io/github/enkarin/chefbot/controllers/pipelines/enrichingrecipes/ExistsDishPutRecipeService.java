@@ -1,6 +1,6 @@
 package io.github.enkarin.chefbot.controllers.pipelines.enrichingrecipes;
 
-import io.github.enkarin.chefbot.controllers.pipelines.ProcessingService;
+import io.github.enkarin.chefbot.controllers.pipelines.NonCommandInputHandler;
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ExistsDishPutRecipeService implements ProcessingService {
+public class ExistsDishPutRecipeService implements NonCommandInputHandler {
     private final DishService dishService;
     private final ModerationService moderationService;
 

@@ -1,6 +1,6 @@
 package io.github.enkarin.chefbot.controllers.pipelines.search;
 
-import io.github.enkarin.chefbot.controllers.pipelines.ProcessingService;
+import io.github.enkarin.chefbot.controllers.pipelines.NonCommandInputHandler;
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
@@ -13,7 +13,7 @@ import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
-public class ProcessingSearchPublishedService implements ProcessingService {
+public class ProcessingSearchPublishedService implements NonCommandInputHandler {
     private final SearchFilterService filterService;
 
     @Override

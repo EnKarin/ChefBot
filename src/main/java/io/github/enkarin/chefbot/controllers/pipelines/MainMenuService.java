@@ -6,7 +6,7 @@ import io.github.enkarin.chefbot.enums.ChatStatus;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MainMenuService implements ProcessingService {
+public class MainMenuService implements NonCommandInputHandler {
     @Override
     public ExecutionResult execute(long userId, String text) {
         return new ExecutionResult(ChatStatus.MAIN_MENU);

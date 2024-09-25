@@ -13,7 +13,7 @@ import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
-public class ApproveBackToMainMenuService implements ProcessingService {
+public class ApproveBackToMainMenuService implements NonCommandInputHandler {
     private final UserService userService;
     private final SearchFilterService searchFilterService;
 

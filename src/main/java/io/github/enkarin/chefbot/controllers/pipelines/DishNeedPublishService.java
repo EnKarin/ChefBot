@@ -12,7 +12,7 @@ import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
-public class DishNeedPublishService implements ProcessingService {
+public class DishNeedPublishService implements NonCommandInputHandler {
     private final ModerationService moderationService;
 
     @Override

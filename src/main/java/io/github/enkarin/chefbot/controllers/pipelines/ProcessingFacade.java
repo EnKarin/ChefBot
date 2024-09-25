@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class ProcessingFacade {
-    private final Map<ChatStatus, ProcessingService> processingServiceMap;
+    private final Map<ChatStatus, NonCommandInputHandler> processingServiceMap;
     private final UserService userService;
 
-    public ProcessingFacade(final List<ProcessingService> processingServiceList, final UserService userService) {
-        processingServiceMap = processingServiceList.stream().collect(Collectors.toMap(ProcessingService::getCurrentStatus, Function.identity()));
+    public ProcessingFacade(final List<NonCommandInputHandler> nonCommandInputHandlerList, final UserService userService) {
+        processingServiceMap = nonCommandInputHandlerList.stream().collect(Collectors.toMap(NonCommandInputHandler::getCurrentStatus, Function.identity()));
         this.userService = userService;
     }
 
