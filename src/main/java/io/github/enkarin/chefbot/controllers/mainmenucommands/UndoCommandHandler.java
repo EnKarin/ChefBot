@@ -1,19 +1,19 @@
 package io.github.enkarin.chefbot.controllers.mainmenucommands;
 
-import io.github.enkarin.chefbot.controllers.MainMenuCommand;
+import io.github.enkarin.chefbot.controllers.MainMenuCommandHandler;
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BackToMainMenuCommand implements MainMenuCommand {
+public class UndoCommandHandler implements MainMenuCommandHandler {
 
     @Override
     public BotAnswer execute(final long userId) {
-        return new BotAnswer("Вы уже в главном меню");
+        return new BotAnswer("Эта команда не доступна в главном меню");
     }
 
     @Override
     public String getCommandName() {
-        return "/back_to_main_menu";
+        return "/undo";
     }
 }
