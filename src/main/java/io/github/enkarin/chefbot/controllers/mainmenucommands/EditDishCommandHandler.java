@@ -1,6 +1,6 @@
 package io.github.enkarin.chefbot.controllers.mainmenucommands;
 
-import io.github.enkarin.chefbot.controllers.MainMenuCommand;
+import io.github.enkarin.chefbot.controllers.MainMenuCommandHandler;
 import io.github.enkarin.chefbot.controllers.pipelines.ProcessingFacade;
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.enums.ChatStatus;
@@ -9,16 +9,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class SearchByNameCommand implements MainMenuCommand {
+public class EditDishCommandHandler implements MainMenuCommandHandler {
     private final ProcessingFacade processingFacade;
 
     @Override
     public BotAnswer execute(final long userId) {
-        return processingFacade.goToStatus(userId, ChatStatus.FIND_DISH_BY_NAME);
+        return processingFacade.goToStatus(userId, ChatStatus.SELECT_EDITING_DISH_NAME);
     }
 
     @Override
     public String getCommandName() {
-        return "/search_by_name";
+        return "/edit_dish";
     }
 }

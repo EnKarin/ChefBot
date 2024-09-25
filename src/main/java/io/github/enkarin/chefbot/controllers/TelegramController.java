@@ -25,16 +25,16 @@ public class TelegramController {
     private final UserService userService;
     private final ProcessingFacade processingFacade;
     private final ModerationService moderationService;
-    private final Map<String, MainMenuCommand> mainMenuCommandMap;
+    private final Map<String, MainMenuCommandHandler> mainMenuCommandMap;
 
     public TelegramController(final UserService userService,
                               final ProcessingFacade processingFacade,
                               final ModerationService moderationService,
-                              final List<MainMenuCommand> mainMenuCommands) {
+                              final List<MainMenuCommandHandler> mainMenuCommandHandlers) {
         this.userService = userService;
         this.processingFacade = processingFacade;
         this.moderationService = moderationService;
-        mainMenuCommandMap = mainMenuCommands.stream().collect(Collectors.toMap(MainMenuCommand::getCommandName, Function.identity()));
+        mainMenuCommandMap = mainMenuCommandHandlers.stream().collect(Collectors.toMap(MainMenuCommandHandler::getCommandName, Function.identity()));
     }
 
     public BotAnswer executeStartCommand(final long userId, final long chatId, final String username) {
