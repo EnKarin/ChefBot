@@ -170,7 +170,7 @@ class UserServiceTest extends ModerationTest {
         moderationService.startModerate(USER_ID - 1, moderationRequestsId[1]);
         moderationService.startModerate(USER_ID - 2, moderationRequestsId[1]);
 
-        userService.deleteLinkForDish(dishRepository.findAll().stream().filter(dish -> dish.getDishName().equalsIgnoreCase("secondDish")).findAny().orElseThrow());
+        userService.deleteLinkForDish(dishRepository.findAll().stream().filter(dish -> "secondDish".equalsIgnoreCase(dish.getDishName())).findAny().orElseThrow());
 
         assertThat(userRepository.findById(USER_ID - 1).orElseThrow().getModerableDish()).isNull();
         assertThat(userRepository.findById(USER_ID - 2).orElseThrow().getModerableDish()).isNull();
