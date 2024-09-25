@@ -1,6 +1,6 @@
 package io.github.enkarin.chefbot.controllers;
 
-import io.github.enkarin.chefbot.controllers.mainmenucommands.MainMenuCommand;
+import io.github.enkarin.chefbot.controllers.pipelines.ProcessingFacade;
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.dto.ModerationRequestMessageDto;
 import io.github.enkarin.chefbot.dto.ModerationResultDto;
@@ -10,7 +10,6 @@ import io.github.enkarin.chefbot.exceptions.DishNameAlreadyExistsInCurrentUserEx
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
 import io.github.enkarin.chefbot.service.ModerationService;
 import io.github.enkarin.chefbot.service.UserService;
-import io.github.enkarin.chefbot.service.pipelines.ProcessingFacade;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
