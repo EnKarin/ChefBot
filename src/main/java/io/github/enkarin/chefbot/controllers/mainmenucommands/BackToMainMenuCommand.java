@@ -1,5 +1,6 @@
 package io.github.enkarin.chefbot.controllers.mainmenucommands;
 
+import io.github.enkarin.chefbot.controllers.MainMenuCommand;
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import org.springframework.stereotype.Component;
 

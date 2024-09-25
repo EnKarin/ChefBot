@@ -1,5 +1,6 @@
 package io.github.enkarin.chefbot.service.pipelines.addendum;
 
+import io.github.enkarin.chefbot.controllers.pipelines.addendum.ProcessingAddDishTypeService;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.DishType;
