@@ -2,18 +2,21 @@ package io.github.enkarin.chefbot.service;
 
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
-import io.github.enkarin.chefbot.util.TestBase;
+import io.github.enkarin.chefbot.util.ModerationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UserServiceTest extends TestBase {
+class UserServiceTest extends ModerationTest {
     @Autowired
     private UserService userService;
 
     @Autowired
     private DishService dishService;
+
+    @Autowired
+    private ModerationService moderationService;
 
     @Test
     void findOrSaveShouldWork() {
@@ -159,5 +162,17 @@ class UserServiceTest extends TestBase {
         userRepository.save(User.builder().id(USER_ID).chatId(CHAT_ID).username("a").chatStatus(ChatStatus.NEW_DISH_NAME).previousChatStatus(ChatStatus.MAIN_MENU).build());
 
         assertThat(userService.getPreviousChatStatus(USER_ID)).isEqualTo(ChatStatus.MAIN_MENU);
+    }
+
+    @Test
+    void deleteLinkForDish() {
+        moderationInit();
+        moderationService.startModerate(USER_ID - 1, moderationRequestsId[1]);
+        moderationService.startModerate(USER_ID - 2, moderationRequestsId[1]);
+
+        userService.deleteLinkForDish(dishRepository.findAll().stream().filter(dish -> "secondDish".equalsIgnoreCase(dish.getDishName())).findAny().orElseThrow());
+
+        assertThat(userRepository.findById(USER_ID - 1).orElseThrow().getModerableDish()).isNull();
+        assertThat(userRepository.findById(USER_ID - 2).orElseThrow().getModerableDish()).isNull();
     }
 }

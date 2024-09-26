@@ -63,7 +63,7 @@ public class Dish implements Serializable {
     )
     private Set<Product> products;
 
-    @OneToOne(mappedBy = "moderationDish")
+    @OneToOne(mappedBy = "moderationDish", orphanRemoval = true)
     private ModerationRequest moderationRequest;
 
     @ManyToOne

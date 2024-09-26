@@ -1,5 +1,6 @@
 package io.github.enkarin.chefbot.service.pipelines.searchbyproduct;
 
+import io.github.enkarin.chefbot.controllers.pipelines.searchbyproduct.FindDishByProductsResponseService;
 import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
