@@ -1,5 +1,6 @@
 package io.github.enkarin.chefbot.service.pipelines.addendum;
 
+import io.github.enkarin.chefbot.controllers.pipelines.addendum.ProcessingAddDishCuisineService;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.util.TestBase;

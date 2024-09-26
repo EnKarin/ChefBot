@@ -1,5 +1,6 @@
 package io.github.enkarin.chefbot.service.pipelines.search;
 
+import io.github.enkarin.chefbot.controllers.pipelines.search.ExecuteRandomSearchService;
 import io.github.enkarin.chefbot.entity.SearchFilter;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;

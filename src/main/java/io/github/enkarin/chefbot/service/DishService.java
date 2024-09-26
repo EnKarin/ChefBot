@@ -51,6 +51,17 @@ public class DishService {
     }
 
     @Transactional
+    public void deleteDish(final long userId, final String name) {
+        final User owner = userService.findUser(userId);
+        final Dish dishForRemove = owner.getDishes().stream()
+                .filter(dish -> dish.getDishName().equalsIgnoreCase(name))
+                .findAny()
+                .orElseThrow(DishesNotFoundException::new);
+        userService.deleteLinkForDish(dishForRemove);
+        dishRepository.delete(dishForRemove);
+    }
+
+    @Transactional
     public void renameCreatingDish(final long userId, final String name) {
         final User user = userService.findUser(userId);
         if (currentUserNotContainDishWithSpecifiedName(name, user)) {
