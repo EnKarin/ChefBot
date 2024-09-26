@@ -1,5 +1,6 @@
 package io.github.enkarin.chefbot.service;
 
+import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.repository.UserRepository;
@@ -71,5 +72,12 @@ public class UserService {
 
     public User findUser(final long userId) {
         return userRepository.findById(userId).orElseThrow();
+    }
+
+    @Transactional
+    void deleteLinkForDish(final Dish dish) {
+        userRepository.saveAll(userRepository.findAllByModerableDish(dish).stream()
+                .peek(user -> user.setModerableDish(null))
+                .toList());
     }
 }

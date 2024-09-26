@@ -7,7 +7,7 @@ import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.exceptions.DishNameAlreadyExistsInCurrentUserException;
-import io.github.enkarin.chefbot.util.TestBase;
+import io.github.enkarin.chefbot.util.ModerationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class DishServiceTest extends TestBase {
+class DishServiceTest extends ModerationTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -25,6 +25,9 @@ class DishServiceTest extends TestBase {
 
     @Autowired
     private SearchFilterService searchFilterService;
+
+    @Autowired
+    private ModerationService moderationService;
 
     @BeforeEach
     void init() {
@@ -255,6 +258,38 @@ class DishServiceTest extends TestBase {
             assertThat(displayDishDto.getProductsName()).containsOnly("seventhProduct");
             assertThat(((DisplayDishWithRecipeDto) displayDishDto).getRecipe()).isEqualTo("Дать настояться месяцок");
         });
+    }
+
+    @Test
+    void deleteDish() {
+        userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_NAME);
+        userService.switchToNewStatus(USER_ID, ChatStatus.MAIN_MENU);
+
+        dishService.deleteDish(USER_ID, "рагу");
+
+        assertThat(dishRepository.findAll()).extracting(Dish::getDishName).doesNotContain("Рагу");
+    }
+
+    @Test
+    void deleteDishAfterCreateModerationRequest() {
+        userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_NAME);
+        moderationService.createModerationRequest(USER_ID);
+        userService.switchToNewStatus(USER_ID, ChatStatus.MAIN_MENU);
+
+        dishService.deleteDish(USER_ID, "Рагу");
+
+        assertThat(dishRepository.findAll()).extracting(Dish::getDishName).doesNotContain("Рагу");
+    }
+
+    @Test
+    void deleteDishAfterStartModeration() {
+        clear();
+        moderationInit();
+        moderationService.startModerate(USER_ID - 1, moderationRequestsId[0]);
+
+        dishService.deleteDish(USER_ID, "firstDish");
+
+        assertThat(dishRepository.findAll()).extracting(Dish::getDishName).doesNotContain("firstDish");
     }
 
     @Test

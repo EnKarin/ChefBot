@@ -1,5 +1,6 @@
 package io.github.enkarin.chefbot.service.pipelines;
 
+import io.github.enkarin.chefbot.controllers.pipelines.ProcessingFacade;
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.Product;
