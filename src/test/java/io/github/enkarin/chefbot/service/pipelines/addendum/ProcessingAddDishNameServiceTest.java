@@ -1,6 +1,6 @@
 package io.github.enkarin.chefbot.service.pipelines.addendum;
 
-import io.github.enkarin.chefbot.controllers.pipelines.addendum.ProcessingAddDishNameService;
+import io.github.enkarin.chefbot.pipelinehandlers.addendum.ProcessingAddDishNameService;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
