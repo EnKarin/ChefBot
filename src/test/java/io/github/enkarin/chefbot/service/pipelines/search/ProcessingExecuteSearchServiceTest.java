@@ -1,9 +1,9 @@
 package io.github.enkarin.chefbot.service.pipelines.search;
 
-import io.github.enkarin.chefbot.controllers.pipelines.search.ProcessingExecuteSearchService;
 import io.github.enkarin.chefbot.entity.SearchFilter;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
+import io.github.enkarin.chefbot.pipelineHandlers.search.ProcessingExecuteSearchService;
 import io.github.enkarin.chefbot.repository.SearchFilterRepository;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.Test;

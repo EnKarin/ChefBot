@@ -1,8 +1,8 @@
 package io.github.enkarin.chefbot.service.pipelines.searchbyname;
 
-import io.github.enkarin.chefbot.controllers.pipelines.searchbyname.FindDishByNameService;
 import io.github.enkarin.chefbot.dto.DisplayDishDto;
 import io.github.enkarin.chefbot.enums.ChatStatus;
+import io.github.enkarin.chefbot.pipelineHandlers.searchbyname.FindDishByNameService;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

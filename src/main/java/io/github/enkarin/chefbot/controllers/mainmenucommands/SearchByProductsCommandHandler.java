@@ -1,9 +1,9 @@
 package io.github.enkarin.chefbot.controllers.mainmenucommands;
 
 import io.github.enkarin.chefbot.controllers.MainMenuCommandHandler;
-import io.github.enkarin.chefbot.controllers.pipelines.ProcessingFacade;
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.enums.ChatStatus;
+import io.github.enkarin.chefbot.pipelineHandlers.ProcessingFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

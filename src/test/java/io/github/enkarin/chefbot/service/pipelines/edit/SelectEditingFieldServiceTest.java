@@ -1,7 +1,7 @@
 package io.github.enkarin.chefbot.service.pipelines.edit;
 
-import io.github.enkarin.chefbot.controllers.pipelines.edit.SelectEditingFieldService;
 import io.github.enkarin.chefbot.enums.ChatStatus;
+import io.github.enkarin.chefbot.pipelineHandlers.edit.SelectEditingFieldService;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

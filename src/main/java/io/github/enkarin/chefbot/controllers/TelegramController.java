@@ -1,6 +1,5 @@
 package io.github.enkarin.chefbot.controllers;
 
-import io.github.enkarin.chefbot.controllers.pipelines.ProcessingFacade;
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.dto.ModerationRequestMessageDto;
 import io.github.enkarin.chefbot.dto.ModerationResultDto;
@@ -8,6 +7,7 @@ import io.github.enkarin.chefbot.dto.OperationResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.exceptions.DishNameAlreadyExistsInCurrentUserException;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
+import io.github.enkarin.chefbot.pipelineHandlers.ProcessingFacade;
 import io.github.enkarin.chefbot.service.ModerationService;
 import io.github.enkarin.chefbot.service.UserService;
 import lombok.extern.slf4j.Slf4j;

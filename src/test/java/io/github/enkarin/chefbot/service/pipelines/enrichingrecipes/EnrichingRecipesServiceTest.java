@@ -1,7 +1,7 @@
 package io.github.enkarin.chefbot.service.pipelines.enrichingrecipes;
 
-import io.github.enkarin.chefbot.controllers.pipelines.enrichingrecipes.EnrichingRecipesService;
 import io.github.enkarin.chefbot.enums.ChatStatus;
+import io.github.enkarin.chefbot.pipelineHandlers.enrichingrecipes.EnrichingRecipesService;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

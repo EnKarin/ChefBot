@@ -1,7 +1,7 @@
 package io.github.enkarin.chefbot.service.pipelines.addendum;
 
-import io.github.enkarin.chefbot.controllers.pipelines.addendum.ProcessingNeedDishRecipe;
 import io.github.enkarin.chefbot.enums.ChatStatus;
+import io.github.enkarin.chefbot.pipelineHandlers.addendum.ProcessingNeedDishRecipe;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

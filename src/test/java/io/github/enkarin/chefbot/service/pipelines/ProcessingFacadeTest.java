@@ -1,6 +1,5 @@
 package io.github.enkarin.chefbot.service.pipelines;
 
-import io.github.enkarin.chefbot.controllers.pipelines.ProcessingFacade;
 import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.Product;
@@ -10,6 +9,7 @@ import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
+import io.github.enkarin.chefbot.pipelineHandlers.ProcessingFacade;
 import io.github.enkarin.chefbot.repository.ModerationRequestRepository;
 import io.github.enkarin.chefbot.repository.SearchFilterRepository;
 import io.github.enkarin.chefbot.service.SearchFilterService;
