@@ -1,8 +1,8 @@
 package io.github.enkarin.chefbot.service.pipelines.searchbyproduct;
 
-import io.github.enkarin.chefbot.controllers.pipelines.searchbyproduct.RequestProductsForFindDishService;
 import io.github.enkarin.chefbot.entity.SearchProduct;
 import io.github.enkarin.chefbot.enums.ChatStatus;
+import io.github.enkarin.chefbot.pipelinehandlers.searchbyproduct.RequestProductsForFindDishService;
 import io.github.enkarin.chefbot.repository.SearchProductRepository;
 import io.github.enkarin.chefbot.service.SearchFilterService;
 import io.github.enkarin.chefbot.util.TestBase;

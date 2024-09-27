@@ -1,7 +1,7 @@
 package io.github.enkarin.chefbot.service.pipelines;
 
-import io.github.enkarin.chefbot.controllers.pipelines.MainMenuService;
 import io.github.enkarin.chefbot.enums.ChatStatus;
+import io.github.enkarin.chefbot.pipelinehandlers.MainMenuService;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
