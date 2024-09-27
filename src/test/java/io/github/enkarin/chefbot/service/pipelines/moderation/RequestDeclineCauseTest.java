@@ -1,7 +1,7 @@
 package io.github.enkarin.chefbot.service.pipelines.moderation;
 
-import io.github.enkarin.chefbot.controllers.pipelines.moderation.RequestDeclineCause;
 import io.github.enkarin.chefbot.enums.ChatStatus;
+import io.github.enkarin.chefbot.pipelinehandlers.moderation.RequestDeclineCause;
 import io.github.enkarin.chefbot.service.ModerationService;
 import io.github.enkarin.chefbot.util.ModerationTest;
 import org.junit.jupiter.api.Test;

@@ -1,7 +1,7 @@
 package io.github.enkarin.chefbot.service.pipelines.edit;
 
-import io.github.enkarin.chefbot.controllers.pipelines.edit.EditingFoodstuffService;
 import io.github.enkarin.chefbot.enums.ChatStatus;
+import io.github.enkarin.chefbot.pipelinehandlers.edit.EditingFoodstuffService;
 import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.service.SearchFilterService;
 import io.github.enkarin.chefbot.util.TestBase;
