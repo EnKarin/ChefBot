@@ -4,7 +4,7 @@ import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
-import io.github.enkarin.chefbot.pipelineHandlers.searchbyproduct.FindDishByProductsResponseService;
+import io.github.enkarin.chefbot.pipelinehandlers.searchbyproduct.FindDishByProductsResponseService;
 import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.service.SearchFilterService;
 import io.github.enkarin.chefbot.util.TestBase;

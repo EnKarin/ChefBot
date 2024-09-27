@@ -9,7 +9,7 @@ import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
-import io.github.enkarin.chefbot.pipelineHandlers.ProcessingFacade;
+import io.github.enkarin.chefbot.pipelinehandlers.ProcessingFacade;
 import io.github.enkarin.chefbot.repository.ModerationRequestRepository;
 import io.github.enkarin.chefbot.repository.SearchFilterRepository;
 import io.github.enkarin.chefbot.service.SearchFilterService;

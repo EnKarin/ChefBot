@@ -7,7 +7,7 @@ import io.github.enkarin.chefbot.dto.OperationResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.exceptions.DishNameAlreadyExistsInCurrentUserException;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
-import io.github.enkarin.chefbot.pipelineHandlers.ProcessingFacade;
+import io.github.enkarin.chefbot.pipelinehandlers.ProcessingFacade;
 import io.github.enkarin.chefbot.service.ModerationService;
 import io.github.enkarin.chefbot.service.UserService;
 import lombok.extern.slf4j.Slf4j;

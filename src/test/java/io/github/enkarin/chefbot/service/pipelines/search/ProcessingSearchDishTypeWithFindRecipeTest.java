@@ -3,7 +3,7 @@ package io.github.enkarin.chefbot.service.pipelines.search;
 import io.github.enkarin.chefbot.entity.SearchFilter;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.DishType;
-import io.github.enkarin.chefbot.pipelineHandlers.search.ProcessingSearchDishTypeWithFindRecipe;
+import io.github.enkarin.chefbot.pipelinehandlers.search.ProcessingSearchDishTypeWithFindRecipe;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

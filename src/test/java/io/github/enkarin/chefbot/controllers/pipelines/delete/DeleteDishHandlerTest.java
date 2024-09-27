@@ -2,7 +2,7 @@ package io.github.enkarin.chefbot.controllers.pipelines.delete;
 
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
-import io.github.enkarin.chefbot.pipelineHandlers.delete.DeleteDishHandler;
+import io.github.enkarin.chefbot.pipelinehandlers.delete.DeleteDishHandler;
 import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.Test;

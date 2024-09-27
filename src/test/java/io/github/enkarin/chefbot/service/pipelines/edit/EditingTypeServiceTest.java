@@ -4,7 +4,7 @@ import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.DishType;
-import io.github.enkarin.chefbot.pipelineHandlers.edit.EditingTypeService;
+import io.github.enkarin.chefbot.pipelinehandlers.edit.EditingTypeService;
 import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.Test;

@@ -3,7 +3,7 @@ package io.github.enkarin.chefbot.service.pipelines.addendum;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.DishType;
-import io.github.enkarin.chefbot.pipelineHandlers.addendum.ProcessingAddDishTypeService;
+import io.github.enkarin.chefbot.pipelinehandlers.addendum.ProcessingAddDishTypeService;
 import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.Test;
