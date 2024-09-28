@@ -1,10 +1,12 @@
 package io.github.enkarin.chefbot.repository;
 
 import io.github.enkarin.chefbot.entity.Dish;
+import io.github.enkarin.chefbot.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface DishRepository extends JpaRepository<Dish, Long> {
@@ -38,4 +40,6 @@ public interface DishRepository extends JpaRepository<Dish, Long> {
 
     @Query(value = "select * from t_dish where dish_name ILIKE CONCAT('%',?,'%') AND (published OR user_id=?)", nativeQuery = true)
     List<Dish> findByDishName(String nameSubstring, long userId);
+
+    Optional<Dish> findByDishNameIgnoreCaseAndOwner(String dishName, User owner);
 }
