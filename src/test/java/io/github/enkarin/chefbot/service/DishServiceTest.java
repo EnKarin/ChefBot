@@ -3,6 +3,8 @@ package io.github.enkarin.chefbot.service;
 import io.github.enkarin.chefbot.dto.DisplayDishDto;
 import io.github.enkarin.chefbot.dto.DisplayDishWithRecipeDto;
 import io.github.enkarin.chefbot.entity.Dish;
+import io.github.enkarin.chefbot.entity.Product;
+import io.github.enkarin.chefbot.entity.ProductQuantity;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
@@ -127,6 +129,14 @@ class DishServiceTest extends ModerationTest {
     }
 
     @Test
+    void putDishFoodstuffWithQuantity() {
+        dishService.putDishFoodstuff(USER_ID, Map.of("Овсянка", "10 грамм", "Отруби", "1 ведро"));
+
+        assertThat(productRepository.findAll()).extracting(Product::getProductName).containsOnly("Овсянка", "Отруби");
+        assertThat(productQuantityRepository.findAll()).extracting(ProductQuantity::getQuantityProduct).containsOnly("10 грамм", "1 ведро");
+    }
+
+    @Test
     void putRecipe() {
         dishService.putDishRecipe(USER_ID, "Тушить два часа");
 
@@ -174,6 +184,17 @@ class DishServiceTest extends ModerationTest {
         initDishes();
 
         assertThat(dishService.findDishByName(USER_ID, "fi")).extracting(DisplayDishDto::getDishName).containsOnly("first", "fifth");
+    }
+
+    @Test
+    void searchDishWithRecipeByName() {
+        initDishes();
+
+        assertThat(dishService.findDishByName(USER_ID, "seventh")).extracting(DisplayDishDto::toString).containsOnly("""
+                *seventh:*
+                -seventhProduct
+                Рецепт приготовления:
+                Дать настояться месяцок""");
     }
 
     @Test

@@ -28,7 +28,8 @@ class ProcessingAddDishFoodstuffHandlerTest extends TestBase {
         searchFilterService.createSearchFilter(USER_ID);
 
         assertThat(foodstuffService.execute(USER_ID, "").chatStatus()).isEqualTo(NEW_DISH_FOODSTUFF);
-        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID).stream().flatMap(displayDishDto -> displayDishDto.getProductsName().stream()))
+        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID).stream()
+                .flatMap(displayDishDto -> displayDishDto.getProductsName().stream()))
                 .isEmpty();
     }
 
@@ -42,7 +43,8 @@ class ProcessingAddDishFoodstuffHandlerTest extends TestBase {
                 Три ведра укропа
                 чесночёк
                 Рис""").chatStatus()).isEqualTo(GET_NEED_DISH_RECIPE);
-        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID).stream().flatMap(displayDishDto -> displayDishDto.getProductsName().stream()))
+        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID).stream()
+                .flatMap(displayDishDto -> displayDishDto.getProductsName().stream()))
                 .containsOnly("Три ведра укропа", "Чесночёк", "Рис");
     }
 
@@ -53,7 +55,20 @@ class ProcessingAddDishFoodstuffHandlerTest extends TestBase {
         searchFilterService.createSearchFilter(USER_ID);
 
         assertThat(foodstuffService.execute(USER_ID, "Охапка дров, плюмбус").chatStatus()).isEqualTo(GET_NEED_DISH_RECIPE);
-        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID).stream().flatMap(displayDishDto -> displayDishDto.getProductsName().stream()))
+        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID).stream()
+                .flatMap(displayDishDto -> displayDishDto.getProductsName().stream()))
                 .containsOnly("Охапка дров", "Плюмбус");
+    }
+
+    @Test
+    void executeWithQuantityProduct() {
+        userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
+        dishService.initDishName(USER_ID, "dish");
+        searchFilterService.createSearchFilter(USER_ID);
+
+        assertThat(foodstuffService.execute(USER_ID, "Охапка дров - 1 штука, плюмбус: 2 кило").chatStatus()).isEqualTo(GET_NEED_DISH_RECIPE);
+        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID).stream()
+                .flatMap(displayDishDto -> displayDishDto.getProductsName().stream()))
+                .containsOnly("Охапка дров: 1 штука", "Плюмбус: 2 кило");
     }
 }

@@ -1,7 +1,6 @@
 package io.github.enkarin.chefbot.service;
 
 import io.github.enkarin.chefbot.dto.DisplayDishDto;
-import io.github.enkarin.chefbot.dto.DisplayDishWithRecipeDto;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.Product;
 import io.github.enkarin.chefbot.entity.ProductQuantity;
@@ -12,6 +11,7 @@ import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.exceptions.DishNameAlreadyExistsInCurrentUserException;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
+import io.github.enkarin.chefbot.mappers.DishEntityToDisplayDtoMapper;
 import io.github.enkarin.chefbot.repository.DishRepository;
 import io.github.enkarin.chefbot.repository.ProductQuantityRepository;
 import io.github.enkarin.chefbot.repository.ProductRepository;
@@ -39,6 +39,7 @@ public class DishService {
     private final DishRepository dishRepository;
     private final UserService userService;
     private final ProductQuantityRepository productQuantityRepository;
+    private final DishEntityToDisplayDtoMapper dishEntityToDisplayDtoMapper;
 
     @Transactional
     public void initDishName(final long userId, final String name) {
@@ -58,6 +59,7 @@ public class DishService {
     public void deleteDish(final long userId, final String name) {
         dishRepository.findByDishNameIgnoreCaseAndOwner(name, userService.findUser(userId)).ifPresentOrElse(dishForRemove -> {
             userService.deleteLinkForDish(dishForRemove);
+            productQuantityRepository.deleteAll(dishForRemove.getProducts());
             dishRepository.delete(dishForRemove);
         }, () -> {
             throw new DishesNotFoundException();
@@ -154,7 +156,7 @@ public class DishService {
 
     public List<DisplayDishDto> findDishByName(final long userId, final String nameSubstring) {
         return dishRepository.findByDishName(nameSubstring, userId).stream()
-                .map(dish -> new DisplayDishDto(dish.getDishName(), findProductsInfo(dish)))
+                .map(dish -> nonNull(dish.getRecipe()) ? dishEntityToDisplayDtoMapper.mapWithRecipe(dish) : dishEntityToDisplayDtoMapper.mapWithoutRecipe(dish))
                 .toList();
     }
 
@@ -192,23 +194,11 @@ public class DishService {
                 .sorted(Comparator.comparing(Dish::getDishName))
                 .skip(pageNumber * 5L)
                 .limit(5)
-                .map(dish -> nonNull(dish.getRecipe())
-                        ? new DisplayDishWithRecipeDto(dish.getDishName(), findProductsInfo(dish), dish.getRecipe())
-                        : new DisplayDishDto(dish.getDishName(), findProductsInfo(dish)))
+                .map(dish -> nonNull(dish.getRecipe()) ? dishEntityToDisplayDtoMapper.mapWithRecipe(dish) : dishEntityToDisplayDtoMapper.mapWithoutRecipe(dish))
                 .toList();
     }
 
     private Dish findEditableDish(final long userId) {
         return userService.findUser(userId).getEditabledDish();
-    }
-
-    private Set<String> findProductsInfo(final Dish dish) {
-        return dish.getProducts().stream()
-                .map(productQuantity -> productQuantity.getProduct()
-                        .getProductName()
-                        .concat(isNull(productQuantity.getQuantityProduct()) || productQuantity.getQuantityProduct().isEmpty()
-                                ? ""
-                                : ": ".concat(productQuantity.getQuantityProduct())))
-                .collect(Collectors.toSet());
     }
 }
