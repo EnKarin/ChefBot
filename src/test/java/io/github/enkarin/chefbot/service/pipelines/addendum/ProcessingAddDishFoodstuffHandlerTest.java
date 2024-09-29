@@ -1,6 +1,6 @@
 package io.github.enkarin.chefbot.service.pipelines.addendum;
 
-import io.github.enkarin.chefbot.pipelinehandlers.addendum.ProcessingAddDishFoodstuffService;
+import io.github.enkarin.chefbot.pipelinehandlers.addendum.ProcessingAddDishFoodstuffHandler;
 import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.service.SearchFilterService;
 import io.github.enkarin.chefbot.util.TestBase;
@@ -11,9 +11,9 @@ import static io.github.enkarin.chefbot.enums.ChatStatus.GET_NEED_DISH_RECIPE;
 import static io.github.enkarin.chefbot.enums.ChatStatus.NEW_DISH_FOODSTUFF;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ProcessingAddDishFoodstuffServiceTest extends TestBase {
+class ProcessingAddDishFoodstuffHandlerTest extends TestBase {
     @Autowired
-    private ProcessingAddDishFoodstuffService foodstuffService;
+    private ProcessingAddDishFoodstuffHandler foodstuffService;
 
     @Autowired
     private DishService dishService;

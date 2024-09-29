@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -112,7 +114,7 @@ class DishServiceTest extends ModerationTest {
 
     @Test
     void putDishFoodstuff() {
-        dishService.putDishFoodstuff(USER_ID, "Овсянка", "Три ведра укропа");
+        dishService.putDishFoodstuff(USER_ID, Map.of("Овсянка", "", "Три ведра укропа", ""));
 
         final String dishId = userService.findUser(USER_ID).getEditabledDish().getDishName();
         assertThat(jdbcTemplate.queryForList(
