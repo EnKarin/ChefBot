@@ -169,7 +169,7 @@ public class DishService {
     private List<? extends DisplayDishDto> findDishByProduct(final long userId, final List<String> productNames, final int pageNumber) {
         final Iterator<String> productIterator = productNames.iterator();
         Set<Dish> prepareResult = productRepository.findByProductNameContainsIgnoreCase(productIterator.next()).stream()
-                .flatMap(product -> product.getDishes().stream())
+                .flatMap(product -> product.getProductQuantities().stream())
                 .filter(dish -> dish.isPublished() || dish.getOwner().getId() == userId)
                 .collect(Collectors.toSet());
         while (productIterator.hasNext()) {

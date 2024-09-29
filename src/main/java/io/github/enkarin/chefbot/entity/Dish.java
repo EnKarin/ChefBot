@@ -9,9 +9,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -55,13 +54,8 @@ public class Dish implements Serializable {
     @Column(name = "recipe", length = 2048)
     private String recipe;
 
-    @ManyToMany
-    @JoinTable(
-            name = "t_dish_product",
-            joinColumns = {@JoinColumn(name = "dish_id")},
-            inverseJoinColumns = {@JoinColumn(name = "product_id")}
-    )
-    private Set<Product> products;
+    @OneToMany(mappedBy = "dish")
+    private Set<ProductQuantity> products;
 
     @OneToOne(mappedBy = "moderationDish", orphanRemoval = true)
     private ModerationRequest moderationRequest;

@@ -15,6 +15,6 @@ class DishEntityDtoMapperTest extends TestBase {
 
     @Test
     void productToString() {
-        assertThat(mapper.productToString(Product.builder().productName("bread").dishes(Set.of()).build())).isEqualTo("bread");
+        assertThat(mapper.productToString(Product.builder().productName("bread").productQuantities(Set.of()).build())).isEqualTo("bread");
     }
 }
