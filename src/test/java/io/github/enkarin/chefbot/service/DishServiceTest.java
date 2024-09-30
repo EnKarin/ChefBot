@@ -294,6 +294,18 @@ class DishServiceTest extends ModerationTest {
     }
 
     @Test
+    void deleteDishMustNotDropProduct() {
+        userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_NAME);
+        dishService.putDishFoodstuff(USER_ID, Map.of("Картошка", "4 штуки", "Кабачок", "1 штука"));
+        userService.switchToNewStatus(USER_ID, ChatStatus.MAIN_MENU);
+
+        dishService.deleteDish(USER_ID, "рагу");
+
+        assertThat(dishRepository.findAll()).extracting(Dish::getDishName).doesNotContain("Рагу");
+        assertThat(productRepository.findAll()).extracting(Product::getProductName).containsOnly("Картошка", "Кабачок");
+    }
+
+    @Test
     void deleteDishAfterCreateModerationRequest() {
         userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_NAME);
         moderationService.createModerationRequest(USER_ID);

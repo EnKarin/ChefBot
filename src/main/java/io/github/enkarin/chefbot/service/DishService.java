@@ -59,7 +59,6 @@ public class DishService {
     public void deleteDish(final long userId, final String name) {
         dishRepository.findByDishNameIgnoreCaseAndOwner(name, userService.findUser(userId)).ifPresentOrElse(dishForRemove -> {
             userService.deleteLinkForDish(dishForRemove);
-            productQuantityRepository.deleteAll(dishForRemove.getProducts());
             dishRepository.delete(dishForRemove);
         }, () -> {
             throw new DishesNotFoundException();

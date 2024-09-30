@@ -54,7 +54,7 @@ public class Dish implements Serializable {
     @Column(name = "recipe", length = 2048)
     private String recipe;
 
-    @OneToMany(mappedBy = "dish")
+    @OneToMany(mappedBy = "dish", orphanRemoval = true)
     private Set<ProductQuantity> products;
 
     @OneToOne(mappedBy = "moderationDish", orphanRemoval = true)
