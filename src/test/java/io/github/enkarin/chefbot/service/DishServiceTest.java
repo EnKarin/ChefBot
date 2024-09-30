@@ -115,8 +115,8 @@ class DishServiceTest extends ModerationTest {
     }
 
     @Test
-    void putDishFoodstuff() {
-        dishService.putDishFoodstuff(USER_ID, Map.of("Овсянка", "", "Три ведра укропа", ""));
+    void putAllDishFoodstuff() {
+        dishService.putAllDishFoodstuff(USER_ID, Map.of("Овсянка", "", "Три ведра укропа", ""));
 
         final String dishId = userService.findUser(USER_ID).getEditabledDish().getDishName();
         assertThat(jdbcTemplate.queryForList(
@@ -129,8 +129,8 @@ class DishServiceTest extends ModerationTest {
     }
 
     @Test
-    void putDishFoodstuffWithQuantity() {
-        dishService.putDishFoodstuff(USER_ID, Map.of("Овсянка", "10 грамм", "Отруби", "1 ведро"));
+    void putAllDishFoodstuffWithQuantity() {
+        dishService.putAllDishFoodstuff(USER_ID, Map.of("Овсянка", "10 грамм", "Отруби", "1 ведро"));
 
         assertThat(productRepository.findAll()).extracting(Product::getProductName).containsOnly("Овсянка", "Отруби");
         assertThat(productQuantityRepository.findAll()).extracting(ProductQuantity::getQuantityProduct).containsOnly("10 грамм", "1 ведро");
@@ -296,7 +296,7 @@ class DishServiceTest extends ModerationTest {
     @Test
     void deleteDishMustNotDropProduct() {
         userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_NAME);
-        dishService.putDishFoodstuff(USER_ID, Map.of("Картошка", "4 штуки", "Кабачок", "1 штука"));
+        dishService.putAllDishFoodstuff(USER_ID, Map.of("Картошка", "4 штуки", "Кабачок", "1 штука"));
         userService.switchToNewStatus(USER_ID, ChatStatus.MAIN_MENU);
 
         dishService.deleteDish(USER_ID, "рагу");

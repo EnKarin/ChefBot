@@ -115,7 +115,7 @@ public class DishService {
     }
 
     @Transactional
-    public void putDishFoodstuff(final long userId, final Map<String, String> foodstuffs) {
+    public void putAllDishFoodstuff(final long userId, final Map<String, String> foodstuffs) {
         final Dish dish = findEditableDish(userId);
         productQuantityRepository.deleteAll(dish.getProducts());
         for (final var foodstuff : foodstuffs.entrySet()) {

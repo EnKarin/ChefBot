@@ -16,7 +16,7 @@ public class ProcessingAddDishFoodstuffHandler extends PutFoodstuffHandler {
     @Override
     public ExecutionResult execute(final long userId, final String text) {
         if (StringUtils.isNoneBlank(text)) {
-            dishService.putDishFoodstuff(userId, parseTextToProductMap(text));
+            dishService.putAllDishFoodstuff(userId, parseTextToProductMap(text));
             return new ExecutionResult(ChatStatus.GET_NEED_DISH_RECIPE);
         }
         return new ExecutionResult(getCurrentStatus());

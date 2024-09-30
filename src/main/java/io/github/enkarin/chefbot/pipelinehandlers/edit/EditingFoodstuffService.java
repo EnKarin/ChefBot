@@ -14,7 +14,7 @@ public class EditingFoodstuffService extends PutFoodstuffHandler {
 
     @Override
     public ExecutionResult execute(final long userId, final String text) {
-        dishService.putDishFoodstuff(userId, parseTextToProductMap(text));
+        dishService.putAllDishFoodstuff(userId, parseTextToProductMap(text));
         dishService.dropPublishFlagForEditableDish(userId);
         return new ExecutionResult(ChatStatus.DISH_NEED_PUBLISH);
     }
