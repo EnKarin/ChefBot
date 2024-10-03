@@ -1,15 +1,14 @@
 package io.github.enkarin.chefbot.service;
 
 import io.github.enkarin.chefbot.dto.DisplayDishDto;
-import io.github.enkarin.chefbot.dto.DisplayDishWithRecipeDto;
 import io.github.enkarin.chefbot.entity.Dish;
-import io.github.enkarin.chefbot.entity.Product;
 import io.github.enkarin.chefbot.entity.SearchFilter;
 import io.github.enkarin.chefbot.entity.SearchProduct;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
+import io.github.enkarin.chefbot.mappers.DishEntityToDisplayDtoMapper;
 import io.github.enkarin.chefbot.repository.DishRepository;
 import io.github.enkarin.chefbot.repository.SearchFilterRepository;
 import io.github.enkarin.chefbot.repository.SearchProductRepository;
@@ -34,16 +33,19 @@ public class SearchFilterService {
     private final UserService userService;
     private final DishRepository dishRepository;
     private final SearchProductRepository searchProductRepository;
+    private final DishEntityToDisplayDtoMapper dishEntityToDisplayDtoMapper;
     private final Random random = new Random();
 
     public SearchFilterService(final SearchFilterRepository searchFilterRepository,
                                final UserService userService,
                                final DishRepository dishRepository,
-                               final SearchProductRepository searchProductRepository) {
+                               final SearchProductRepository searchProductRepository,
+                               final DishEntityToDisplayDtoMapper dishEntityToDisplayDtoMapper) {
         this.searchFilterRepository = searchFilterRepository;
         this.userService = userService;
         this.dishRepository = dishRepository;
         this.searchProductRepository = searchProductRepository;
+        this.dishEntityToDisplayDtoMapper = dishEntityToDisplayDtoMapper;
     }
 
     @Transactional
@@ -94,8 +96,8 @@ public class SearchFilterService {
         final SearchFilter searchFilter = currentUser.getSearchFilter();
         final Set<DisplayDishDto> result;
         final Function<Dish, DisplayDishDto> dishDisplayDtoFromEntityMapper = searchFilter.isNeedGetRecipe()
-                ? dish -> new DisplayDishWithRecipeDto(dish.getDishName(), productNamesParser(dish), dish.getRecipe())
-                : dish -> new DisplayDishDto(dish.getDishName(), productNamesParser(dish));
+                ? dishEntityToDisplayDtoMapper::mapWithRecipe
+                : dishEntityToDisplayDtoMapper::mapWithoutRecipe;
         if (searchFilter.isSearchFromPublicDish()) {
             result = findDishesWithSpecifiedFilter(searchFilter, currentUser.getId())
                     .stream()
@@ -135,13 +137,7 @@ public class SearchFilterService {
         final Dish dish = searchFilter.isSearchFromPublicDish()
                 ? getRandomPublishDishWithCurrentFilter(ownerId, searchFilter)
                 : getRandomPrivateDishWithCurrentFilter(currentUser, searchFilter);
-        return searchFilter.isNeedGetRecipe()
-                ? new DisplayDishWithRecipeDto(dish.getDishName(), productNamesParser(dish), dish.getRecipe())
-                : new DisplayDishDto(dish.getDishName(), productNamesParser(dish));
-    }
-
-    private Set<String> productNamesParser(final Dish dish) {
-        return dish.getProducts().stream().map(Product::getProductName).collect(Collectors.toSet());
+        return searchFilter.isNeedGetRecipe() ? dishEntityToDisplayDtoMapper.mapWithRecipe(dish) : dishEntityToDisplayDtoMapper.mapWithoutRecipe(dish);
     }
 
     private Dish getRandomPrivateDishWithCurrentFilter(final User currentUser, final SearchFilter searchFilter) {
