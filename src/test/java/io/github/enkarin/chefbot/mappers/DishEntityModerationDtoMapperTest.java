@@ -1,20 +1,19 @@
 package io.github.enkarin.chefbot.mappers;
 
 import io.github.enkarin.chefbot.entity.Product;
+import io.github.enkarin.chefbot.entity.ProductQuantity;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Set;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DishEntityDtoMapperTest extends TestBase {
+class DishEntityModerationDtoMapperTest extends TestBase {
     @Autowired
-    private DishEntityDtoMapper mapper;
+    private DishEntityModerationDtoMapper mapper;
 
     @Test
     void productToString() {
-        assertThat(mapper.productToString(Product.builder().productName("bread").dishes(Set.of()).build())).isEqualTo("bread");
+        assertThat(mapper.productToString(ProductQuantity.builder().product(Product.builder().productName("bread").build()).build())).isEqualTo("bread");
     }
 }
