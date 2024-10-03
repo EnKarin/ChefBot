@@ -2,11 +2,13 @@ package io.github.enkarin.chefbot.util;
 
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.Product;
+import io.github.enkarin.chefbot.entity.ProductQuantity;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.repository.DishRepository;
+import io.github.enkarin.chefbot.repository.ProductQuantityRepository;
 import io.github.enkarin.chefbot.repository.ProductRepository;
 import io.github.enkarin.chefbot.repository.UserRepository;
 import io.github.enkarin.chefbot.service.UserService;
@@ -18,8 +20,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
-
-import java.util.Set;
 
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
 @SpringBootTest
@@ -42,6 +42,8 @@ public class TestBase {
     protected ProductRepository productRepository;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    protected ProductQuantityRepository productQuantityRepository;
 
     @AfterEach
     protected void clear() {
@@ -53,63 +55,56 @@ public class TestBase {
     }
 
     protected void initDishes() {
-        dishRepository.save(Dish.builder()
+        productQuantityRepository.save(ProductQuantity.builder().dish(dishRepository.save(Dish.builder()
                 .dishName("first")
                 .type(DishType.SALAD)
                 .spicy(false)
                 .cuisine(WorldCuisine.ASIA)
-                .products(Set.of(productRepository.save(Product.builder().productName("firstProduct").build())))
                 .published(true)
                 .recipe("Тушить в казане")
-                .build());
-        dishRepository.save(Dish.builder()
+                .build())).product(productRepository.save(Product.builder().productName("firstProduct").build())).build());
+        productQuantityRepository.save(ProductQuantity.builder().dish(dishRepository.save(Dish.builder()
                 .dishName("second")
                 .type(DishType.PASTRY)
                 .spicy(true)
                 .cuisine(WorldCuisine.INTERNATIONAL)
-                .products(Set.of(productRepository.save(Product.builder().productName("secondProduct").build())))
                 .published(true)
-                .build());
-        dishRepository.save(Dish.builder()
+                .build())).product(productRepository.save(Product.builder().productName("secondProduct").build())).build());
+        productQuantityRepository.save(ProductQuantity.builder().dish(dishRepository.save(Dish.builder()
                 .dishName("third")
                 .type(DishType.SNACK)
                 .spicy(false)
                 .cuisine(WorldCuisine.SLAVIC)
-                .products(Set.of(productRepository.save(Product.builder().productName("thirdProduct").build())))
                 .published(true)
-                .build());
-        dishRepository.save(Dish.builder()
+                .build())).product(productRepository.save(Product.builder().productName("thirdProduct").build())).build());
+        productQuantityRepository.save(ProductQuantity.builder().dish(dishRepository.save(Dish.builder()
                 .dishName("fourth")
                 .type(DishType.SOUP)
                 .spicy(true)
                 .cuisine(WorldCuisine.MEXICAN)
-                .products(Set.of(productRepository.save(Product.builder().productName("fourthProduct").build())))
                 .published(true)
-                .build());
-        dishRepository.save(Dish.builder()
+                .build())).product(productRepository.save(Product.builder().productName("fourthProduct").build())).build());
+        productQuantityRepository.save(ProductQuantity.builder().dish(dishRepository.save(Dish.builder()
                 .dishName("fifth")
                 .type(DishType.SOUP)
                 .spicy(false)
                 .cuisine(WorldCuisine.MIDDLE_EASTERN)
-                .products(Set.of(productRepository.save(Product.builder().productName("fifthProduct").build())))
                 .owner(userRepository.findById(USER_ID).orElseThrow())
-                .build());
-        dishRepository.save(Dish.builder()
+                .build())).product(productRepository.save(Product.builder().productName("fifthProduct").build())).build());
+        productQuantityRepository.save(ProductQuantity.builder().dish(dishRepository.save(Dish.builder()
                 .dishName("sixth")
                 .type(DishType.MAIN_DISH)
                 .spicy(true)
                 .cuisine(WorldCuisine.MEDITERRANEAN)
-                .products(Set.of(productRepository.save(Product.builder().productName("sixthProduct").build())))
                 .owner(userRepository.findById(USER_ID).orElseThrow())
-                .build());
-        dishRepository.save(Dish.builder()
+                .build())).product(productRepository.save(Product.builder().productName("sixthProduct").build())).build());
+        productQuantityRepository.save(ProductQuantity.builder().dish(dishRepository.save(Dish.builder()
                 .dishName("seventh")
                 .type(DishType.SALAD)
                 .spicy(false)
                 .cuisine(WorldCuisine.OTHER)
-                .products(Set.of(productRepository.save(Product.builder().productName("seventhProduct").build())))
                 .owner(userRepository.findById(USER_ID).orElseThrow())
                 .recipe("Дать настояться месяцок")
-                .build());
+                .build())).product(productRepository.save(Product.builder().productName("seventhProduct").build())).build());
     }
 }
