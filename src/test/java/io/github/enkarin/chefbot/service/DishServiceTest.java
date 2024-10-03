@@ -3,6 +3,8 @@ package io.github.enkarin.chefbot.service;
 import io.github.enkarin.chefbot.dto.DisplayDishDto;
 import io.github.enkarin.chefbot.dto.DisplayDishWithRecipeDto;
 import io.github.enkarin.chefbot.entity.Dish;
+import io.github.enkarin.chefbot.entity.Product;
+import io.github.enkarin.chefbot.entity.ProductQuantity;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
@@ -12,6 +14,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -111,8 +115,8 @@ class DishServiceTest extends ModerationTest {
     }
 
     @Test
-    void putDishFoodstuff() {
-        dishService.putDishFoodstuff(USER_ID, "Овсянка", "Три ведра укропа");
+    void putAllDishFoodstuff() {
+        dishService.putAllDishFoodstuff(USER_ID, Map.of("Овсянка", "", "Три ведра укропа", ""));
 
         final String dishId = userService.findUser(USER_ID).getEditabledDish().getDishName();
         assertThat(jdbcTemplate.queryForList(
@@ -122,6 +126,14 @@ class DishServiceTest extends ModerationTest {
                 String.class,
                 dishId)).containsOnly("Овсянка", "Три ведра укропа");
         assertThat(productRepository.count()).isEqualTo(2);
+    }
+
+    @Test
+    void putAllDishFoodstuffWithQuantity() {
+        dishService.putAllDishFoodstuff(USER_ID, Map.of("Овсянка", "10 грамм", "Отруби", "1 ведро"));
+
+        assertThat(productRepository.findAll()).extracting(Product::getProductName).containsOnly("Овсянка", "Отруби");
+        assertThat(productQuantityRepository.findAll()).extracting(ProductQuantity::getQuantityProduct).containsOnly("10 грамм", "1 ведро");
     }
 
     @Test
@@ -172,6 +184,17 @@ class DishServiceTest extends ModerationTest {
         initDishes();
 
         assertThat(dishService.findDishByName(USER_ID, "fi")).extracting(DisplayDishDto::getDishName).containsOnly("first", "fifth");
+    }
+
+    @Test
+    void searchDishWithRecipeByName() {
+        initDishes();
+
+        assertThat(dishService.findDishByName(USER_ID, "seventh")).extracting(DisplayDishDto::toString).containsOnly("""
+                *seventh:*
+                -seventhProduct
+                Рецепт приготовления:
+                Дать настояться месяцок""");
     }
 
     @Test
@@ -268,6 +291,18 @@ class DishServiceTest extends ModerationTest {
         dishService.deleteDish(USER_ID, "рагу");
 
         assertThat(dishRepository.findAll()).extracting(Dish::getDishName).doesNotContain("Рагу");
+    }
+
+    @Test
+    void deleteDishMustNotDropProduct() {
+        userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_NAME);
+        dishService.putAllDishFoodstuff(USER_ID, Map.of("Картошка", "4 штуки", "Кабачок", "1 штука"));
+        userService.switchToNewStatus(USER_ID, ChatStatus.MAIN_MENU);
+
+        dishService.deleteDish(USER_ID, "рагу");
+
+        assertThat(dishRepository.findAll()).extracting(Dish::getDishName).doesNotContain("Рагу");
+        assertThat(productRepository.findAll()).extracting(Product::getProductName).containsOnly("Картошка", "Кабачок");
     }
 
     @Test

@@ -318,7 +318,10 @@ class ProcessingFacadeTest extends TestBase {
             assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
         });
         assertThat(processingFacade.execute(USER_ID, "Список продуктов").botAnswer()).satisfies(botAnswer -> {
-            assertThat(botAnswer.messageText()).isEqualTo("Введите список продуктов");
+            assertThat(botAnswer.messageText()).isEqualTo("""
+                Введите список продуктов для приготовления блюда одним сообщением.
+                Отделяйте их запятой или новой строкой.
+                Количество продукта нужно написать после его названия, отделив двоеточием или тире.""");
             assertThat(botAnswer.userAnswerOptions()).isEmpty();
         });
         processingFacade.execute(USER_ID, "Булочка, сосиска");

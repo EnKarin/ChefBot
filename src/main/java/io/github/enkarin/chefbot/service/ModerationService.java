@@ -6,7 +6,7 @@ import io.github.enkarin.chefbot.dto.ModerationResultDto;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.ModerationRequest;
 import io.github.enkarin.chefbot.entity.User;
-import io.github.enkarin.chefbot.mappers.DishEntityDtoMapper;
+import io.github.enkarin.chefbot.mappers.DishEntityModerationDtoMapper;
 import io.github.enkarin.chefbot.mappers.ModerationRequestMessageEntityDtoMapper;
 import io.github.enkarin.chefbot.repository.ModerationRequestMessageRepository;
 import io.github.enkarin.chefbot.repository.ModerationRequestRepository;
@@ -26,14 +26,14 @@ public class ModerationService {
     private final ModerationRequestRepository moderationRequestRepository;
     private final ModerationRequestMessageRepository moderationRequestMessageRepository;
     private final ModerationRequestMessageEntityDtoMapper moderationRequestMessageEntityDtoMapper;
-    private final DishEntityDtoMapper dishEntityDtoMapper;
+    private final DishEntityModerationDtoMapper dishEntityModerationDtoMapper;
     private final UserRepository userRepository;
 
     public ModerationDishDto createModerationRequest(final long userId) {
         final ModerationRequest moderationRequest = moderationRequestRepository.save(ModerationRequest.builder()
                 .moderationDish(userService.findUser(userId).getEditabledDish())
                 .build());
-        final ModerationDishDto result = dishEntityDtoMapper.entityToDto(moderationRequest.getModerationDish());
+        final ModerationDishDto result = dishEntityModerationDtoMapper.entityToDto(moderationRequest.getModerationDish());
         result.setRequestId(moderationRequest.getId());
         return result;
     }
@@ -48,7 +48,7 @@ public class ModerationService {
 
     Set<ModerationDishDto> findAllRequests() {
         return moderationRequestRepository.findAll().stream().map(moderationRequest -> {
-            final ModerationDishDto dto = dishEntityDtoMapper.entityToDto(moderationRequest.getModerationDish());
+            final ModerationDishDto dto = dishEntityModerationDtoMapper.entityToDto(moderationRequest.getModerationDish());
             dto.setRequestId(moderationRequest.getId());
             return dto;
         }).collect(Collectors.toSet());
