@@ -2,7 +2,7 @@ package io.github.enkarin.chefbot.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +28,6 @@ public class Product implements Serializable {
     @Id
     private String productName;
 
-    @ManyToMany(mappedBy = "products")
-    private Set<Dish> dishes;
+    @OneToMany(mappedBy = "product")
+    private Set<ProductQuantity> productQuantities;
 }

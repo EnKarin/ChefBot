@@ -1,9 +1,9 @@
 package io.github.enkarin.chefbot.service;
 
 import io.github.enkarin.chefbot.dto.DisplayDishDto;
-import io.github.enkarin.chefbot.dto.DisplayDishWithRecipeDto;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.Product;
+import io.github.enkarin.chefbot.entity.ProductQuantity;
 import io.github.enkarin.chefbot.entity.SearchFilter;
 import io.github.enkarin.chefbot.entity.SearchProduct;
 import io.github.enkarin.chefbot.entity.User;
@@ -11,7 +11,9 @@ import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.exceptions.DishNameAlreadyExistsInCurrentUserException;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
+import io.github.enkarin.chefbot.mappers.DishEntityToDisplayDtoMapper;
 import io.github.enkarin.chefbot.repository.DishRepository;
+import io.github.enkarin.chefbot.repository.ProductQuantityRepository;
 import io.github.enkarin.chefbot.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,6 +38,8 @@ public class DishService {
     private final ProductRepository productRepository;
     private final DishRepository dishRepository;
     private final UserService userService;
+    private final ProductQuantityRepository productQuantityRepository;
+    private final DishEntityToDisplayDtoMapper dishEntityToDisplayDtoMapper;
 
     @Transactional
     public void initDishName(final long userId, final String name) {
@@ -110,12 +115,13 @@ public class DishService {
     }
 
     @Transactional
-    public void putDishFoodstuff(final long userId, final String... foodstuffNames) {
+    public void putAllDishFoodstuff(final long userId, final Map<String, String> foodstuffs) {
         final Dish dish = findEditableDish(userId);
-        dish.getProducts().clear();
-        for (final String foodstuffName : foodstuffNames) {
-            final String trimFoodstuff = capitalize(foodstuffName.trim().toLowerCase(Locale.ROOT));
-            dish.getProducts().add(productRepository.findById(trimFoodstuff).orElseGet(() -> productRepository.save(Product.builder().productName(trimFoodstuff).build())));
+        productQuantityRepository.deleteAll(dish.getProducts());
+        for (final var foodstuff : foodstuffs.entrySet()) {
+            final String trimFoodstuff = capitalize(foodstuff.getKey().trim().toLowerCase(Locale.ROOT));
+            final Product product = productRepository.findById(trimFoodstuff).orElseGet(() -> productRepository.save(Product.builder().productName(trimFoodstuff).build()));
+            productQuantityRepository.save(ProductQuantity.builder().product(product).dish(dish).quantityProduct(foodstuff.getValue().trim()).build());
         }
     }
 
@@ -149,7 +155,7 @@ public class DishService {
 
     public List<DisplayDishDto> findDishByName(final long userId, final String nameSubstring) {
         return dishRepository.findByDishName(nameSubstring, userId).stream()
-                .map(dish -> new DisplayDishDto(dish.getDishName(), findProductsName(dish)))
+                .map(dish -> nonNull(dish.getRecipe()) ? dishEntityToDisplayDtoMapper.mapWithRecipe(dish) : dishEntityToDisplayDtoMapper.mapWithoutRecipe(dish))
                 .toList();
     }
 
@@ -169,30 +175,29 @@ public class DishService {
     private List<? extends DisplayDishDto> findDishByProduct(final long userId, final List<String> productNames, final int pageNumber) {
         final Iterator<String> productIterator = productNames.iterator();
         Set<Dish> prepareResult = productRepository.findByProductNameContainsIgnoreCase(productIterator.next()).stream()
-                .flatMap(product -> product.getDishes().stream())
+                .flatMap(product -> product.getProductQuantities().stream())
+                .map(ProductQuantity::getDish)
                 .filter(dish -> dish.isPublished() || dish.getOwner().getId() == userId)
                 .collect(Collectors.toSet());
         while (productIterator.hasNext()) {
             final String nowProductName = productIterator.next().toLowerCase(Locale.ROOT);
             prepareResult = prepareResult.stream()
-                    .filter(dish -> dish.getProducts().stream().map(Product::getProductName).map(String::toLowerCase).anyMatch(productName -> productName.contains(nowProductName)))
+                    .filter(dish -> dish.getProducts().stream()
+                            .map(ProductQuantity::getProduct)
+                            .map(Product::getProductName)
+                            .map(String::toLowerCase)
+                            .anyMatch(productName -> productName.contains(nowProductName)))
                     .collect(Collectors.toSet());
         }
         return prepareResult.stream()
                 .sorted(Comparator.comparing(Dish::getDishName))
                 .skip(pageNumber * 5L)
                 .limit(5)
-                .map(dish -> nonNull(dish.getRecipe())
-                        ? new DisplayDishWithRecipeDto(dish.getDishName(), findProductsName(dish), dish.getRecipe())
-                        : new DisplayDishDto(dish.getDishName(), findProductsName(dish)))
+                .map(dish -> nonNull(dish.getRecipe()) ? dishEntityToDisplayDtoMapper.mapWithRecipe(dish) : dishEntityToDisplayDtoMapper.mapWithoutRecipe(dish))
                 .toList();
     }
 
     private Dish findEditableDish(final long userId) {
         return userService.findUser(userId).getEditabledDish();
-    }
-
-    private Set<String> findProductsName(final Dish dish) {
-        return dish.getProducts().stream().map(Product::getProductName).collect(Collectors.toSet());
     }
 }
