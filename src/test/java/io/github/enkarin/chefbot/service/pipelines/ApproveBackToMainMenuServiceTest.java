@@ -61,7 +61,6 @@ class ApproveBackToMainMenuServiceTest extends TestBase {
 
     @Test
     void executeWithExistsSearchFilter() {
-        createUser(ChatStatus.APPROVE_BACK_TO_MAIN_MENU);
         searchFilterService.createSearchFilter(USER_ID);
 
         assertThat(approveBackToMainMenuService.execute(USER_ID, "да").chatStatus()).isEqualTo(ChatStatus.MAIN_MENU);

@@ -18,7 +18,7 @@ public class EnrichingRecipesService implements NonCommandInputHandler {
 
     @Override
     public ExecutionResult execute(final long userId, final String text) {
-        if("Другое".equalsIgnoreCase(text)) {
+        if ("Другое".equalsIgnoreCase(text)) {
             return new ExecutionResult(getCurrentStatus());
         } else {
             dishService.putEditableDish(userId, text);
@@ -29,10 +29,10 @@ public class EnrichingRecipesService implements NonCommandInputHandler {
     @Override
     public BotAnswer getMessageForUser(final long userId) {
         final List<String> dishNamesWithoutRecipeForUser = dishService.findDishNamesWithoutRecipeForUser(userId);
-        if(dishNamesWithoutRecipeForUser.isEmpty()) {
+        if (dishNamesWithoutRecipeForUser.isEmpty()) {
             throw new DishesNotFoundException();
         }
-        if(dishNamesWithoutRecipeForUser.size() == 10) {
+        if (dishNamesWithoutRecipeForUser.size() == 10) {
             dishNamesWithoutRecipeForUser.add("Другое");
         }
         return new BotAnswer("Выберете добавленное вами ранее блюдо для добавления рецепта", dishNamesWithoutRecipeForUser.toArray(String[]::new));

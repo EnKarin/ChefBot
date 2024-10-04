@@ -27,6 +27,13 @@ class EnrichingRecipesServiceTest extends TestBase {
     }
 
     @Test
+    void executeWithOtherAnswer() {
+        createUser(ChatStatus.ENRICHING_RECIPES);
+
+        assertThat(enrichingRecipesService.execute(USER_ID, "Другое").chatStatus()).isEqualTo(ChatStatus.ENRICHING_RECIPES);
+    }
+
+    @Test
     void getMessageForUserWithSmallResult() {
         createUser(ChatStatus.ENRICHING_RECIPES);
         initDishes();
