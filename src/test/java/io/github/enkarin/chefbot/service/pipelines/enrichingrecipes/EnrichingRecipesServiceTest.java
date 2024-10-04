@@ -20,4 +20,6 @@ class EnrichingRecipesServiceTest extends TestBase {
         assertThat(enrichingRecipesService.execute(USER_ID, "sixth").chatStatus()).isEqualTo(ChatStatus.EXISTS_DISH_PUT_RECIPE);
         assertThat(userService.findUser(USER_ID).getEditabledDish().getDishName()).isEqualTo("sixth");
     }
+
+
 }

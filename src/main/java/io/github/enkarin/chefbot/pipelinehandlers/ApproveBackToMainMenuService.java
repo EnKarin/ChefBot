@@ -22,6 +22,7 @@ public class ApproveBackToMainMenuService implements NonCommandInputHandler {
         return switch (text.toLowerCase(Locale.ROOT)) {
             case "да" -> {
                 searchFilterService.deleteSearchFilter(userId);
+                userService.dropPageNumberValue(userId);
                 yield new ExecutionResult(ChatStatus.MAIN_MENU);
             }
             case "нет" -> new ExecutionResult(userService.getPreviousChatStatus(userId));

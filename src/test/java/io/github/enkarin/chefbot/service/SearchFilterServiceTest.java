@@ -5,12 +5,10 @@ import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.Product;
 import io.github.enkarin.chefbot.entity.ProductQuantity;
 import io.github.enkarin.chefbot.entity.SearchFilter;
-import io.github.enkarin.chefbot.entity.SearchProduct;
 import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
 import io.github.enkarin.chefbot.repository.SearchFilterRepository;
-import io.github.enkarin.chefbot.repository.SearchProductRepository;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,9 +26,6 @@ class SearchFilterServiceTest extends TestBase {
 
     @Autowired
     private SearchFilterRepository searchFilterRepository;
-
-    @Autowired
-    private SearchProductRepository searchProductRepository;
 
     @BeforeEach
     void initUser() {
@@ -446,31 +441,13 @@ class SearchFilterServiceTest extends TestBase {
     }
 
     @Test
-    void saveProductsForCurrentSearchFilter() {
-        searchFilterService.createSearchFilter(USER_ID);
-
-        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID, "Три ведра укропа", "Ведро воды");
-
-        assertThat(searchProductRepository.findAll()).extracting(SearchProduct::getName).containsOnly("Три ведра укропа", "Ведро воды");
-    }
-
-    @Test
-    void saveProductsForCurrentSearchFilterMustParseInput() {
-        searchFilterService.createSearchFilter(USER_ID);
-
-        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID, "три ведра укропа", "ведро Воды");
-
-        assertThat(searchProductRepository.findAll()).extracting(SearchProduct::getName).containsOnly("Три ведра укропа", "Ведро воды");
-    }
-
-    @Test
     void dropPageNumber() {
         searchFilterService.createSearchFilter(USER_ID);
         initDishes();
         searchFilterService.searchRandomDishWithCurrentFilter(USER_ID);
 
-        searchFilterService.dropPageNumberValue(USER_ID);
+        userService.dropPageNumberValue(USER_ID);
 
-        assertThat(searchFilterRepository.findAll()).allMatch(searchFilter -> searchFilter.getPageNumber() == 0);
+        assertThat(userService.findUser(USER_ID).getPageNumber()).isZero();
     }
 }

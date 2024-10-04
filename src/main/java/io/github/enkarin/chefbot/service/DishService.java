@@ -4,7 +4,6 @@ import io.github.enkarin.chefbot.dto.DisplayDishDto;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.Product;
 import io.github.enkarin.chefbot.entity.ProductQuantity;
-import io.github.enkarin.chefbot.entity.SearchFilter;
 import io.github.enkarin.chefbot.entity.SearchProduct;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.DishType;
@@ -131,12 +130,17 @@ public class DishService {
         dish.setRecipe(recipe);
     }
 
-    public String[] findDishNamesWithoutRecipeForUser(final long userId) {
-        return userService.findUser(userId).getDishes().stream()
+    @Transactional
+    public List<String> findDishNamesWithoutRecipeForUser(final long userId) {
+        final User user = userService.findUser(userId);
+        final List<String> result = user.getDishes().stream()
                 .filter(dish -> isNull(dish.getRecipe()))
+                .skip(user.getPageNumber() * 10L)
                 .limit(10)
                 .map(Dish::getDishName)
-                .toArray(String[]::new);
+                .collect(Collectors.toList());
+        user.setPageNumber(user.getPageNumber() + 1);
+        return result;
     }
 
     @Transactional
@@ -165,10 +169,9 @@ public class DishService {
 
     @Transactional
     public List<? extends DisplayDishDto> findDishByProduct(final long userId) {
-        final SearchFilter searchFilter = userService.findUser(userId).getSearchFilter();
-        final List<? extends DisplayDishDto> result = findDishByProduct(userId, searchFilter.getSearchProductList().stream().map(SearchProduct::getName).toList(),
-                searchFilter.getPageNumber());
-        searchFilter.setPageNumber(searchFilter.getPageNumber() + 1);
+        final User user = userService.findUser(userId);
+        final List<? extends DisplayDishDto> result = findDishByProduct(userId, user.getSearchProductList().stream().map(SearchProduct::getName).toList(), user.getPageNumber());
+        user.setPageNumber(user.getPageNumber() + 1);
         return result;
     }
 
