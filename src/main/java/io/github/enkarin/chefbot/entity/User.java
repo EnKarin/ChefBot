@@ -67,7 +67,7 @@ public class User implements Serializable {
     @JoinColumn(name = "moderate_dish")
     private Dish moderableDish;
 
-    @OneToMany(mappedBy = "searchFilter", orphanRemoval = true)
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
     private List<SearchProduct> searchProductList;
 
     private int pageNumber;

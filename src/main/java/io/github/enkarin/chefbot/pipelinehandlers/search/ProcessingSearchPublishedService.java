@@ -6,6 +6,7 @@ import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.pipelinehandlers.NonCommandInputHandler;
 import io.github.enkarin.chefbot.service.SearchFilterService;
+import io.github.enkarin.chefbot.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +16,11 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class ProcessingSearchPublishedService implements NonCommandInputHandler {
     private final SearchFilterService filterService;
+    private final UserService userService;
 
     @Override
     public ExecutionResult execute(final long userId, final String text) {
-        filterService.dropPageNumberValue(userId);
+        userService.dropPageNumberValue(userId);
         return switch (text.toLowerCase(Locale.ROOT).trim()) {
             case "все блюда" -> {
                 filterService.putNeedPublicSearch(userId, true);

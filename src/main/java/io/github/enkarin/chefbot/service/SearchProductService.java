@@ -1,7 +1,7 @@
 package io.github.enkarin.chefbot.service;
 
-import io.github.enkarin.chefbot.entity.SearchFilter;
 import io.github.enkarin.chefbot.entity.SearchProduct;
+import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.repository.SearchProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -18,9 +18,9 @@ public class SearchProductService {
 
     @Transactional
     public void saveProductsForCurrentSearchFilter(final long userId, final String... productsName) {
-        final SearchFilter searchFilter = userService.findUser(userId).getSearchFilter();
+        final User user = userService.findUser(userId);
         for (final String productName : productsName) {
-            searchProductRepository.save(new SearchProduct(StringUtils.capitalize(productName.trim().toLowerCase(Locale.ROOT)), searchFilter));
+            searchProductRepository.save(new SearchProduct(StringUtils.capitalize(productName.trim().toLowerCase(Locale.ROOT)), user));
         }
     }
 }
