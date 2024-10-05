@@ -3,7 +3,6 @@ package io.github.enkarin.chefbot.service;
 import io.github.enkarin.chefbot.dto.DisplayDishDto;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.SearchFilter;
-import io.github.enkarin.chefbot.entity.SearchProduct;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
@@ -11,13 +10,10 @@ import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
 import io.github.enkarin.chefbot.mappers.DishEntityToDisplayDtoMapper;
 import io.github.enkarin.chefbot.repository.DishRepository;
 import io.github.enkarin.chefbot.repository.SearchFilterRepository;
-import io.github.enkarin.chefbot.repository.SearchProductRepository;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
-import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
@@ -32,19 +28,16 @@ public class SearchFilterService {
     private final SearchFilterRepository searchFilterRepository;
     private final UserService userService;
     private final DishRepository dishRepository;
-    private final SearchProductRepository searchProductRepository;
     private final DishEntityToDisplayDtoMapper dishEntityToDisplayDtoMapper;
     private final Random random = new Random();
 
     public SearchFilterService(final SearchFilterRepository searchFilterRepository,
                                final UserService userService,
                                final DishRepository dishRepository,
-                               final SearchProductRepository searchProductRepository,
                                final DishEntityToDisplayDtoMapper dishEntityToDisplayDtoMapper) {
         this.searchFilterRepository = searchFilterRepository;
         this.userService = userService;
         this.dishRepository = dishRepository;
-        this.searchProductRepository = searchProductRepository;
         this.dishEntityToDisplayDtoMapper = dishEntityToDisplayDtoMapper;
     }
 
@@ -99,7 +92,7 @@ public class SearchFilterService {
                 ? dishEntityToDisplayDtoMapper::mapWithRecipe
                 : dishEntityToDisplayDtoMapper::mapWithoutRecipe;
         if (searchFilter.isSearchFromPublicDish()) {
-            result = findDishesWithSpecifiedFilter(searchFilter, currentUser.getId())
+            result = findDishesWithSpecifiedFilter(searchFilter, currentUser)
                     .stream()
                     .map(dishDisplayDtoFromEntityMapper)
                     .collect(Collectors.toSet());
@@ -108,27 +101,27 @@ public class SearchFilterService {
                     .filter(dish -> dishMatchesWithSpecifiedFilter(dish, searchFilter))
                     .filter(dish -> !searchFilter.isNeedGetRecipe() || nonNull(dish.getRecipe()))
                     .sorted(Comparator.comparing(Dish::getDishName))
-                    .skip(searchFilter.getPageNumber() * 5L)
+                    .skip(currentUser.getSearchPageNumber() * 5L)
                     .limit(5)
                     .map(dishDisplayDtoFromEntityMapper)
                     .collect(Collectors.toSet());
         }
-        searchFilter.setPageNumber(searchFilter.getPageNumber() + 1);
+        currentUser.setSearchPageNumber(currentUser.getSearchPageNumber() + 1);
         return result;
     }
 
-    private Set<Dish> findDishesWithSpecifiedFilter(final SearchFilter searchFilter, final long currentUserId) {
+    private Set<Dish> findDishesWithSpecifiedFilter(final SearchFilter searchFilter, final User currentUser) {
         return searchFilter.isNeedGetRecipe()
-                ? dishRepository.findAllDishByFilterWithSpecifiedOffsetAndRecipe(currentUserId,
+                ? dishRepository.findAllDishByFilterWithSpecifiedOffsetAndRecipe(currentUser.getId(),
                 searchFilter.getSpicy(),
                 isNull(searchFilter.getDishType()) ? null : searchFilter.getDishType().name(),
                 isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name(),
-                searchFilter.getPageNumber())
-                : dishRepository.findAllDishByFilterWithSpecifiedOffset(currentUserId,
+                currentUser.getSearchPageNumber())
+                : dishRepository.findAllDishByFilterWithSpecifiedOffset(currentUser.getId(),
                 searchFilter.getSpicy(),
                 isNull(searchFilter.getDishType()) ? null : searchFilter.getDishType().name(),
                 isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name(),
-                searchFilter.getPageNumber());
+                currentUser.getSearchPageNumber());
     }
 
     public DisplayDishDto searchRandomDishWithCurrentFilter(final long ownerId) {
@@ -187,18 +180,5 @@ public class SearchFilterService {
         return (isNull(searchFilter.getDishType()) || searchFilter.getDishType() == dish.getType())
                 && (isNull(searchFilter.getSpicy()) || searchFilter.getSpicy() == dish.isSpicy())
                 && (isNull(searchFilter.getCuisine()) || searchFilter.getCuisine() == dish.getCuisine());
-    }
-
-    @Transactional
-    public void saveProductsForCurrentSearchFilter(final long userId, final String... productsName) {
-        final SearchFilter searchFilter = userService.findUser(userId).getSearchFilter();
-        for (final String productName : productsName) {
-            searchProductRepository.save(new SearchProduct(StringUtils.capitalize(productName.trim().toLowerCase(Locale.ROOT)), searchFilter));
-        }
-    }
-
-    @Transactional
-    public void dropPageNumberValue(final long userId) {
-        userService.findUser(userId).getSearchFilter().setPageNumber(0);
     }
 }

@@ -19,7 +19,7 @@ class RequestDeclineCauseTest extends ModerationTest {
     @Test
     void execute() {
         moderationInit();
-        createUser(ChatStatus.NEW_DISH_NAME);
+        userService.switchToNewStatus(USER_ID, ChatStatus.NEW_DISH_NAME);
         userService.switchToNewStatus(USER_ID, ChatStatus.WRITE_DECLINE_MODERATION_REQUEST);
         moderationService.startModerate(USER_ID, moderationRequestsId[0]);
 
