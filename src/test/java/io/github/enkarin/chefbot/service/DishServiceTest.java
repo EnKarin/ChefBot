@@ -28,10 +28,10 @@ class DishServiceTest extends ModerationTest {
     private DishService dishService;
 
     @Autowired
-    private SearchFilterService searchFilterService;
+    private ModerationService moderationService;
 
     @Autowired
-    private ModerationService moderationService;
+    private SearchProductService searchProductService;
 
     @BeforeEach
     void init() {
@@ -151,6 +151,14 @@ class DishServiceTest extends ModerationTest {
     }
 
     @Test
+    void findDishesWithoutRecipeForUserPaginationShouldWork() {
+        initDishes();
+
+        dishService.findDishNamesWithoutRecipeForUser(USER_ID);
+        assertThat(dishService.findDishNamesWithoutRecipeForUser(USER_ID)).isEmpty();
+    }
+
+    @Test
     void putEditableDish() {
         initDishes();
         dishService.putEditableDish(USER_ID, "fifth");
@@ -215,8 +223,7 @@ class DishServiceTest extends ModerationTest {
     @Test
     void findDishByProductsWithOneFilter() {
         initDishes();
-        searchFilterService.createSearchFilter(USER_ID);
-        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID, "firstProduct");
+        searchProductService.saveProductsForCurrentSearchFilter(USER_ID, "firstProduct");
 
         assertThat(dishService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
             assertThat(displayDishDto.getDishName()).isEqualTo("first");
@@ -227,8 +234,7 @@ class DishServiceTest extends ModerationTest {
     @Test
     void findDishByProductsIgnoreCase() {
         initDishes();
-        searchFilterService.createSearchFilter(USER_ID);
-        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID, "Second", "product");
+        searchProductService.saveProductsForCurrentSearchFilter(USER_ID, "Second", "product");
 
         assertThat(dishService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
             assertThat(displayDishDto.getDishName()).isEqualTo("second");
@@ -239,8 +245,7 @@ class DishServiceTest extends ModerationTest {
     @Test
     void findDishByProductsWithManyFilters() {
         initDishes();
-        searchFilterService.createSearchFilter(USER_ID);
-        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID, "se", "th", "product");
+        searchProductService.saveProductsForCurrentSearchFilter(USER_ID, "se", "th", "product");
 
         assertThat(dishService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
             assertThat(displayDishDto.getDishName()).isEqualTo("seventh");
@@ -251,8 +256,7 @@ class DishServiceTest extends ModerationTest {
     @Test
     void findDishByProductsWithTooManyFilters() {
         initDishes();
-        searchFilterService.createSearchFilter(USER_ID);
-        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID, "firstProduct", "secondProduct");
+        searchProductService.saveProductsForCurrentSearchFilter(USER_ID, "firstProduct", "secondProduct");
 
         assertThat(dishService.findDishByProduct(USER_ID)).isEmpty();
     }
@@ -260,8 +264,7 @@ class DishServiceTest extends ModerationTest {
     @Test
     void manyFindDishByProduct() {
         initDishes();
-        searchFilterService.createSearchFilter(USER_ID);
-        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID, "firstProduct");
+        searchProductService.saveProductsForCurrentSearchFilter(USER_ID, "firstProduct");
 
         assertThat(dishService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
             assertThat(displayDishDto.getDishName()).isEqualTo("first");
@@ -273,8 +276,7 @@ class DishServiceTest extends ModerationTest {
     @Test
     void findDishWithRecipeByProduct() {
         initDishes();
-        searchFilterService.createSearchFilter(USER_ID);
-        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID, "seventhProduct");
+        searchProductService.saveProductsForCurrentSearchFilter(USER_ID, "seventhProduct");
 
         assertThat(dishService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
             assertThat(displayDishDto.getDishName()).isEqualTo("seventh");
@@ -331,8 +333,7 @@ class DishServiceTest extends ModerationTest {
     void searchMustNotFoundOtherPrivateDish() {
         userService.createOrUpdateUser(USER_ID - 1, CHAT_ID - 1, USERNAME + 1);
         initDishes();
-        searchFilterService.createSearchFilter(USER_ID - 1);
-        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID - 1, "seventhProduct");
+        searchProductService.saveProductsForCurrentSearchFilter(USER_ID - 1, "seventhProduct");
 
         assertThat(dishService.findDishByProduct(USER_ID - 1)).isEmpty();
     }

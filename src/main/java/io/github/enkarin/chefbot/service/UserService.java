@@ -78,4 +78,9 @@ public class UserService {
                 .peek(user -> user.setModerableDish(null))
                 .toList());
     }
+
+    @Transactional
+    public void dropPageNumberValue(final long userId) {
+        findUser(userId).setSearchPageNumber(0);
+    }
 }
