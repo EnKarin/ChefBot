@@ -6,7 +6,7 @@ import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
 import io.github.enkarin.chefbot.pipelinehandlers.searchbyproduct.FindDishByProductsResponseService;
 import io.github.enkarin.chefbot.service.DishService;
-import io.github.enkarin.chefbot.service.SearchFilterService;
+import io.github.enkarin.chefbot.service.SearchProductService;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ class FindDishByProductsResponseServiceTest extends TestBase {
     private FindDishByProductsResponseService findDishByProductsResponseService;
 
     @Autowired
-    private SearchFilterService searchFilterService;
+    private SearchProductService searchProductService;
 
     @Autowired
     private DishService dishService;
@@ -38,8 +38,7 @@ class FindDishByProductsResponseServiceTest extends TestBase {
     void getMessageUser() {
         createUser(ChatStatus.FIND_DISH_BY_PRODUCTS_RESPONSE);
         initDishes();
-        searchFilterService.createSearchFilter(USER_ID);
-        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID, "second", "product");
+        searchProductService.saveProductsForCurrentSearchFilter(USER_ID, "second", "product");
 
         assertThat(findDishByProductsResponseService.getMessageForUser(USER_ID)).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).startsWith("*second:*\n-secondProduct");
@@ -51,8 +50,7 @@ class FindDishByProductsResponseServiceTest extends TestBase {
     void getMessageUserMustCorrectConcatDishes() {
         createUser(ChatStatus.FIND_DISH_BY_PRODUCTS_RESPONSE);
         initDishes();
-        searchFilterService.createSearchFilter(USER_ID);
-        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID, "se");
+        searchProductService.saveProductsForCurrentSearchFilter(USER_ID, "se");
 
         assertThat(findDishByProductsResponseService.getMessageForUser(USER_ID).messageText()).isEqualTo("""
                 *second:*
@@ -68,8 +66,7 @@ class FindDishByProductsResponseServiceTest extends TestBase {
     void getMessageUserWithEmptyOutput() {
         createUser(ChatStatus.FIND_DISH_BY_PRODUCTS_RESPONSE);
         initDishes();
-        searchFilterService.createSearchFilter(USER_ID);
-        searchFilterService.saveProductsForCurrentSearchFilter(USER_ID, "testo");
+        searchProductService.saveProductsForCurrentSearchFilter(USER_ID, "testo");
 
         assertThatThrownBy(() -> findDishByProductsResponseService.getMessageForUser(USER_ID)).isInstanceOf(DishesNotFoundException.class);
     }
