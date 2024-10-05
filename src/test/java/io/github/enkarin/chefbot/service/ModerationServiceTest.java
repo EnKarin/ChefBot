@@ -5,7 +5,6 @@ import io.github.enkarin.chefbot.dto.ModerationRequestMessageDto;
 import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.ModerationRequest;
 import io.github.enkarin.chefbot.entity.ModerationRequestMessage;
-import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.mappers.ModerationRequestMessageEntityDtoMapper;
 import io.github.enkarin.chefbot.util.ModerationTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -83,7 +82,6 @@ class ModerationServiceTest extends ModerationTest {
 
     @Test
     void declineRequest() {
-        createUser(ChatStatus.MAIN_MENU);
         moderationService.startModerate(USER_ID, moderationRequestsId[2]);
 
         moderationService.declineRequest(USER_ID, "Bad request");
@@ -97,7 +95,6 @@ class ModerationServiceTest extends ModerationTest {
 
     @Test
     void startModerate() {
-        createUser(ChatStatus.MAIN_MENU);
         moderationService.startModerate(USER_ID, moderationRequestsId[3]);
 
         assertThat(jdbcTemplate.queryForObject("select dish_name from moderation_request inner join t_dish on moderation_dish=dish_id where mr_id=?",

@@ -19,6 +19,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -65,4 +66,9 @@ public class User implements Serializable {
     @ManyToOne
     @JoinColumn(name = "moderate_dish")
     private Dish moderableDish;
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    private List<SearchProduct> searchProductList;
+
+    private int searchPageNumber;
 }
