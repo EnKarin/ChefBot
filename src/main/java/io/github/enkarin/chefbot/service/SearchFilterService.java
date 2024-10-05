@@ -101,12 +101,12 @@ public class SearchFilterService {
                     .filter(dish -> dishMatchesWithSpecifiedFilter(dish, searchFilter))
                     .filter(dish -> !searchFilter.isNeedGetRecipe() || nonNull(dish.getRecipe()))
                     .sorted(Comparator.comparing(Dish::getDishName))
-                    .skip(currentUser.getPageNumber() * 5L)
+                    .skip(currentUser.getSearchPageNumber() * 5L)
                     .limit(5)
                     .map(dishDisplayDtoFromEntityMapper)
                     .collect(Collectors.toSet());
         }
-        currentUser.setPageNumber(currentUser.getPageNumber() + 1);
+        currentUser.setSearchPageNumber(currentUser.getSearchPageNumber() + 1);
         return result;
     }
 
@@ -116,12 +116,12 @@ public class SearchFilterService {
                 searchFilter.getSpicy(),
                 isNull(searchFilter.getDishType()) ? null : searchFilter.getDishType().name(),
                 isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name(),
-                currentUser.getPageNumber())
+                currentUser.getSearchPageNumber())
                 : dishRepository.findAllDishByFilterWithSpecifiedOffset(currentUser.getId(),
                 searchFilter.getSpicy(),
                 isNull(searchFilter.getDishType()) ? null : searchFilter.getDishType().name(),
                 isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name(),
-                currentUser.getPageNumber());
+                currentUser.getSearchPageNumber());
     }
 
     public DisplayDishDto searchRandomDishWithCurrentFilter(final long ownerId) {

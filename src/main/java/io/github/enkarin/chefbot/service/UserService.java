@@ -81,6 +81,6 @@ public class UserService {
 
     @Transactional
     public void dropPageNumberValue(final long userId) {
-        findUser(userId).setPageNumber(0);
+        findUser(userId).setSearchPageNumber(0);
     }
 }

@@ -448,6 +448,6 @@ class SearchFilterServiceTest extends TestBase {
 
         userService.dropPageNumberValue(USER_ID);
 
-        assertThat(userService.findUser(USER_ID).getPageNumber()).isZero();
+        assertThat(userService.findUser(USER_ID).getSearchPageNumber()).isZero();
     }
 }

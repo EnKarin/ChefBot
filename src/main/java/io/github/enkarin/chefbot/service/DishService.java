@@ -135,11 +135,11 @@ public class DishService {
         final User user = userService.findUser(userId);
         final List<String> result = user.getDishes().stream()
                 .filter(dish -> isNull(dish.getRecipe()))
-                .skip(user.getPageNumber() * 10L)
+                .skip(user.getSearchPageNumber() * 10L)
                 .limit(10)
                 .map(Dish::getDishName)
                 .collect(Collectors.toList());
-        user.setPageNumber(user.getPageNumber() + 1);
+        user.setSearchPageNumber(user.getSearchPageNumber() + 1);
         return result;
     }
 
@@ -170,8 +170,8 @@ public class DishService {
     @Transactional
     public List<? extends DisplayDishDto> findDishByProduct(final long userId) {
         final User user = userService.findUser(userId);
-        final List<? extends DisplayDishDto> result = findDishByProduct(userId, user.getSearchProductList().stream().map(SearchProduct::getName).toList(), user.getPageNumber());
-        user.setPageNumber(user.getPageNumber() + 1);
+        final List<? extends DisplayDishDto> result = findDishByProduct(userId, user.getSearchProductList().stream().map(SearchProduct::getName).toList(), user.getSearchPageNumber());
+        user.setSearchPageNumber(user.getSearchPageNumber() + 1);
         return result;
     }
 

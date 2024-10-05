@@ -70,5 +70,5 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user", orphanRemoval = true)
     private List<SearchProduct> searchProductList;
 
-    private int pageNumber;
+    private int searchPageNumber;
 }
