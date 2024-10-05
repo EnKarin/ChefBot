@@ -25,6 +25,6 @@ public class SearchProduct implements Serializable {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "search_filter")
-    private SearchFilter searchFilter;
+    @JoinColumn(name = "user_id")
+    private User user;
 }

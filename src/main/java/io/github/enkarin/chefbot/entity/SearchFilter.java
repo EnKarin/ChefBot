@@ -7,13 +7,11 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
 
 @Entity
 @Getter
@@ -30,14 +28,10 @@ public class SearchFilter implements Serializable {
     private boolean needGetRecipe;
     private Boolean spicy;
     private boolean searchFromPublicDish;
-    private int pageNumber;
 
     @Enumerated(EnumType.STRING)
     private WorldCuisine cuisine;
 
     @Enumerated(EnumType.STRING)
     private DishType dishType;
-
-    @OneToMany(mappedBy = "searchFilter", orphanRemoval = true)
-    private List<SearchProduct> searchProductList;
 }
