@@ -45,7 +45,31 @@ class EnrichingRecipesServiceTest extends TestBase {
     void getMessageForUserWithFullResult() {
         createUser(ChatStatus.ENRICHING_RECIPES);
         initDishes();
+        initMoreDish();
 
+        assertThat(enrichingRecipesService.getMessageForUser(USER_ID).userAnswerOptions().orElseThrow())
+                .containsOnly("fifth", "sixth", "eighth", "ninth", "tenth", "eleventh", "twelfth", "thirteenth", "fourteenth", "fifteenth", "Другое");
+    }
+
+    @Test
+    void getMessageForUserWithFullResultReturnWithoutRepeat() {
+        createUser(ChatStatus.ENRICHING_RECIPES);
+        initDishes();
+        initMoreDish();
+        dishRepository.save(Dish.builder()
+                .dishName("sixteenth")
+                .type(DishType.SOUP)
+                .spicy(false)
+                .cuisine(WorldCuisine.MIDDLE_EASTERN)
+                .owner(userRepository.findById(USER_ID).orElseThrow())
+                .build());
+
+        assertThat(enrichingRecipesService.getMessageForUser(USER_ID).userAnswerOptions().orElseThrow())
+                .containsOnly("fifth", "sixth", "eighth", "ninth", "tenth", "eleventh", "sixteenth", "thirteenth", "fourteenth", "fifteenth", "Другое");
+        assertThat(enrichingRecipesService.getMessageForUser(USER_ID).userAnswerOptions().orElseThrow()).containsOnly("twelfth");
+    }
+
+    private void initMoreDish() {
         dishRepository.save(Dish.builder()
                 .dishName("eighth")
                 .type(DishType.SOUP)
@@ -102,9 +126,6 @@ class EnrichingRecipesServiceTest extends TestBase {
                 .cuisine(WorldCuisine.MIDDLE_EASTERN)
                 .owner(userRepository.findById(USER_ID).orElseThrow())
                 .build());
-
-        assertThat(enrichingRecipesService.getMessageForUser(USER_ID).userAnswerOptions().orElseThrow())
-                .containsOnly("fifth", "sixth", "eighth", "ninth", "tenth", "eleventh", "twelfth", "thirteenth", "fourteenth", "fifteenth", "Другое");
     }
 
     @Test

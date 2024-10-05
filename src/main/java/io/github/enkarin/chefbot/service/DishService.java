@@ -135,6 +135,7 @@ public class DishService {
         final User user = userService.findUser(userId);
         final List<String> result = user.getDishes().stream()
                 .filter(dish -> isNull(dish.getRecipe()))
+                .sorted(Comparator.comparing(Dish::getDishName))
                 .skip(user.getSearchPageNumber() * 10L)
                 .limit(10)
                 .map(Dish::getDishName)
