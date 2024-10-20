@@ -25,7 +25,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <testcontainers.version>1.20.2</testcontainers.version>
         <telegrambots.version>6.9.7.1</telegrambots.version>
-        <junit.jupiter.version>5.11.0</junit.jupiter.version>
+        <junit.jupiter.version>5.11.2</junit.jupiter.version>
         <spotbugs.version>4.8.6</spotbugs.version>
         <pg-index-health.version>0.13.0</pg-index-health.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
