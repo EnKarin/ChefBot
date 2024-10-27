@@ -2,6 +2,7 @@ package io.github.enkarin.chefbot.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -30,4 +31,7 @@ public class Product implements Serializable {
 
     @OneToMany(mappedBy = "product")
     private Set<ProductQuantity> productQuantities;
+
+    @ManyToMany(mappedBy = "excludeProducts")
+    private Set<User> users;
 }

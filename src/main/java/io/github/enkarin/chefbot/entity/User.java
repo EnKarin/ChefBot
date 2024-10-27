@@ -7,6 +7,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -71,4 +73,11 @@ public class User implements Serializable {
     private List<SearchProduct> searchProductList;
 
     private int searchPageNumber;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_exclude_product",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_name"))
+    private List<Product> excludeProducts;
 }
