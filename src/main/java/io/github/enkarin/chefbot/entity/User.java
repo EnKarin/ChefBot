@@ -79,5 +79,5 @@ public class User implements Serializable {
             name = "user_exclude_product",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "product_name"))
-    private List<Product> excludeProducts;
+    private Set<Product> excludeProducts;
 }
