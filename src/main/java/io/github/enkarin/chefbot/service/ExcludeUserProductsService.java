@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.function.BiFunction;
 
@@ -37,7 +38,8 @@ public class ExcludeUserProductsService {
 
     @Transactional
     public void deleteExcludeProductsByLikeName(final long userId, final String... excludeProductNames) {
-        deleteExcludeProducts(userId, excludeProductNames, (product, excludeProductName) -> product.getProductName().contains(excludeProductName));
+        deleteExcludeProducts(userId, excludeProductNames,
+                (product, excludeProductName) -> product.getProductName().toLowerCase(Locale.ROOT).contains(excludeProductName.toLowerCase(Locale.ROOT)));
     }
 
     private void deleteExcludeProducts(final long userId, final String[] excludeProductNames, final BiFunction<Product, String, Boolean> comparisonCondition) {
