@@ -10,22 +10,22 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AddExcludeProductInputHandler implements NonCommandInputHandler {
+public class DeleteExcludeProductsContainsNameInputHandler implements NonCommandInputHandler {
     private final ExcludeUserProductsService service;
 
     @Override
     public ExecutionResult execute(final long userId, final String text) {
-        service.addExcludeProducts(userId, text.split("[\n,]"));
+        service.deleteExcludeProductsByLikeName(userId, text.split("[\n,]"));
         return new ExecutionResult(ChatStatus.MAIN_MENU);
     }
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return BotAnswer.createBotAnswerWithoutKeyboard("Введите названия продуктов, которые хотите добавить в список, через запятую или с новой строки");
+        return BotAnswer.createBotAnswerWithoutKeyboard("Введите названия продуктов, которые хотите исключить из списка, через запятую или с новой строки");
     }
 
     @Override
     public ChatStatus getCurrentStatus() {
-        return ChatStatus.ADD_EXCLUDE_PRODUCTS;
+        return ChatStatus.DELETE_EXCLUDE_PRODUCTS_CONTAINS_NAME;
     }
 }

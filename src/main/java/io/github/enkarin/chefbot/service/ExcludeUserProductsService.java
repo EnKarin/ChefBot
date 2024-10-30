@@ -26,20 +26,20 @@ public class ExcludeUserProductsService {
     public void addExcludeProducts(final long userId, final String... excludeProductNames) {
         final Set<Product> newExcludeProducts = new HashSet<>();
         for (final String excludeProductName : excludeProductNames) {
-            newExcludeProducts.addAll(productRepository.findByProductNameContainsIgnoreCase(excludeProductName));
+            newExcludeProducts.addAll(productRepository.findByProductNameContainsIgnoreCase(excludeProductName.trim()));
         }
         userService.findUser(userId).getExcludeProducts().addAll(newExcludeProducts);
     }
 
     @Transactional
     public void deleteExcludeProductsByEqualsNames(final long userId, final String... excludeProductNames) {
-        deleteExcludeProducts(userId, excludeProductNames, (product, excludeProductName) -> product.getProductName().equalsIgnoreCase(excludeProductName));
+        deleteExcludeProducts(userId, excludeProductNames, (product, excludeProductName) -> product.getProductName().equalsIgnoreCase(excludeProductName.trim()));
     }
 
     @Transactional
     public void deleteExcludeProductsByLikeName(final long userId, final String... excludeProductNames) {
         deleteExcludeProducts(userId, excludeProductNames,
-                (product, excludeProductName) -> product.getProductName().toLowerCase(Locale.ROOT).contains(excludeProductName.toLowerCase(Locale.ROOT)));
+                (product, excludeProductName) -> product.getProductName().toLowerCase(Locale.ROOT).contains(excludeProductName.trim().toLowerCase(Locale.ROOT)));
     }
 
     private void deleteExcludeProducts(final long userId, final String[] excludeProductNames, final BiFunction<Product, String, Boolean> comparisonCondition) {

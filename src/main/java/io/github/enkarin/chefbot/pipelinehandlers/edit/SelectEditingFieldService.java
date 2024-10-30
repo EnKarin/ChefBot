@@ -13,14 +13,14 @@ public class SelectEditingFieldService implements NonCommandInputHandler {
     @Override
     public ExecutionResult execute(final long userId, final String text) {
         return new ExecutionResult(switch (text.toLowerCase(Locale.ROOT)) {
-                case "название" -> ChatStatus.EDITING_NAME;
-                case "острота" -> ChatStatus.EDITING_SPICY;
-                case "тип" -> ChatStatus.EDITING_TYPE;
-                case "кухня" -> ChatStatus.EDITING_KITCHEN;
-                case "список продуктов" -> ChatStatus.EDITING_FOODSTUFF;
-                case "рецепт" -> ChatStatus.EDITING_RECIPE;
-                default -> getCurrentStatus();
-            });
+            case "название" -> ChatStatus.EDITING_NAME;
+            case "острота" -> ChatStatus.EDITING_SPICY;
+            case "тип" -> ChatStatus.EDITING_TYPE;
+            case "кухня" -> ChatStatus.EDITING_KITCHEN;
+            case "список продуктов" -> ChatStatus.EDITING_FOODSTUFF;
+            case "рецепт" -> ChatStatus.EDITING_RECIPE;
+            default -> getCurrentStatus();
+        });
     }
 
     @Override

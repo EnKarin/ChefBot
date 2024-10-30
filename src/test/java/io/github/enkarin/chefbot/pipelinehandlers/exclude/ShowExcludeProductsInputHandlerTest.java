@@ -22,17 +22,17 @@ class ShowExcludeProductsInputHandlerTest extends TestBase {
 
     @Test
     void executeWithAddProduct() {
-        assertThat(handler.execute(USER_ID, "добавить продукт в список").chatStatus()).isEqualTo(ChatStatus.ADD_EXCLUDE_PRODUCTS);
+        assertThat(handler.execute(USER_ID, "добавить продукты в список").chatStatus()).isEqualTo(ChatStatus.ADD_EXCLUDE_PRODUCTS);
     }
 
     @Test
     void executeWithDeleteContainsName() {
-        assertThat(handler.execute(USER_ID, "Удалить продукт из списка по части названия").chatStatus()).isEqualTo(ChatStatus.DELETE_EXCLUDE_PRODUCTS_CONTAINS_NAME);
+        assertThat(handler.execute(USER_ID, "Удалить продукты из списка по частичному названию").chatStatus()).isEqualTo(ChatStatus.DELETE_EXCLUDE_PRODUCTS_CONTAINS_NAME);
     }
 
     @Test
     void executeWithDeleteByName() {
-        assertThat(handler.execute(USER_ID, "Удалить продукт из списка по полному названию").chatStatus()).isEqualTo(ChatStatus.DELETE_EXCLUDE_PRODUCTS_BY_NAME);
+        assertThat(handler.execute(USER_ID, "Удалить продукты из списка по полному названию").chatStatus()).isEqualTo(ChatStatus.DELETE_EXCLUDE_PRODUCTS_BY_NAME);
     }
 
     @Test
