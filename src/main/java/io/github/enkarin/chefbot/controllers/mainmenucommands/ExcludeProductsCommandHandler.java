@@ -5,20 +5,20 @@ import io.github.enkarin.chefbot.dto.BotAnswer;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.pipelinehandlers.ProcessingFacade;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class ShowExcludeProductsCommandHandler implements MainMenuCommandHandler {
+public class ExcludeProductsCommandHandler implements MainMenuCommandHandler {
     private final ProcessingFacade processingFacade;
 
     @Override
     public BotAnswer execute(final long userId) {
-        return processingFacade.goToStatus(userId, ChatStatus.FIND_EXCLUDE_PRODUCTS);
+        return processingFacade.goToStatus(userId, ChatStatus.EXCLUDE_PRODUCTS);
     }
 
     @Override
     public String getCommandName() {
-        return "/show_exclude_products";
+        return "/exclude_products";
     }
 }

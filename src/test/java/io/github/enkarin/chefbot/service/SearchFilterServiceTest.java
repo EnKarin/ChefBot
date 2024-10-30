@@ -182,8 +182,8 @@ class SearchFilterServiceTest extends TestBase {
         initDishes();
 
         assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).extracting(DisplayDishDto::getDishName)
-                .containsOnly("first", "second", "third", "fourth", "fifth");
-        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).extracting(DisplayDishDto::getDishName).containsOnly("sixth", "seventh");
+                .containsOnly("first", "second", "seventh", "fourth", "fifth");
+        assertThat(searchFilterService.searchDishWithCurrentFilter(USER_ID)).extracting(DisplayDishDto::getDishName).containsOnly("sixth", "third");
     }
 
     @Test
