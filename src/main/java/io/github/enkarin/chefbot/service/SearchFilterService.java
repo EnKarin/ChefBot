@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
@@ -91,52 +92,47 @@ public class SearchFilterService {
         final Function<Dish, DisplayDishDto> dishDisplayDtoFromEntityMapper = searchFilter.isNeedGetRecipe()
                 ? dishEntityToDisplayDtoMapper::mapWithRecipe
                 : dishEntityToDisplayDtoMapper::mapWithoutRecipe;
-        if (searchFilter.isSearchFromPublicDish()) {
-            result = findDishesWithSpecifiedFilter(searchFilter, currentUser)
-                    .stream()
-                    .map(dishDisplayDtoFromEntityMapper)
-                    .collect(Collectors.toSet());
-        } else {
-            result = currentUser.getDishes().stream()
-                    .filter(dish -> dishMatchesWithSpecifiedFilter(dish, searchFilter))
-                    .filter(dish -> !searchFilter.isNeedGetRecipe() || nonNull(dish.getRecipe()))
-                    .sorted(Comparator.comparing(Dish::getDishName))
-                    .skip(currentUser.getSearchPageNumber() * 5L)
-                    .limit(5)
-                    .map(dishDisplayDtoFromEntityMapper)
-                    .collect(Collectors.toSet());
-        }
+        result = (searchFilter.isSearchFromPublicDish()
+                ? findDishesWithSpecifiedFilter(searchFilter, currentUser).stream()
+                : currentUser.getDishes().stream()
+                .filter(dish -> dishMatchesWithSpecifiedFilter(dish, searchFilter))
+                .filter(dish -> !searchFilter.isNeedGetRecipe() || nonNull(dish.getRecipe())))
+                .filter(dish -> userService.dishNotContainExcludeProduct(dish, currentUser))
+                .sorted(Comparator.comparing(Dish::getDishName))
+                .skip(currentUser.getSearchPageNumber() * 5L)
+                .limit(5)
+                .map(dishDisplayDtoFromEntityMapper)
+                .collect(Collectors.toSet());
         currentUser.setSearchPageNumber(currentUser.getSearchPageNumber() + 1);
         return result;
     }
 
     private Set<Dish> findDishesWithSpecifiedFilter(final SearchFilter searchFilter, final User currentUser) {
         return searchFilter.isNeedGetRecipe()
-                ? dishRepository.findAllDishByFilterWithSpecifiedOffsetAndRecipe(currentUser.getId(),
+                ? dishRepository.findAllDishByFilterWithRecipe(currentUser.getId(),
                 searchFilter.getSpicy(),
                 isNull(searchFilter.getDishType()) ? null : searchFilter.getDishType().name(),
-                isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name(),
-                currentUser.getSearchPageNumber())
-                : dishRepository.findAllDishByFilterWithSpecifiedOffset(currentUser.getId(),
+                isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name())
+                : dishRepository.findAllDishByFilter(currentUser.getId(),
                 searchFilter.getSpicy(),
                 isNull(searchFilter.getDishType()) ? null : searchFilter.getDishType().name(),
-                isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name(),
-                currentUser.getSearchPageNumber());
+                isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name());
     }
 
     public DisplayDishDto searchRandomDishWithCurrentFilter(final long ownerId) {
         final User currentUser = userService.findUser(ownerId);
         final SearchFilter searchFilter = currentUser.getSearchFilter();
         final Dish dish = searchFilter.isSearchFromPublicDish()
-                ? getRandomPublishDishWithCurrentFilter(ownerId, searchFilter)
+                ? getRandomPublishDishWithCurrentFilter(currentUser, searchFilter)
                 : getRandomPrivateDishWithCurrentFilter(currentUser, searchFilter);
         return searchFilter.isNeedGetRecipe() ? dishEntityToDisplayDtoMapper.mapWithRecipe(dish) : dishEntityToDisplayDtoMapper.mapWithoutRecipe(dish);
     }
 
     private Dish getRandomPrivateDishWithCurrentFilter(final User currentUser, final SearchFilter searchFilter) {
         final Dish[] dishes = currentUser.getDishes().stream()
-                .filter(d -> dishMatchesWithSpecifiedFilter(d, searchFilter))
+                .filter(dish -> dishMatchesWithSpecifiedFilter(dish, searchFilter))
                 .filter(dish -> !searchFilter.isNeedGetRecipe() || nonNull(dish.getRecipe()))
+                .filter(dish -> userService.dishNotContainExcludeProduct(dish, currentUser))
                 .toArray(Dish[]::new);
         if (dishes.length > 0) {
             return dishes[random.nextInt(dishes.length)];
@@ -145,25 +141,35 @@ public class SearchFilterService {
         }
     }
 
-    private Dish getRandomPublishDishWithCurrentFilter(final long ownerId, final SearchFilter searchFilter) {
-        final int dishWithFilterCount = findDishWithFilterCount(ownerId, searchFilter);
-        if (dishWithFilterCount > 0) {
-            return findDishWithSpecifiedFilterAndOffset(ownerId, searchFilter, dishWithFilterCount);
-        } else {
-            throw new DishesNotFoundException();
+    private Dish getRandomPublishDishWithCurrentFilter(final User owner, final SearchFilter searchFilter) {
+        final int dishWithFilterCount = findDishWithFilterCount(owner.getId(), searchFilter);
+        final Set<Integer> usedOffset = new HashSet<>(dishWithFilterCount);
+        Dish possibleResult;
+        int offset;
+        while (usedOffset.size() < dishWithFilterCount) {
+            do {
+                offset = random.nextInt(dishWithFilterCount);
+            } while (usedOffset.contains(offset));
+            possibleResult = findDishWithSpecifiedFilterAndOffset(owner.getId(), searchFilter, offset);
+            if (userService.dishNotContainExcludeProduct(possibleResult, owner)) {
+                return possibleResult;
+            } else {
+                usedOffset.add(offset);
+            }
         }
+        throw new DishesNotFoundException();
     }
 
-    private Dish findDishWithSpecifiedFilterAndOffset(final long ownerId, final SearchFilter searchFilter, final int dishWithFilterCount) {
+    private Dish findDishWithSpecifiedFilterAndOffset(final long ownerId, final SearchFilter searchFilter, final int offset) {
         return searchFilter.isNeedGetRecipe()
                 ? dishRepository.findDishByFilterWithSpecifiedOffsetAndRecipe(ownerId, searchFilter.getSpicy(),
                 isNull(searchFilter.getDishType()) ? null : searchFilter.getDishType().name(),
                 isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name(),
-                random.nextInt(dishWithFilterCount))
+                offset)
                 : dishRepository.findDishByFilterWithSpecifiedOffset(ownerId, searchFilter.getSpicy(),
                 isNull(searchFilter.getDishType()) ? null : searchFilter.getDishType().name(),
                 isNull(searchFilter.getCuisine()) ? null : searchFilter.getCuisine().name(),
-                random.nextInt(dishWithFilterCount));
+                offset);
     }
 
     private int findDishWithFilterCount(final long ownerId, final SearchFilter searchFilter) {

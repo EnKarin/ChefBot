@@ -1,6 +1,7 @@
 package io.github.enkarin.chefbot.service;
 
 import io.github.enkarin.chefbot.entity.Dish;
+import io.github.enkarin.chefbot.entity.ProductQuantity;
 import io.github.enkarin.chefbot.entity.User;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.repository.UserRepository;
@@ -68,10 +69,6 @@ public class UserService {
         return user.getChatStatus();
     }
 
-    public User findUser(final long userId) {
-        return userRepository.findById(userId).orElseThrow();
-    }
-
     @Transactional
     void deleteLinkForDish(final Dish dish) {
         userRepository.saveAll(userRepository.findAllByModerableDish(dish).stream()
@@ -82,5 +79,14 @@ public class UserService {
     @Transactional
     public void dropPageNumberValue(final long userId) {
         findUser(userId).setSearchPageNumber(0);
+    }
+
+    @Transactional
+    boolean dishNotContainExcludeProduct(final Dish dish, final User user) {
+        return dish.getProducts().stream().map(ProductQuantity::getProduct).noneMatch(user.getExcludeProducts()::contains);
+    }
+
+    public User findUser(final long userId) {
+        return userRepository.findById(userId).orElseThrow();
     }
 }

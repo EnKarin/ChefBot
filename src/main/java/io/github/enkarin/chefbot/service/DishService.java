@@ -171,21 +171,21 @@ public class DishService {
     @Transactional
     public List<? extends DisplayDishDto> findDishByProduct(final long userId) {
         final User user = userService.findUser(userId);
-        final List<? extends DisplayDishDto> result = findDishByProduct(userId, user.getSearchProductList().stream().map(SearchProduct::getName).toList(), user.getSearchPageNumber());
+        final List<? extends DisplayDishDto> result = findDishByProduct(user, user.getSearchProductList().stream().map(SearchProduct::getName).toList(), user.getSearchPageNumber());
         user.setSearchPageNumber(user.getSearchPageNumber() + 1);
         return result;
     }
 
-    private List<? extends DisplayDishDto> findDishByProduct(final long userId, final List<String> productNames, final int pageNumber) {
+    private List<? extends DisplayDishDto> findDishByProduct(final User user, final List<String> productNames, final int pageNumber) {
         final Iterator<String> productIterator = productNames.iterator();
-        Set<Dish> prepareResult = productRepository.findByProductNameContainsIgnoreCase(productIterator.next()).stream()
+        Set<Dish> possibleResult = productRepository.findByProductNameContainsIgnoreCase(productIterator.next()).stream()
                 .flatMap(product -> product.getProductQuantities().stream())
                 .map(ProductQuantity::getDish)
-                .filter(dish -> dish.isPublished() || dish.getOwner().getId() == userId)
+                .filter(dish -> dish.isPublished() || dish.getOwner().equals(user))
                 .collect(Collectors.toSet());
         while (productIterator.hasNext()) {
             final String nowProductName = productIterator.next().toLowerCase(Locale.ROOT);
-            prepareResult = prepareResult.stream()
+            possibleResult = possibleResult.stream()
                     .filter(dish -> dish.getProducts().stream()
                             .map(ProductQuantity::getProduct)
                             .map(Product::getProductName)
@@ -193,7 +193,8 @@ public class DishService {
                             .anyMatch(productName -> productName.contains(nowProductName)))
                     .collect(Collectors.toSet());
         }
-        return prepareResult.stream()
+        return possibleResult.stream()
+                .filter(dish -> userService.dishNotContainExcludeProduct(dish, user))
                 .sorted(Comparator.comparing(Dish::getDishName))
                 .skip(pageNumber * 5L)
                 .limit(5)
