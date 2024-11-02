@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.3</version>
+        <version>3.3.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -23,9 +23,9 @@
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <testcontainers.version>1.20.1</testcontainers.version>
+        <testcontainers.version>1.20.2</testcontainers.version>
         <telegrambots.version>6.9.7.1</telegrambots.version>
-        <junit.jupiter.version>5.11.0</junit.jupiter.version>
+        <junit.jupiter.version>5.11.2</junit.jupiter.version>
         <spotbugs.version>4.8.6</spotbugs.version>
         <pg-index-health.version>0.13.0</pg-index-health.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
@@ -164,7 +164,7 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>4.8.6.3</version>
+                <version>4.8.6.4</version>
                 <configuration>
                     <excludeFilterFile>/config/spotbugs/spotbugs.xml</excludeFilterFile>
                     <includeTests>true</includeTests>
@@ -229,7 +229,7 @@
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>10.18.1</version>
+                        <version>10.18.2</version>
                     </dependency>
                     <dependency>
                         <groupId>com.thomasjensen.checkstyle.addons</groupId>
