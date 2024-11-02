@@ -37,14 +37,14 @@ public class Product implements Serializable {
     private Set<User> users;
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        Product product = (Product) o;
+        final Product product = (Product) obj;
         return Objects.equals(productName, product.productName);
     }
 

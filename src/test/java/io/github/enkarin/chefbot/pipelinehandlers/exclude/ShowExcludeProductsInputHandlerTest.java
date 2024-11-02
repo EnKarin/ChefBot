@@ -36,15 +36,29 @@ class ShowExcludeProductsInputHandlerTest extends TestBase {
     }
 
     @Test
-    void getMessageForUser() {
+    void getMessageForUserWhereExistsExcludeProducts() {
         createUser(ChatStatus.EXCLUDE_PRODUCTS);
         initDishes();
         jdbcTemplate.update("insert into user_exclude_product(user_id, product_name) values (?, 'thirdProduct'), (?, 'secondProduct')", USER_ID, USER_ID);
 
-        assertThat(handler.getMessageForUser(USER_ID).messageText()).satisfies(messageText -> {
-            assertThat(messageText).startsWith("Список продуктов, блюда с которыми будут исключены из поиска:");
-            assertThat(messageText).contains("thirdProduct", "secondProduct");
-            assertThat(messageText).endsWith("Желаете его изменить?");
+        assertThat(handler.getMessageForUser(USER_ID)).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).startsWith("Список продуктов, блюда с которыми будут исключены из поиска:\n");
+            assertThat(botAnswer.messageText()).contains("-thirdProduct", "-secondProduct");
+            assertThat(botAnswer.messageText()).endsWith("Желаете его изменить?");
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("В главное меню",
+                    "Добавить продукты в список",
+                    "Удалить продукты из списка по полному названию",
+                    "Удалить продукты из списка по частичному названию");
+        });
+    }
+
+    @Test
+    void getMessageForUserWithoutExistsExcludeProducts() {
+        createUser(ChatStatus.EXCLUDE_PRODUCTS);
+
+        assertThat(handler.getMessageForUser(USER_ID)).satisfies(botAnswer -> {
+            assertThat(botAnswer.messageText()).isEqualTo("У вас нет продуктов, блюда с которыми будут исключены из поиска. Хотите добавить?");
+            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("В главное меню", "Добавить продукты в список");
         });
     }
 }

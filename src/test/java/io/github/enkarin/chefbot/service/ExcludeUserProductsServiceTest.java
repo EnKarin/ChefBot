@@ -4,6 +4,9 @@ import io.github.enkarin.chefbot.dto.DisplayDishDto;
 import io.github.enkarin.chefbot.entity.Product;
 import io.github.enkarin.chefbot.entity.SearchFilter;
 import io.github.enkarin.chefbot.enums.ChatStatus;
+import io.github.enkarin.chefbot.enums.DishType;
+import io.github.enkarin.chefbot.enums.WorldCuisine;
+import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
 import io.github.enkarin.chefbot.repository.SearchFilterRepository;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ExcludeUserProductsServiceTest extends TestBase {
     @Autowired
@@ -181,5 +185,21 @@ class ExcludeUserProductsServiceTest extends TestBase {
             assertThat(displayDishDto.getDishName()).isEqualTo("second");
             assertThat(displayDishDto.getProductsName()).containsOnly("secondProduct");
         });
+    }
+
+    @Test
+    void searchRandomPublishDishWishExcludeProducts() {
+        searchFilterService.createSearchFilter(USER_ID);
+        final SearchFilter searchFilter = searchFilterRepository.findAll().get(0);
+        searchFilter.setSearchFromPublicDish(true);
+        searchFilter.setSpicy(false);
+        searchFilter.setDishType(DishType.SALAD);
+        searchFilter.setCuisine(WorldCuisine.ASIA);
+        searchFilter.setNeedGetRecipe(true);
+        searchFilterRepository.save(searchFilter);
+        initDishes();
+        excludeUserProductsService.addExcludeProducts(USER_ID, "firstProduct");
+
+        assertThatThrownBy(() -> searchFilterService.searchRandomDishWithCurrentFilter(USER_ID)).isInstanceOf(DishesNotFoundException.class);
     }
 }
