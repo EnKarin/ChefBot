@@ -15,6 +15,12 @@
             <property name="violationSuppressXPath" value="./ancestor-or-self::ClassDeclaration[contains(@SimpleName, 'Base')]"/>
         </properties>
     </rule>
+    <rule ref="category/java/bestpractices.xml/UnitTestContainsTooManyAsserts">
+        <properties>
+            <property name="maximumAsserts" value="10" />
+            <property name="extraAssertMethodNames" value="" />
+        </properties>
+    </rule>
 
     <rule ref="category/java/codestyle.xml">
         <exclude name="OnlyOneReturn"/>
