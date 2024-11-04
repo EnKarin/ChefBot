@@ -7,7 +7,7 @@ import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
 import io.github.enkarin.chefbot.pipelinehandlers.NonCommandInputHandler;
-import io.github.enkarin.chefbot.service.DishService;
+import io.github.enkarin.chefbot.service.SearchProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +17,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class FindDishByProductsResponseService implements NonCommandInputHandler {
-    private final DishService dishService;
+    private final SearchProductService searchProductService;
 
     @Override
     public ExecutionResult execute(final long userId, final String text) {
         if ("Вернуться в главное меню".equalsIgnoreCase(text)) {
+            searchProductService.dropSearchProductForUser(userId);
             return new ExecutionResult(ChatStatus.MAIN_MENU);
         } else {
             return new ExecutionResult(getCurrentStatus());
@@ -30,7 +31,7 @@ public class FindDishByProductsResponseService implements NonCommandInputHandler
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        final List<? extends DisplayDishDto> dishByProduct = dishService.findDishByProduct(userId);
+        final List<? extends DisplayDishDto> dishByProduct = searchProductService.findDishByProduct(userId);
         if (dishByProduct.isEmpty()) {
             throw new DishesNotFoundException();
         } else {

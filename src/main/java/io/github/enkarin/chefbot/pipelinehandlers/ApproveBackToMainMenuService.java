@@ -5,6 +5,7 @@ import io.github.enkarin.chefbot.dto.ExecutionResult;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.service.SearchFilterService;
+import io.github.enkarin.chefbot.service.SearchProductService;
 import io.github.enkarin.chefbot.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.Locale;
 public class ApproveBackToMainMenuService implements NonCommandInputHandler {
     private final UserService userService;
     private final SearchFilterService searchFilterService;
+    private final SearchProductService searchProductService;
 
     @Override
     public ExecutionResult execute(final long userId, final String text) {
@@ -23,6 +25,7 @@ public class ApproveBackToMainMenuService implements NonCommandInputHandler {
             case "да" -> {
                 searchFilterService.deleteSearchFilter(userId);
                 userService.dropPageNumberValue(userId);
+                searchProductService.dropSearchProductForUser(userId);
                 yield new ExecutionResult(ChatStatus.MAIN_MENU);
             }
             case "нет" -> new ExecutionResult(userService.getPreviousChatStatus(userId));
