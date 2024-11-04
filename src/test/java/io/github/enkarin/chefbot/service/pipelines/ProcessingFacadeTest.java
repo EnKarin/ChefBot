@@ -12,6 +12,7 @@ import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
 import io.github.enkarin.chefbot.pipelinehandlers.ProcessingFacade;
 import io.github.enkarin.chefbot.repository.ModerationRequestRepository;
 import io.github.enkarin.chefbot.repository.SearchFilterRepository;
+import io.github.enkarin.chefbot.service.ExcludeUserProductsService;
 import io.github.enkarin.chefbot.service.SearchFilterService;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,9 @@ class ProcessingFacadeTest extends TestBase {
 
     @Autowired
     private ModerationRequestRepository moderationRequestRepository;
+
+    @Autowired
+    private ExcludeUserProductsService excludeUserProductsService;
 
     @Test
     void execute() {
@@ -423,5 +427,43 @@ class ProcessingFacadeTest extends TestBase {
         assertThat(processingFacade.execute(USER_ID, "Все личные блюда").botAnswer().messageText()).isEqualTo("""
                         *fifth:*
                         -fifthProduct""");
+    }
+
+    @Test
+    void addExcludeProduct() {
+        createUser(ChatStatus.EXCLUDE_PRODUCTS);
+        initDishes();
+
+        assertThat(processingFacade.execute(USER_ID, "добавить продукты в список").botAnswer().messageText())
+                .isEqualTo("Введите названия продуктов, которые хотите добавить в список, через запятую или с новой строки");
+        assertThat(processingFacade.execute(USER_ID, "first, second").botAnswer().messageText())
+                .isEqualTo("Вы в главном меню. Выберете следующую команду для выполнения.");
+        assertThat(excludeUserProductsService.findExcludeProducts(USER_ID)).containsOnly("firstProduct", "secondProduct");
+    }
+
+    @Test
+    void deleteExcludeProductByName() {
+        createUser(ChatStatus.EXCLUDE_PRODUCTS);
+        initDishes();
+        excludeUserProductsService.addExcludeProducts(USER_ID, "first", "second", "third");
+
+        assertThat(processingFacade.execute(USER_ID, "удалить продукты из списка по полному названию").botAnswer().messageText())
+                .isEqualTo("Введите названия продуктов, которые хотите исключить из списка, через запятую или с новой строки");
+        assertThat(processingFacade.execute(USER_ID, "firstProduct, secondProduct").botAnswer().messageText())
+                .isEqualTo("Вы в главном меню. Выберете следующую команду для выполнения.");
+        assertThat(excludeUserProductsService.findExcludeProducts(USER_ID)).containsOnly("thirdProduct");
+    }
+
+    @Test
+    void deleteExcludeProductContainsName() {
+        createUser(ChatStatus.EXCLUDE_PRODUCTS);
+        initDishes();
+        excludeUserProductsService.addExcludeProducts(USER_ID, "first", "second", "third");
+
+        assertThat(processingFacade.execute(USER_ID, "удалить продукты из списка по частичному названию").botAnswer().messageText())
+                .isEqualTo("Введите названия продуктов, которые хотите исключить из списка, через запятую или с новой строки");
+        assertThat(processingFacade.execute(USER_ID, "first, third").botAnswer().messageText())
+                .isEqualTo("Вы в главном меню. Выберете следующую команду для выполнения.");
+        assertThat(excludeUserProductsService.findExcludeProducts(USER_ID)).containsOnly("secondProduct");
     }
 }

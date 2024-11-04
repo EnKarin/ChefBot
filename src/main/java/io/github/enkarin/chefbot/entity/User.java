@@ -7,6 +7,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -20,6 +22,7 @@ import lombok.experimental.SuperBuilder;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -71,4 +74,28 @@ public class User implements Serializable {
     private List<SearchProduct> searchProductList;
 
     private int searchPageNumber;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_exclude_product",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_name"))
+    private Set<Product> excludeProducts;
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final User user = (User) obj;
+        return id == user.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

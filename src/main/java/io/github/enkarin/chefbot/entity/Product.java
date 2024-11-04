@@ -2,6 +2,7 @@ package io.github.enkarin.chefbot.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -12,6 +13,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -30,4 +32,24 @@ public class Product implements Serializable {
 
     @OneToMany(mappedBy = "product")
     private Set<ProductQuantity> productQuantities;
+
+    @ManyToMany(mappedBy = "excludeProducts")
+    private Set<User> users;
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final Product product = (Product) obj;
+        return Objects.equals(productName, product.productName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(productName);
+    }
 }
