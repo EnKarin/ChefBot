@@ -5,6 +5,7 @@ import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
 import io.github.enkarin.chefbot.pipelinehandlers.searchbyproduct.FindDishByProductsResponseService;
+import io.github.enkarin.chefbot.repository.SearchProductRepository;
 import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.service.SearchProductService;
 import io.github.enkarin.chefbot.util.TestBase;
@@ -24,8 +25,13 @@ class FindDishByProductsResponseServiceTest extends TestBase {
     @Autowired
     private DishService dishService;
 
+    @Autowired
+    private SearchProductRepository searchProductRepository;
+
     @Test
     void executeWithReturnToMainMenu() {
+        createUser(ChatStatus.FIND_DISH_BY_PRODUCTS_RESPONSE);
+
         assertThat(findDishByProductsResponseService.execute(USER_ID, "Вернуться в главное меню")).extracting(ExecutionResult::chatStatus).isEqualTo(ChatStatus.MAIN_MENU);
     }
 
@@ -69,5 +75,15 @@ class FindDishByProductsResponseServiceTest extends TestBase {
         searchProductService.saveProductsForCurrentSearchFilter(USER_ID, "testo");
 
         assertThatThrownBy(() -> findDishByProductsResponseService.getMessageForUser(USER_ID)).isInstanceOf(DishesNotFoundException.class);
+    }
+
+    @Test
+    void clearSearchProducts() {
+        createUser(ChatStatus.FIND_DISH_BY_PRODUCTS_RESPONSE);
+        searchProductService.saveProductsForCurrentSearchFilter(USER_ID, "first", "second");
+
+        findDishByProductsResponseService.execute(USER_ID, "Вернуться в главное меню");
+
+        assertThat(searchProductRepository.count()).isZero();
     }
 }

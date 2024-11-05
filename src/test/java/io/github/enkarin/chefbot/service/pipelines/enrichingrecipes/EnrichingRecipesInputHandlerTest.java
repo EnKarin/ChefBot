@@ -5,7 +5,7 @@ import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.enums.DishType;
 import io.github.enkarin.chefbot.enums.WorldCuisine;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
-import io.github.enkarin.chefbot.pipelinehandlers.enrichingrecipes.EnrichingRecipesService;
+import io.github.enkarin.chefbot.pipelinehandlers.enrichingrecipes.EnrichingRecipesInputHandler;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,16 +13,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class EnrichingRecipesServiceTest extends TestBase {
+class EnrichingRecipesInputHandlerTest extends TestBase {
     @Autowired
-    private EnrichingRecipesService enrichingRecipesService;
+    private EnrichingRecipesInputHandler enrichingRecipesInputHandler;
 
     @Test
     void execute() {
         createUser(ChatStatus.ENRICHING_RECIPES);
         initDishes();
 
-        assertThat(enrichingRecipesService.execute(USER_ID, "sixth").chatStatus()).isEqualTo(ChatStatus.EXISTS_DISH_PUT_RECIPE);
+        assertThat(enrichingRecipesInputHandler.execute(USER_ID, "sixth").chatStatus()).isEqualTo(ChatStatus.EXISTS_DISH_PUT_RECIPE);
         assertThat(userService.findUser(USER_ID).getEditabledDish().getDishName()).isEqualTo("sixth");
     }
 
@@ -30,7 +30,7 @@ class EnrichingRecipesServiceTest extends TestBase {
     void executeWithOtherAnswer() {
         createUser(ChatStatus.ENRICHING_RECIPES);
 
-        assertThat(enrichingRecipesService.execute(USER_ID, "Другое").chatStatus()).isEqualTo(ChatStatus.ENRICHING_RECIPES);
+        assertThat(enrichingRecipesInputHandler.execute(USER_ID, "Другое").chatStatus()).isEqualTo(ChatStatus.ENRICHING_RECIPES);
     }
 
     @Test
@@ -38,7 +38,7 @@ class EnrichingRecipesServiceTest extends TestBase {
         createUser(ChatStatus.ENRICHING_RECIPES);
         initDishes();
 
-        assertThat(enrichingRecipesService.getMessageForUser(USER_ID).userAnswerOptions().orElseThrow()).containsOnly("fifth", "sixth");
+        assertThat(enrichingRecipesInputHandler.getMessageForUser(USER_ID).userAnswerOptions().orElseThrow()).containsOnly("fifth", "sixth");
     }
 
     @Test
@@ -47,7 +47,7 @@ class EnrichingRecipesServiceTest extends TestBase {
         initDishes();
         initMoreDish();
 
-        assertThat(enrichingRecipesService.getMessageForUser(USER_ID).userAnswerOptions().orElseThrow())
+        assertThat(enrichingRecipesInputHandler.getMessageForUser(USER_ID).userAnswerOptions().orElseThrow())
                 .containsOnly("fifth", "sixth", "eighth", "ninth", "tenth", "eleventh", "twelfth", "thirteenth", "fourteenth", "fifteenth", "Другое");
     }
 
@@ -64,9 +64,9 @@ class EnrichingRecipesServiceTest extends TestBase {
                 .owner(userRepository.findById(USER_ID).orElseThrow())
                 .build());
 
-        assertThat(enrichingRecipesService.getMessageForUser(USER_ID).userAnswerOptions().orElseThrow())
+        assertThat(enrichingRecipesInputHandler.getMessageForUser(USER_ID).userAnswerOptions().orElseThrow())
                 .containsOnly("fifth", "sixth", "eighth", "ninth", "tenth", "eleventh", "sixteenth", "thirteenth", "fourteenth", "fifteenth", "Другое");
-        assertThat(enrichingRecipesService.getMessageForUser(USER_ID).userAnswerOptions().orElseThrow()).containsOnly("twelfth");
+        assertThat(enrichingRecipesInputHandler.getMessageForUser(USER_ID).userAnswerOptions().orElseThrow()).containsOnly("twelfth");
     }
 
     private void initMoreDish() {
@@ -132,6 +132,6 @@ class EnrichingRecipesServiceTest extends TestBase {
     void getMessageForUserWithEmptyResult() {
         createUser(ChatStatus.ENRICHING_RECIPES);
 
-        assertThatThrownBy(() -> enrichingRecipesService.getMessageForUser(USER_ID)).isInstanceOf(DishesNotFoundException.class);
+        assertThatThrownBy(() -> enrichingRecipesInputHandler.getMessageForUser(USER_ID)).isInstanceOf(DishesNotFoundException.class);
     }
 }

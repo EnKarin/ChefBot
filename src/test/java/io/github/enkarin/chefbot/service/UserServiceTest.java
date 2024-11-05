@@ -175,4 +175,13 @@ class UserServiceTest extends ModerationTest {
         assertThat(userRepository.findById(USER_ID - 1).orElseThrow().getModerableDish()).isNull();
         assertThat(userRepository.findById(USER_ID - 2).orElseThrow().getModerableDish()).isNull();
     }
+
+    @Test
+    void dropPageNumberWhereBackToMainMenu() {
+        userRepository.save(User.builder().id(USER_ID - 1).searchPageNumber(4).chatStatus(ChatStatus.APPROVE_BACK_TO_MAIN_MENU).build());
+
+        userService.switchToNewStatus(USER_ID - 1, ChatStatus.MAIN_MENU);
+
+        assertThat(userService.findUser(USER_ID - 1).getSearchPageNumber()).isZero();
+    }
 }

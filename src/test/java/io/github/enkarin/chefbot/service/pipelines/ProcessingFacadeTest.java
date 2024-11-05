@@ -156,6 +156,7 @@ class ProcessingFacadeTest extends TestBase {
                 .isEqualTo("""
                         *third:*
                         -thirdProduct""");
+        assertThat(userService.findUser(USER_ID).getSearchPageNumber()).isZero();
     }
 
     @Test
@@ -214,6 +215,7 @@ class ProcessingFacadeTest extends TestBase {
             assertThat(dish.getDishName()).isEqualTo("sixth");
         });
         assertThat(moderationRequestRepository.findAll()).isEmpty();
+        assertThat(userService.findUser(USER_ID).getSearchPageNumber()).isZero();
     }
 
     @Test
@@ -409,6 +411,7 @@ class ProcessingFacadeTest extends TestBase {
             assertThat(botAnswer.messageText()).isEqualTo("Вы в главном меню. Выберете следующую команду для выполнения.");
             assertThat(botAnswer.userAnswerOptions()).isEmpty();
         });
+        assertThat(userService.findUser(USER_ID).getSearchPageNumber()).isZero();
     }
 
     @Test

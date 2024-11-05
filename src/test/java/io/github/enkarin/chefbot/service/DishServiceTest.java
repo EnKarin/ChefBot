@@ -225,7 +225,7 @@ class DishServiceTest extends ModerationTest {
         initDishes();
         searchProductService.saveProductsForCurrentSearchFilter(USER_ID, "firstProduct");
 
-        assertThat(dishService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
+        assertThat(searchProductService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
             assertThat(displayDishDto.getDishName()).isEqualTo("first");
             assertThat(displayDishDto.getProductsName()).containsOnly("firstProduct");
         });
@@ -236,7 +236,7 @@ class DishServiceTest extends ModerationTest {
         initDishes();
         searchProductService.saveProductsForCurrentSearchFilter(USER_ID, "Second", "product");
 
-        assertThat(dishService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
+        assertThat(searchProductService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
             assertThat(displayDishDto.getDishName()).isEqualTo("second");
             assertThat(displayDishDto.getProductsName()).containsOnly("secondProduct");
         });
@@ -247,7 +247,7 @@ class DishServiceTest extends ModerationTest {
         initDishes();
         searchProductService.saveProductsForCurrentSearchFilter(USER_ID, "se", "th", "product");
 
-        assertThat(dishService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
+        assertThat(searchProductService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
             assertThat(displayDishDto.getDishName()).isEqualTo("seventh");
             assertThat(displayDishDto.getProductsName()).containsOnly("seventhProduct");
         });
@@ -258,7 +258,7 @@ class DishServiceTest extends ModerationTest {
         initDishes();
         searchProductService.saveProductsForCurrentSearchFilter(USER_ID, "firstProduct", "secondProduct");
 
-        assertThat(dishService.findDishByProduct(USER_ID)).isEmpty();
+        assertThat(searchProductService.findDishByProduct(USER_ID)).isEmpty();
     }
 
     @Test
@@ -266,11 +266,11 @@ class DishServiceTest extends ModerationTest {
         initDishes();
         searchProductService.saveProductsForCurrentSearchFilter(USER_ID, "firstProduct");
 
-        assertThat(dishService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
+        assertThat(searchProductService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
             assertThat(displayDishDto.getDishName()).isEqualTo("first");
             assertThat(displayDishDto.getProductsName()).containsOnly("firstProduct");
         });
-        assertThat(dishService.findDishByProduct(USER_ID)).isEmpty();
+        assertThat(searchProductService.findDishByProduct(USER_ID)).isEmpty();
     }
 
     @Test
@@ -278,7 +278,7 @@ class DishServiceTest extends ModerationTest {
         initDishes();
         searchProductService.saveProductsForCurrentSearchFilter(USER_ID, "seventhProduct");
 
-        assertThat(dishService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
+        assertThat(searchProductService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
             assertThat(displayDishDto.getDishName()).isEqualTo("seventh");
             assertThat(displayDishDto.getProductsName()).containsOnly("seventhProduct");
             assertThat(((DisplayDishWithRecipeDto) displayDishDto).getRecipe()).isEqualTo("Дать настояться месяцок");
@@ -335,6 +335,6 @@ class DishServiceTest extends ModerationTest {
         initDishes();
         searchProductService.saveProductsForCurrentSearchFilter(USER_ID - 1, "seventhProduct");
 
-        assertThat(dishService.findDishByProduct(USER_ID - 1)).isEmpty();
+        assertThat(searchProductService.findDishByProduct(USER_ID - 1)).isEmpty();
     }
 }

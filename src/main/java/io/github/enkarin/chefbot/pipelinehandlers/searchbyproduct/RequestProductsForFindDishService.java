@@ -15,6 +15,7 @@ public class RequestProductsForFindDishService implements NonCommandInputHandler
 
     @Override
     public ExecutionResult execute(final long userId, final String text) {
+        service.dropSearchProductForUser(userId);
         service.saveProductsForCurrentSearchFilter(userId, text.split("[,\n]"));
         return new ExecutionResult(ChatStatus.FIND_DISH_BY_PRODUCTS_RESPONSE);
     }

@@ -181,7 +181,7 @@ class ExcludeUserProductsServiceTest extends TestBase {
 
         searchProductService.saveProductsForCurrentSearchFilter(USER_ID, "se");
 
-        assertThat(dishService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
+        assertThat(searchProductService.findDishByProduct(USER_ID)).allSatisfy(displayDishDto -> {
             assertThat(displayDishDto.getDishName()).isEqualTo("second");
             assertThat(displayDishDto.getProductsName()).containsOnly("secondProduct");
         });
