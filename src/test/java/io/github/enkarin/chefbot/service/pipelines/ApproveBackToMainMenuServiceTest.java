@@ -3,8 +3,10 @@ package io.github.enkarin.chefbot.service.pipelines;
 import io.github.enkarin.chefbot.enums.ChatStatus;
 import io.github.enkarin.chefbot.pipelinehandlers.ApproveBackToMainMenuService;
 import io.github.enkarin.chefbot.repository.SearchFilterRepository;
+import io.github.enkarin.chefbot.repository.SearchProductRepository;
 import io.github.enkarin.chefbot.service.DishService;
 import io.github.enkarin.chefbot.service.SearchFilterService;
+import io.github.enkarin.chefbot.service.SearchProductService;
 import io.github.enkarin.chefbot.util.TestBase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +26,12 @@ class ApproveBackToMainMenuServiceTest extends TestBase {
 
     @Autowired
     private SearchFilterRepository searchFilterRepository;
+
+    @Autowired
+    private SearchProductService searchProductService;
+
+    @Autowired
+    private SearchProductRepository searchProductRepository;
 
     @BeforeEach
     void initUser() {
@@ -65,5 +73,14 @@ class ApproveBackToMainMenuServiceTest extends TestBase {
 
         assertThat(approveBackToMainMenuService.execute(USER_ID, "да").chatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
         assertThat(searchFilterRepository.count()).isEqualTo(0);
+    }
+
+    @Test
+    void clearSearchProducts() {
+        searchProductService.saveProductsForCurrentSearchFilter(USER_ID, "first", "second");
+
+        searchProductService.dropSearchProductForUser(USER_ID);
+
+        assertThat(searchProductRepository.count()).isZero();
     }
 }

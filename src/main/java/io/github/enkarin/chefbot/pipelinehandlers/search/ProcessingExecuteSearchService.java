@@ -8,7 +8,6 @@ import io.github.enkarin.chefbot.enums.StandardUserAnswerOption;
 import io.github.enkarin.chefbot.exceptions.DishesNotFoundException;
 import io.github.enkarin.chefbot.pipelinehandlers.NonCommandInputHandler;
 import io.github.enkarin.chefbot.service.SearchFilterService;
-import io.github.enkarin.chefbot.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -18,15 +17,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ProcessingExecuteSearchService implements NonCommandInputHandler {
-
     private final SearchFilterService searchFilterService;
-    private final UserService userService;
 
     @Override
     public ExecutionResult execute(final long userId, final String text) {
         if ("вернуться в главное меню".equalsIgnoreCase(text)) {
             searchFilterService.deleteSearchFilter(userId);
-            userService.switchToNewStatus(userId, ChatStatus.MAIN_MENU);
             return new ExecutionResult(ChatStatus.MAIN_MENU);
         }
         return new ExecutionResult(getCurrentStatus());

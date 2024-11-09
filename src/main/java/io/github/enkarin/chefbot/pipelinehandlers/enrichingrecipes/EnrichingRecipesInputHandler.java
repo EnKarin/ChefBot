@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class EnrichingRecipesService implements NonCommandInputHandler {
+public class EnrichingRecipesInputHandler implements NonCommandInputHandler {
     private final DishService dishService;
 
     @Override

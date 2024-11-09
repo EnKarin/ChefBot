@@ -49,6 +49,7 @@ public class UserService {
         if (user.getChatStatus() != newChatStatus) {
             if (newChatStatus == ChatStatus.MAIN_MENU) {
                 user.setEditabledDish(null);
+                dropPageNumberValue(userId);
                 user.setPreviousChatStatus(ChatStatus.MAIN_MENU);
             } else {
                 user.setPreviousChatStatus(user.getChatStatus());
