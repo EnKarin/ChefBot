@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -30,9 +32,13 @@ public class ModerationService {
     private final UserRepository userRepository;
 
     public ModerationDishDto createModerationRequest(final long userId) {
-        final ModerationRequest moderationRequest = moderationRequestRepository.save(ModerationRequest.builder()
-                .moderationDish(userService.findUser(userId).getEditabledDish())
-                .build());
+        final Dish editableDish = userService.findUser(userId).getEditabledDish();
+        final ModerationRequest moderationRequest;
+        if (isNull(editableDish.getModerationRequest())) {
+            moderationRequest = moderationRequestRepository.save(ModerationRequest.builder().moderationDish(editableDish).build());
+        } else {
+            moderationRequest = editableDish.getModerationRequest();
+        }
         final ModerationDishDto result = dishEntityModerationDtoMapper.entityToDto(moderationRequest.getModerationDish());
         result.setRequestId(moderationRequest.getId());
         return result;
