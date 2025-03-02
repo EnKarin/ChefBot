@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -30,11 +32,22 @@ public class ModerationService {
     private final UserRepository userRepository;
 
     public ModerationDishDto createModerationRequest(final long userId) {
-        final ModerationRequest moderationRequest = moderationRequestRepository.save(ModerationRequest.builder()
-                .moderationDish(userService.findUser(userId).getEditabledDish())
-                .build());
+        final Dish editableDish = userService.findUser(userId).getEditabledDish();
+        final ModerationRequest moderationRequest;
+        final Set<ModerationRequestMessageDto> moderationRequestMessages;
+        if (isNull(editableDish.getModerationRequest())) {
+            moderationRequest = moderationRequestRepository.save(ModerationRequest.builder().moderationDish(editableDish).build());
+            moderationRequestMessages = Set.of();
+        } else {
+            moderationRequest = editableDish.getModerationRequest();
+            moderationRequestMessages = moderationRequest.getModerationRequestMessages().stream()
+                    .map(moderationRequestMessageEntityDtoMapper::entityToDto)
+                    .collect(Collectors.toSet());
+            moderationRequestMessageRepository.deleteAll(moderationRequest.getModerationRequestMessages());
+        }
         final ModerationDishDto result = dishEntityModerationDtoMapper.entityToDto(moderationRequest.getModerationDish());
         result.setRequestId(moderationRequest.getId());
+        result.setOldModerationRequests(moderationRequestMessages);
         return result;
     }
 

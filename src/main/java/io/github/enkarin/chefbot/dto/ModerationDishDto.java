@@ -20,6 +20,7 @@ public class ModerationDishDto {
     private WorldCuisine worldCuisine;
     private Set<String> products;
     private String recipe;
+    private Set<ModerationRequestMessageDto> oldModerationRequests;
 
     @Override
     public String toString() {

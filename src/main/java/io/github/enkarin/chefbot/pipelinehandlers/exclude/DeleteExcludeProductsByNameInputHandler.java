@@ -16,7 +16,7 @@ public class DeleteExcludeProductsByNameInputHandler implements NonCommandInputH
     @Override
     public ExecutionResult execute(final long userId, final String text) {
         service.deleteExcludeProductsByEqualsNames(userId, text.split("[\n,]"));
-        return new ExecutionResult(ChatStatus.MAIN_MENU);
+        return new ExecutionResult(ChatStatus.EXCLUDE_PRODUCTS);
     }
 
     @Override

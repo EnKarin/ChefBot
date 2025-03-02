@@ -38,11 +38,12 @@ class ModerationServiceTest extends ModerationTest {
 
     @Test
     void createModerationRequest() {
+        moderationRequestRepository.deleteAll();
         dishService.initDishName(USER_ID, "newDish");
 
         moderationService.createModerationRequest(USER_ID);
 
-        assertThat(moderationRequestRepository.findAll()).extracting(ModerationRequest::getModerationDish).extracting(Dish::getDishName).contains("newDish");
+        assertThat(moderationRequestRepository.findAll()).hasSize(1).extracting(ModerationRequest::getModerationDish).extracting(Dish::getDishName).contains("newDish");
     }
 
     @Test
@@ -100,5 +101,24 @@ class ModerationServiceTest extends ModerationTest {
         assertThat(jdbcTemplate.queryForObject("select dish_name from moderation_request inner join t_dish on moderation_dish=dish_id where mr_id=?",
                 String.class,
                 moderationRequestsId[3])).isEqualTo("fourthDish");
+    }
+
+    @Test
+    void createRepeatedModerationRequest() {
+        moderationRequestRepository.deleteAll();
+        dishService.initDishName(USER_ID, "newDish");
+        final long moderationRequestId = moderationService.createModerationRequest(USER_ID).getRequestId();
+        dishService.putDishRecipe(USER_ID, "Recipe");
+        moderationService.addRequestMessages(moderationRequestId, Set.of(new ModerationRequestMessageDto(1, CHAT_ID - 1)));
+
+        assertThat(moderationService.createModerationRequest(USER_ID).getOldModerationRequests())
+                .extracting(ModerationRequestMessageDto::chatId)
+                .containsOnly(CHAT_ID - 1);
+        assertThat(moderationRequestRepository.findAll())
+                .hasSize(1)
+                .extracting(ModerationRequest::getModerationDish)
+                .extracting(Dish::getDishName)
+                .contains("newDish");
+        assertThat(moderationRequestMessageRepository.count()).isZero();
     }
 }
