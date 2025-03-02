@@ -107,11 +107,18 @@ class ModerationServiceTest extends ModerationTest {
     void createRepeatedModerationRequest() {
         moderationRequestRepository.deleteAll();
         dishService.initDishName(USER_ID, "newDish");
-        moderationService.createModerationRequest(USER_ID);
+        final long moderationRequestId = moderationService.createModerationRequest(USER_ID).getRequestId();
         dishService.putDishRecipe(USER_ID, "Recipe");
+        moderationService.addRequestMessages(moderationRequestId, Set.of(new ModerationRequestMessageDto(1, CHAT_ID - 1)));
 
-        moderationService.createModerationRequest(USER_ID);
-
-        assertThat(moderationRequestRepository.findAll()).hasSize(1).extracting(ModerationRequest::getModerationDish).extracting(Dish::getDishName).contains("newDish");
+        assertThat(moderationService.createModerationRequest(USER_ID).getOldModerationRequests())
+                .extracting(ModerationRequestMessageDto::chatId)
+                .containsOnly(CHAT_ID - 1);
+        assertThat(moderationRequestRepository.findAll())
+                .hasSize(1)
+                .extracting(ModerationRequest::getModerationDish)
+                .extracting(Dish::getDishName)
+                .contains("newDish");
+        assertThat(moderationRequestMessageRepository.count()).isZero();
     }
 }

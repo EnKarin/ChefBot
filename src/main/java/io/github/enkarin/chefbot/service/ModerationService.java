@@ -34,13 +34,20 @@ public class ModerationService {
     public ModerationDishDto createModerationRequest(final long userId) {
         final Dish editableDish = userService.findUser(userId).getEditabledDish();
         final ModerationRequest moderationRequest;
+        final Set<ModerationRequestMessageDto> moderationRequestMessages;
         if (isNull(editableDish.getModerationRequest())) {
             moderationRequest = moderationRequestRepository.save(ModerationRequest.builder().moderationDish(editableDish).build());
+            moderationRequestMessages = Set.of();
         } else {
             moderationRequest = editableDish.getModerationRequest();
+            moderationRequestMessages = moderationRequest.getModerationRequestMessages().stream()
+                    .map(moderationRequestMessageEntityDtoMapper::entityToDto)
+                    .collect(Collectors.toSet());
+            moderationRequestMessageRepository.deleteAll(moderationRequest.getModerationRequestMessages());
         }
         final ModerationDishDto result = dishEntityModerationDtoMapper.entityToDto(moderationRequest.getModerationDish());
         result.setRequestId(moderationRequest.getId());
+        result.setOldModerationRequests(moderationRequestMessages);
         return result;
     }
 
