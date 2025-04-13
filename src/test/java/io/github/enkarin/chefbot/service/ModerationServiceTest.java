@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,15 @@ class ModerationServiceTest extends ModerationTest {
         moderationService.createModerationRequest(USER_ID);
 
         assertThat(moderationRequestRepository.findAll()).hasSize(1).extracting(ModerationRequest::getModerationDish).extracting(Dish::getDishName).contains("newDish");
+    }
+
+    @Test
+    void createModerationRequestWithShowQuantityOfProduct() {
+        moderationRequestRepository.deleteAll();
+        dishService.initDishName(USER_ID, "newDish");
+        dishService.putAllDishFoodstuff(USER_ID, Map.of("Egg", "2", "Milk", "200 ml", "Salt", "2 gram"));
+
+        assertThat(moderationService.createModerationRequest(USER_ID).getProducts()).containsOnly("Egg: 2", "Milk: 200 ml", "Salt: 2 gram");
     }
 
     @Test
