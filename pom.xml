@@ -363,7 +363,7 @@
                             <url>sftp://root@194.67.125.199</url>
                             <serverId>deploy</serverId>
                             <commands>
-                                <command>bash ~/chef-bot/install.sh ~/chef-bot/${project.build.finalName}.jar</command>
+                                <command>bash ~/chef-bot/install.sh ~/chef-bot/${project.build.finalName}.jar ${project.version}</command>
                             </commands>
                             <displayCommandOutputs>true</displayCommandOutputs>
                         </configuration>
