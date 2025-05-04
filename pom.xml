@@ -363,9 +363,22 @@
                             <url>sftp://root@194.67.125.199</url>
                             <serverId>deploy</serverId>
                             <commands>
-                                <command>bash ~/chef-bot/install.sh ~/chef-bot/${project.build.finalName}.jar ${project.version}</command>
+                                <command>bash ~/chef-bot/install.sh ~/chef-bot/${project.build.finalName}</command>
                             </commands>
                             <displayCommandOutputs>true</displayCommandOutputs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>download-dump</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>download-single</goal>
+                        </goals>
+                        <configuration>
+                            <url>sftp://root@194.67.125.199</url>
+                            <serverId>deploy</serverId>
+                            <fromFile>/root/chef-bot/${project.build.finalName}_dump.sql</fromFile>
+                            <toFile>D:\userData\dumps\${project.build.finalName}_dump.sql</toFile>
                         </configuration>
                     </execution>
                 </executions>
