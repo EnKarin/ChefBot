@@ -440,7 +440,7 @@ class ProcessingFacadeTest extends TestBase {
         assertThat(processingFacade.execute(USER_ID, "добавить продукты в список").botAnswer().messageText())
                 .isEqualTo("Введите названия продуктов, которые хотите добавить в список, через запятую или с новой строки");
         assertThat(processingFacade.execute(USER_ID, "first, second").botAnswer().messageText())
-                .isEqualTo("Вы в главном меню. Выберете следующую команду для выполнения.");
+                .startsWith("Список продуктов, блюда с которыми будут исключены из поиска:");
         assertThat(excludeUserProductsService.findExcludeProducts(USER_ID)).containsOnly("firstProduct", "secondProduct");
     }
 
@@ -453,7 +453,7 @@ class ProcessingFacadeTest extends TestBase {
         assertThat(processingFacade.execute(USER_ID, "удалить продукты из списка по полному названию").botAnswer().messageText())
                 .isEqualTo("Введите названия продуктов, которые хотите исключить из списка, через запятую или с новой строки");
         assertThat(processingFacade.execute(USER_ID, "firstProduct, secondProduct").botAnswer().messageText())
-                .isEqualTo("Вы в главном меню. Выберете следующую команду для выполнения.");
+                .startsWith("Список продуктов, блюда с которыми будут исключены из поиска:");
         assertThat(excludeUserProductsService.findExcludeProducts(USER_ID)).containsOnly("thirdProduct");
     }
 
@@ -466,7 +466,7 @@ class ProcessingFacadeTest extends TestBase {
         assertThat(processingFacade.execute(USER_ID, "удалить продукты из списка по частичному названию").botAnswer().messageText())
                 .isEqualTo("Введите названия продуктов, которые хотите исключить из списка, через запятую или с новой строки");
         assertThat(processingFacade.execute(USER_ID, "first, third").botAnswer().messageText())
-                .isEqualTo("Вы в главном меню. Выберете следующую команду для выполнения.");
+                .startsWith("Список продуктов, блюда с которыми будут исключены из поиска:");
         assertThat(excludeUserProductsService.findExcludeProducts(USER_ID)).containsOnly("secondProduct");
     }
 }

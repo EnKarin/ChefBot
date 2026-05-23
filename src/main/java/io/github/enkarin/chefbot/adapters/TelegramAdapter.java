@@ -82,6 +82,7 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
             if (action instanceof ModerationResultDto moderationResultDto) {
                 sendDeclineResultToOwner(moderationResultDto);
             } else if (action instanceof ModerationDishDto moderationDishDto) {
+                moderationDishDto.getOldModerationRequests().forEach(this::deleteOddRequestMessage);
                 telegramController.addRequestMessages(moderationDishDto.getRequestId(),
                         sendModerationRequests(telegramController.findAvailableModeratorsId(moderationDishDto.getOwnerChatId()), moderationDishDto));
             } else if (action instanceof List<?> dishDtoList) {
