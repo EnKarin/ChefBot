@@ -349,8 +349,8 @@
                         </goals>
                         <configuration>
                             <fromFile>${project.build.directory}/${project.build.finalName}.jar</fromFile>
-                            <url>sftp://root@194.67.125.199/root/chef-bot</url>
-                            <serverId>deploy</serverId>
+                            <url>sftp://root@185.230.143.192/root/chefBot</url>
+                            <serverId>aeza-server</serverId>
                         </configuration>
                     </execution>
                     <execution>
@@ -360,25 +360,12 @@
                             <goal>sshexec</goal>
                         </goals>
                         <configuration>
-                            <url>sftp://root@194.67.125.199</url>
-                            <serverId>deploy</serverId>
+                            <url>sftp://root@185.230.143.192</url>
+                            <serverId>aeza-server</serverId>
                             <commands>
-                                <command>bash ~/chef-bot/install.sh ~/chef-bot/${project.build.finalName}</command>
+                                <command>bash ~/chefBot/install.sh ~/chefBot/${project.build.finalName}</command>
                             </commands>
                             <displayCommandOutputs>true</displayCommandOutputs>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>download-dump</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>download-single</goal>
-                        </goals>
-                        <configuration>
-                            <url>sftp://root@194.67.125.199</url>
-                            <serverId>deploy</serverId>
-                            <fromFile>/root/chef-bot/${project.build.finalName}_dump.sql</fromFile>
-                            <toFile>D:\userData\dumps\${project.build.finalName}_dump.sql</toFile>
                         </configuration>
                     </execution>
                 </executions>
@@ -421,8 +408,8 @@
 
     <distributionManagement>
         <repository>
-            <id>remote-server</id>
-            <url>sftp://root@194.67.125.199/root/project-poms</url>
+            <id>aeza-server</id>
+            <url>sftp://root@185.230.143.192/root/project-poms</url>
         </repository>
     </distributionManagement>
 </project>
