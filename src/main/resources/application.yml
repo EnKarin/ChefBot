@@ -8,7 +8,7 @@ spring:
         enable_lazy_load_no_trans: false
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/chefdata
+    url: jdbc:postgresql://localhost:5433/chefdata
     username: ${DATABASE_USER}
     password: ${DATABASE_PASS}
 telegram-bot:
