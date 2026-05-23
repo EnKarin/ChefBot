@@ -7,6 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
@@ -20,6 +21,6 @@ public interface DishEntityModerationDtoMapper {
     Set<String> productsToString(Set<ProductQuantity> products);
 
     default String productToString(final ProductQuantity productQuantity) {
-        return productQuantity.getProduct().getProductName();
+        return productQuantity.getProduct().getProductName().concat(Optional.ofNullable(productQuantity.getQuantityProduct()).map(": "::concat).orElse(""));
     }
 }
