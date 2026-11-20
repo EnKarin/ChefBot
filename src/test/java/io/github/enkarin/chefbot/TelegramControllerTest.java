@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -34,7 +33,7 @@ class TelegramControllerTest extends ModerationTest {
         final BotAnswer botAnswer = telegramController.executeStartCommand(USER_ID, CHAT_ID, USERNAME);
 
         assertThat(botAnswer.messageText()).isEqualTo("Приветствую! Здесь вы можете найти блюдо по вашим предпочтениям и поделиться своими рецептами с другими пользователями");
-        assertThat(botAnswer.userAnswerOptions().orElseThrow()).hasSize(0);
+        assertThat(botAnswer.userAnswerOptions()).hasSize(0);
         assertThat(userRepository.existsById(USER_ID)).isTrue();
     }
 
@@ -44,7 +43,7 @@ class TelegramControllerTest extends ModerationTest {
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/change_moderator_status")).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Указанной команды не существует");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).hasSize(0);
+            assertThat(botAnswer.userAnswerOptions()).hasSize(0);
         });
     }
 
@@ -54,7 +53,7 @@ class TelegramControllerTest extends ModerationTest {
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/back_to_main_menu")).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Вы уже в главном меню");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).hasSize(0);
+            assertThat(botAnswer.userAnswerOptions()).hasSize(0);
         });
     }
 
@@ -65,7 +64,7 @@ class TelegramControllerTest extends ModerationTest {
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/back_to_main_menu")).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Вы хотите вернуться в главное меню?");
-            assertThat(botAnswer.userAnswerOptions()).isEqualTo(Optional.of(StandardUserAnswerOption.YES_OR_NO.getAnswers()));
+            assertThat(botAnswer.userAnswerOptions()).isEqualTo(StandardUserAnswerOption.YES_OR_NO.getAnswers());
         });
     }
 
@@ -75,7 +74,7 @@ class TelegramControllerTest extends ModerationTest {
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/change_moderator_status")).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Эта команда не доступна вне главного меню");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).hasSize(0);
+            assertThat(botAnswer.userAnswerOptions()).hasSize(0);
         });
     }
 
@@ -83,7 +82,7 @@ class TelegramControllerTest extends ModerationTest {
     void callCommandThrowException() {
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/change_moderator_status")).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Произошла непредвиденная ошибка");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).hasSize(0);
+            assertThat(botAnswer.userAnswerOptions()).hasSize(0);
         });
     }
 
@@ -131,7 +130,7 @@ class TelegramControllerTest extends ModerationTest {
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/search_dish"))
                 .extracting(BotAnswer::messageText, BotAnswer::userAnswerOptions)
-                .containsOnly("Выберете тип искомого блюда", Optional.of(StandardUserAnswerOption.DISH_TYPES_WITH_ANY_CASE.getAnswers()));
+                .containsOnly("Выберете тип искомого блюда", StandardUserAnswerOption.DISH_TYPES_WITH_ANY_CASE.getAnswers());
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
                 .get()
@@ -145,7 +144,7 @@ class TelegramControllerTest extends ModerationTest {
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/search_recipe"))
                 .extracting(BotAnswer::messageText, BotAnswer::userAnswerOptions)
-                .containsOnly("Выберете тип искомого блюда", Optional.of(StandardUserAnswerOption.DISH_TYPES_WITH_ANY_CASE.getAnswers()));
+                .containsOnly("Выберете тип искомого блюда", StandardUserAnswerOption.DISH_TYPES_WITH_ANY_CASE.getAnswers());
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
                 .get()
@@ -159,7 +158,7 @@ class TelegramControllerTest extends ModerationTest {
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/add_dish"))
                 .extracting(BotAnswer::messageText, BotAnswer::userAnswerOptions)
-                .containsOnly("Введите название блюда", Optional.empty());
+                .containsOnly("Введите название блюда", new String[0]);
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
                 .get()
@@ -189,7 +188,7 @@ class TelegramControllerTest extends ModerationTest {
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/enriching_recipes")).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Выберете добавленное вами ранее блюдо для добавления рецепта");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("fifth", "sixth");
+            assertThat(botAnswer.userAnswerOptions()).containsOnly("fifth", "sixth");
         });
         assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.ENRICHING_RECIPES);
     }
@@ -230,7 +229,7 @@ class TelegramControllerTest extends ModerationTest {
 
         assertThat(telegramController.executeWorkerCommand(USER_ID, "/edit_dish")).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Введите название блюда, которое вы хотите отредактировать");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).isEmpty();
+            assertThat(botAnswer.userAnswerOptions()).isEmpty();
         });
         assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.SELECT_EDITING_DISH_NAME);
     }

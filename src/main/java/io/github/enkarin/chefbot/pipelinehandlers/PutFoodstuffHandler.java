@@ -16,7 +16,7 @@ public abstract class PutFoodstuffHandler implements NonCommandInputHandler {
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return BotAnswer.createBotAnswerWithoutKeyboard("""
+        return new BotAnswer("""
                 Введите список продуктов для приготовления блюда одним сообщением.
                 Отделяйте их запятой или новой строкой.
                 Количество продукта нужно написать после его названия, отделив двоеточием или тире.""");

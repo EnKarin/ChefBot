@@ -21,9 +21,9 @@ public class ProcessingSearchCuisineService implements NonCommandInputHandler {
         try {
             final WorldCuisine cuisine = WorldCuisine.getCuisine(text);
             filterService.putKitchen(userId, cuisine);
-            return new ExecutionResult(ChatStatus.SELECT_DISH_PUBLISHED);
+            return new ExecutionResult(ChatStatus.ROOT_SELECT_DISH);
         } catch (IllegalArgumentException e) {
-            return new ExecutionResult(ChatStatus.SELECT_DISH_PUBLISHED);
+            return new ExecutionResult(ChatStatus.ROOT_SELECT_DISH);
         }
     }
 

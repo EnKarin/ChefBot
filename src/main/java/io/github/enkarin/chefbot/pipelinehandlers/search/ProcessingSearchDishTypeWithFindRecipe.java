@@ -20,9 +20,9 @@ public class ProcessingSearchDishTypeWithFindRecipe implements NonCommandInputHa
         filterService.createSearchFilterForFindRecipe(userId);
         try {
             filterService.putDishType(userId, DishType.parse(text));
-            return new ExecutionResult(ChatStatus.SELECT_DISH_SPICY);
+            return new ExecutionResult(ChatStatus.ROOT_SELECT_DISH);
         } catch (IllegalArgumentException e) {
-            return new ExecutionResult(ChatStatus.SELECT_DISH_SPICY);
+            return new ExecutionResult(ChatStatus.ROOT_SELECT_DISH);
         }
     }
 

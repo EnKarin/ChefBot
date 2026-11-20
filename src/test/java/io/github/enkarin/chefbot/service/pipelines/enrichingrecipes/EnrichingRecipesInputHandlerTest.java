@@ -38,7 +38,7 @@ class EnrichingRecipesInputHandlerTest extends TestBase {
         createUser(ChatStatus.ENRICHING_RECIPES);
         initDishes();
 
-        assertThat(enrichingRecipesInputHandler.getMessageForUser(USER_ID).userAnswerOptions().orElseThrow()).containsOnly("fifth", "sixth");
+        assertThat(enrichingRecipesInputHandler.getMessageForUser(USER_ID).userAnswerOptions()).containsOnly("fifth", "sixth");
     }
 
     @Test
@@ -47,7 +47,7 @@ class EnrichingRecipesInputHandlerTest extends TestBase {
         initDishes();
         initMoreDish();
 
-        assertThat(enrichingRecipesInputHandler.getMessageForUser(USER_ID).userAnswerOptions().orElseThrow())
+        assertThat(enrichingRecipesInputHandler.getMessageForUser(USER_ID).userAnswerOptions())
                 .containsOnly("fifth", "sixth", "eighth", "ninth", "tenth", "eleventh", "twelfth", "thirteenth", "fourteenth", "fifteenth", "Другое");
     }
 
@@ -64,9 +64,9 @@ class EnrichingRecipesInputHandlerTest extends TestBase {
                 .owner(userRepository.findById(USER_ID).orElseThrow())
                 .build());
 
-        assertThat(enrichingRecipesInputHandler.getMessageForUser(USER_ID).userAnswerOptions().orElseThrow())
+        assertThat(enrichingRecipesInputHandler.getMessageForUser(USER_ID).userAnswerOptions())
                 .containsOnly("fifth", "sixth", "eighth", "ninth", "tenth", "eleventh", "sixteenth", "thirteenth", "fourteenth", "fifteenth", "Другое");
-        assertThat(enrichingRecipesInputHandler.getMessageForUser(USER_ID).userAnswerOptions().orElseThrow()).containsOnly("twelfth");
+        assertThat(enrichingRecipesInputHandler.getMessageForUser(USER_ID).userAnswerOptions()).containsOnly("twelfth");
     }
 
     private void initMoreDish() {

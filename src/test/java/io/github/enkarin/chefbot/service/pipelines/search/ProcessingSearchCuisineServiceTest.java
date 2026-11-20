@@ -12,8 +12,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static io.github.enkarin.chefbot.enums.ChatStatus.ROOT_SELECT_DISH;
 import static io.github.enkarin.chefbot.enums.ChatStatus.SELECT_DISH_KITCHEN;
-import static io.github.enkarin.chefbot.enums.ChatStatus.SELECT_DISH_PUBLISHED;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ProcessingSearchCuisineServiceTest extends TestBase {
@@ -33,7 +33,7 @@ class ProcessingSearchCuisineServiceTest extends TestBase {
     @ParameterizedTest
     @EnumSource(WorldCuisine.class)
     void executeShouldWork(final WorldCuisine cuisine) {
-        assertThat(searchCuisineService.execute(USER_ID, cuisine.getLocalizedValue()).chatStatus()).isEqualTo(SELECT_DISH_PUBLISHED);
+        assertThat(searchCuisineService.execute(USER_ID, cuisine.getLocalizedValue()).chatStatus()).isEqualTo(ROOT_SELECT_DISH);
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
                 .get()
@@ -44,7 +44,7 @@ class ProcessingSearchCuisineServiceTest extends TestBase {
 
     @Test
     void executeShouldWorkWithUnknownText() {
-        assertThat(searchCuisineService.execute(USER_ID, "unknown").chatStatus()).isEqualTo(SELECT_DISH_PUBLISHED);
+        assertThat(searchCuisineService.execute(USER_ID, "unknown").chatStatus()).isEqualTo(ROOT_SELECT_DISH);
         assertThat(userRepository.findById(USER_ID).orElseThrow().getSearchFilter().getCuisine()).isNull();
     }
 }

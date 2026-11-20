@@ -19,18 +19,18 @@ public class ProcessingSearchSpicyService implements NonCommandInputHandler {
 
     @Override
     public ExecutionResult execute(final long userId, final String text) {
-        return switch (text.toLowerCase(Locale.ROOT)) {
+        return new ExecutionResult(switch (text.toLowerCase(Locale.ROOT)) {
             case "да" -> {
                 filterService.putSpicySign(userId, true);
-                yield new ExecutionResult(ChatStatus.SELECT_DISH_KITCHEN);
+                yield ChatStatus.ROOT_SELECT_DISH;
             }
             case "нет" -> {
                 filterService.putSpicySign(userId, false);
-                yield new ExecutionResult(ChatStatus.SELECT_DISH_KITCHEN);
+                yield ChatStatus.ROOT_SELECT_DISH;
             }
-            case "любое" -> new ExecutionResult(ChatStatus.SELECT_DISH_KITCHEN);
-            default -> new ExecutionResult(getCurrentStatus());
-        };
+            case "любое" -> ChatStatus.ROOT_SELECT_DISH;
+            default -> getCurrentStatus();
+        });
     }
 
     @Override

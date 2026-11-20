@@ -22,7 +22,7 @@ public class RequestDeclineCause implements NonCommandInputHandler {
 
     @Override
     public BotAnswer getMessageForUser(long userId) {
-        return BotAnswer.createBotAnswerWithoutKeyboard("Введите причину отклонения заявки");
+        return new BotAnswer("Введите причину отклонения заявки");
     }
 
     @Override

@@ -32,7 +32,7 @@ public class ExistsDishPutRecipeService implements NonCommandInputHandler {
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return BotAnswer.createBotAnswerWithoutKeyboard("Введите способ приготвления блюда");
+        return new BotAnswer("Введите способ приготвления блюда");
     }
 
     @Override

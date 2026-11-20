@@ -17,7 +17,7 @@ class EnrichingRecipesCommandHandlerTest extends TestBase {
         initDishes();
 
         assertThat(handler.execute(USER_ID)).satisfies(botAnswer -> {
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("fifth", "sixth");
+            assertThat(botAnswer.userAnswerOptions()).containsOnly("fifth", "sixth");
             assertThat(botAnswer.messageText()).isEqualTo("Выберете добавленное вами ранее блюдо для добавления рецепта");
         });
         assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.ENRICHING_RECIPES);
@@ -29,7 +29,7 @@ class EnrichingRecipesCommandHandlerTest extends TestBase {
 
         assertThat(handler.execute(USER_ID)).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("У вас нет блюд без рецептов. Вы возвращены в главное меню");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).isEmpty();
+            assertThat(botAnswer.userAnswerOptions()).isEmpty();
         });
         assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.MAIN_MENU);
     }

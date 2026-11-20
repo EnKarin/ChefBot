@@ -21,7 +21,7 @@ public class AddExcludeProductInputHandler implements NonCommandInputHandler {
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return BotAnswer.createBotAnswerWithoutKeyboard("Введите названия продуктов, которые хотите добавить в список, через запятую или с новой строки");
+        return new BotAnswer("Введите названия продуктов, которые хотите добавить в список, через запятую или с новой строки");
     }
 
     @Override

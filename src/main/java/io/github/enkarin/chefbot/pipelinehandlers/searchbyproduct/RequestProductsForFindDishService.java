@@ -22,7 +22,7 @@ public class RequestProductsForFindDishService implements NonCommandInputHandler
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return BotAnswer.createBotAnswerWithoutKeyboard("Введите список продуктов, которые должно содержать желаемое блюдо");
+        return new BotAnswer("Введите список продуктов, которые должно содержать желаемое блюдо");
     }
 
     @Override

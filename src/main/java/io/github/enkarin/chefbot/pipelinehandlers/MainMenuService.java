@@ -14,7 +14,7 @@ public class MainMenuService implements NonCommandInputHandler {
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return BotAnswer.createBotAnswerWithoutKeyboard("Вы в главном меню. Выберете следующую команду для выполнения.");
+        return new BotAnswer("Вы в главном меню. Выберете следующую команду для выполнения.");
     }
 
     @Override
