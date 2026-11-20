@@ -13,6 +13,7 @@ import java.util.List;
 public abstract class ModerationTest extends TestBase {
     @Autowired
     protected ModerationRequestMessageRepository moderationRequestMessageRepository;
+
     @Autowired
     protected ModerationRequestRepository moderationRequestRepository;
 

@@ -23,6 +23,7 @@ class DishNeedPublishServiceTest extends TestBase {
 
     @AfterEach
     void clean() {
+        dishRepository.findAll().stream().peek(dish -> dish.setModerationRequest(null)).forEach(dishRepository::save);
         moderationRequestRepository.deleteAll();
     }
 
