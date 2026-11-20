@@ -71,9 +71,10 @@ public class ModerationService {
         final ModerationRequest moderationRequest = moderationRequestRepository.findById(requestId).orElseThrow();
         final Dish moderationDish = moderationRequest.getModerationDish();
         moderationDish.setPublished(true);
-        final ModerationResultDto resultDto = ModerationResultDto.createApproveResult(moderationRequest.getModerationDish().getDishName(),
+        final ModerationResultDto resultDto = new ModerationResultDto(moderationRequest.getModerationDish().getDishName(),
                 moderationRequest.getModerationDish().getOwner().getChatId(),
                 moderationRequest.getModerationRequestMessages().stream().map(moderationRequestMessageEntityDtoMapper::entityToDto).collect(Collectors.toSet()));
+        moderationDish.setModerationRequest(null);
         moderationRequestRepository.delete(moderationRequest);
         return resultDto;
     }
@@ -83,11 +84,12 @@ public class ModerationService {
         final Dish moderableDish = user.getModerableDish();
         moderableDish.setPublished(false);
         final ModerationRequest moderationRequest = moderableDish.getModerationRequest();
-        final ModerationResultDto moderationResultDto = ModerationResultDto.createDeclineResult(moderableDish.getDishName(),
+        final ModerationResultDto moderationResultDto = new ModerationResultDto(moderableDish.getDishName(),
                 moderableDish.getOwner().getChatId(),
                 moderationRequest.getModerationRequestMessages().stream().map(moderationRequestMessageEntityDtoMapper::entityToDto).collect(Collectors.toSet()),
                 cause);
         user.setModerableDish(null);
+        moderableDish.setModerationRequest(null);
         moderationRequestRepository.delete(moderationRequest);
         userRepository.save(user);
         return moderationResultDto;
