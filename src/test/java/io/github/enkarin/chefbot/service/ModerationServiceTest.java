@@ -6,6 +6,7 @@ import io.github.enkarin.chefbot.entity.Dish;
 import io.github.enkarin.chefbot.entity.ModerationRequest;
 import io.github.enkarin.chefbot.entity.ModerationRequestMessage;
 import io.github.enkarin.chefbot.mappers.ModerationRequestMessageEntityDtoMapper;
+import io.github.enkarin.chefbot.repository.DishRepository;
 import io.github.enkarin.chefbot.util.ModerationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,9 @@ class ModerationServiceTest extends ModerationTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private DishRepository dishRepository;
+
     @BeforeEach
     void init() {
         moderationInit();
@@ -39,7 +43,7 @@ class ModerationServiceTest extends ModerationTest {
 
     @Test
     void createModerationRequest() {
-        moderationRequestRepository.deleteAll();
+        deleteModerationDish();
         dishService.initDishName(USER_ID, "newDish");
 
         moderationService.createModerationRequest(USER_ID);
@@ -49,7 +53,7 @@ class ModerationServiceTest extends ModerationTest {
 
     @Test
     void createModerationRequestWithShowQuantityOfProduct() {
-        moderationRequestRepository.deleteAll();
+        deleteModerationDish();
         dishService.initDishName(USER_ID, "newDish");
         dishService.putAllDishFoodstuff(USER_ID, Map.of("Egg", "2", "Milk", "200 ml", "Salt", "2 gram"));
 
@@ -115,7 +119,7 @@ class ModerationServiceTest extends ModerationTest {
 
     @Test
     void createRepeatedModerationRequest() {
-        moderationRequestRepository.deleteAll();
+        deleteModerationDish();
         dishService.initDishName(USER_ID, "newDish");
         final long moderationRequestId = moderationService.createModerationRequest(USER_ID).getRequestId();
         dishService.putDishRecipe(USER_ID, "Recipe");
@@ -130,5 +134,10 @@ class ModerationServiceTest extends ModerationTest {
                 .extracting(Dish::getDishName)
                 .contains("newDish");
         assertThat(moderationRequestMessageRepository.count()).isZero();
+    }
+
+    private void deleteModerationDish() {
+        dishRepository.findAll().stream().peek(dish -> dish.setModerationRequest(null)).forEach(dishRepository::save);
+        moderationRequestRepository.deleteAll();
     }
 }

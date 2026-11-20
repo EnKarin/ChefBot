@@ -15,10 +15,10 @@ import io.github.enkarin.chefbot.service.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
@@ -30,7 +30,7 @@ public class TestBase {
     protected static final Long CHAT_ID = Long.MAX_VALUE - 1000;
     protected static final String USERNAME = "Pupa";
 
-    @MockBean
+    @MockitoBean
     protected TelegramBotsApi telegramBotApi;
     @Autowired
     protected UserService userService;
