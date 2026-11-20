@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.stream.Stream;
 
-import static io.github.enkarin.chefbot.enums.ChatStatus.SELECT_DISH_KITCHEN;
+import static io.github.enkarin.chefbot.enums.ChatStatus.ROOT_SELECT_DISH;
 import static io.github.enkarin.chefbot.enums.ChatStatus.SELECT_DISH_SPICY;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,9 +46,9 @@ class ProcessingSearchSpicyServiceTest extends TestBase {
 
     static Stream<Arguments> provideTextAndResult() {
         return Stream.of(
-                Arguments.of("Да", SELECT_DISH_KITCHEN, true),
-                Arguments.of("Нет", SELECT_DISH_KITCHEN, false),
-                Arguments.of("любое", SELECT_DISH_KITCHEN, null)
+                Arguments.of("Да", ROOT_SELECT_DISH, true),
+                Arguments.of("Нет", ROOT_SELECT_DISH, false),
+                Arguments.of("любое", ROOT_SELECT_DISH, null)
         );
     }
 

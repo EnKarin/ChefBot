@@ -26,7 +26,7 @@ public class EditingRecipeService implements NonCommandInputHandler {
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return BotAnswer.createBotAnswerWithoutKeyboard("Введите рецепт");
+        return new BotAnswer("Введите рецепт");
     }
 
     @Override

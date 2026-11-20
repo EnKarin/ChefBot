@@ -22,7 +22,7 @@ public class EditingNameService implements NonCommandInputHandler {
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return BotAnswer.createBotAnswerWithoutKeyboard("Введите новое название блюда");
+        return new BotAnswer("Введите новое название блюда");
     }
 
     @Override

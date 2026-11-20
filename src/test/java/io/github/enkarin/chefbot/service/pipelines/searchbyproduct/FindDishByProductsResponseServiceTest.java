@@ -48,7 +48,7 @@ class FindDishByProductsResponseServiceTest extends TestBase {
 
         assertThat(findDishByProductsResponseService.getMessageForUser(USER_ID)).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).startsWith("*second:*\n-secondProduct");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).isEqualTo(StandardUserAnswerOption.MORE_OR_STOP.getAnswers());
+            assertThat(botAnswer.userAnswerOptions()).isEqualTo(StandardUserAnswerOption.MORE_OR_STOP.getAnswers());
         });
     }
 

@@ -74,7 +74,7 @@ public class TelegramController {
             return new OperationResult(new BotAnswer(e.getMessage()));
         } catch (DishesNotFoundException e) {
             processingFacade.goToStatus(userId, ChatStatus.MAIN_MENU);
-            return new OperationResult(BotAnswer.createBotAnswerWithoutKeyboard(e.getMessage()));
+            return new OperationResult(new BotAnswer(e.getMessage()));
         }
     }
 

@@ -21,7 +21,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static io.github.enkarin.chefbot.enums.StandardUserAnswerOption.DISH_TYPES_WITH_ANY_CASE;
@@ -75,7 +74,7 @@ class ProcessingFacadeTest extends TestBase {
 
         assertThat(processingFacade.goToStatus(USER_ID, ChatStatus.APPROVE_BACK_TO_MAIN_MENU)).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Вы хотите вернуться в главное меню?");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).isEqualTo(YES_OR_NO.getAnswers());
+            assertThat(botAnswer.userAnswerOptions()).isEqualTo(YES_OR_NO.getAnswers());
         });
 
         assertThat(userService.findUser(USER_ID).getChatStatus()).isEqualTo(ChatStatus.APPROVE_BACK_TO_MAIN_MENU);
@@ -106,7 +105,7 @@ class ProcessingFacadeTest extends TestBase {
 
         assertThat(processingFacade.goToStatus(USER_ID, status))
                 .extracting(BotAnswer::messageText, BotAnswer::userAnswerOptions)
-                .containsOnly(messageText, Optional.of(userAnswerOption.getAnswers()));
+                .containsOnly(messageText, userAnswerOption.getAnswers());
     }
 
     static Stream<Arguments> provideStatusAndAnswer() {
@@ -126,9 +125,8 @@ class ProcessingFacadeTest extends TestBase {
         userService.switchToNewStatus(USER_ID, ChatStatus.SELECT_DISH_TYPE);
         initDishes();
 
-        processingFacade.execute(USER_ID, "Закуска"); //select soup
-        processingFacade.execute(USER_ID, "нет"); //select spicy
-        processingFacade.execute(USER_ID, "Славянская"); //select cuisine
+        processingFacade.execute(USER_ID, "Закуска"); //select type
+        processingFacade.execute(USER_ID, "Искать"); //select spicy
         final BotAnswer userMessage = processingFacade.execute(USER_ID, "все блюда").botAnswer(); //select published
 
         assertThat(userMessage)
@@ -146,8 +144,11 @@ class ProcessingFacadeTest extends TestBase {
         initDishes();
 
         processingFacade.execute(USER_ID, "Любое"); //select type
+        processingFacade.execute(USER_ID, "По остроте"); //select spic
         processingFacade.execute(USER_ID, "нет"); //select spicy
+        processingFacade.execute(USER_ID, "По виду кухни"); //root filter
         processingFacade.execute(USER_ID, "Славянская"); //select cuisine
+        processingFacade.execute(USER_ID, "Искать"); //root filter
         final BotAnswer userMessage = processingFacade.execute(USER_ID, "случайное блюдо").botAnswer(); //select published
 
         assertThat(userMessage)
@@ -164,9 +165,8 @@ class ProcessingFacadeTest extends TestBase {
         userService.createOrUpdateUser(USER_ID, CHAT_ID, USERNAME);
         userService.switchToNewStatus(USER_ID, ChatStatus.SELECT_DISH_TYPE);
 
-        processingFacade.execute(USER_ID, "да"); //select soup
-        processingFacade.execute(USER_ID, "нет"); //select spicy
-        processingFacade.execute(USER_ID, "Славянская"); //select cuisine
+        processingFacade.execute(USER_ID, "Любая"); //select type
+        processingFacade.execute(USER_ID, "Искать"); //skip optional filters
         assertThatThrownBy(() -> processingFacade.execute(USER_ID, "все блюда")) //select published
                 .isInstanceOf(DishesNotFoundException.class)
                 .hasMessage("Подходящие блюда не найдены. Вы возвращены в главное меню.");
@@ -225,11 +225,11 @@ class ProcessingFacadeTest extends TestBase {
 
         assertThat(processingFacade.execute(USER_ID, "fifth").botAnswer()).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Укажите поле, которое вы хотите отредактировать");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
+            assertThat(botAnswer.userAnswerOptions()).containsOnly("Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
         });
         assertThat(processingFacade.execute(USER_ID, "Острота").botAnswer()).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Блюдо острое?");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("Да", "Нет");
+            assertThat(botAnswer.userAnswerOptions()).containsOnly("Да", "Нет");
         });
         processingFacade.execute(USER_ID, "Да");
         processingFacade.execute(USER_ID, "Нет");
@@ -250,7 +250,7 @@ class ProcessingFacadeTest extends TestBase {
 
         assertThat(processingFacade.execute(USER_ID, "sixth").botAnswer()).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Укажите поле, которое вы хотите отредактировать");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
+            assertThat(botAnswer.userAnswerOptions()).containsOnly("Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
         });
         assertThat(processingFacade.execute(USER_ID, "название").botAnswer()).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Введите новое название блюда");
@@ -271,11 +271,11 @@ class ProcessingFacadeTest extends TestBase {
 
         assertThat(processingFacade.execute(USER_ID, "fifth").botAnswer()).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Укажите поле, которое вы хотите отредактировать");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
+            assertThat(botAnswer.userAnswerOptions()).containsOnly("Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
         });
         assertThat(processingFacade.execute(USER_ID, "Тип").botAnswer()).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Выберете новый тип блюда");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly(StandardUserAnswerOption.DISH_TYPES.getAnswers());
+            assertThat(botAnswer.userAnswerOptions()).containsOnly(StandardUserAnswerOption.DISH_TYPES.getAnswers());
         });
         processingFacade.execute(USER_ID, "Суп");
         processingFacade.execute(USER_ID, "Нет");
@@ -296,11 +296,11 @@ class ProcessingFacadeTest extends TestBase {
 
         assertThat(processingFacade.execute(USER_ID, "sixth").botAnswer()).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Укажите поле, которое вы хотите отредактировать");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
+            assertThat(botAnswer.userAnswerOptions()).containsOnly("Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
         });
         assertThat(processingFacade.execute(USER_ID, "Кухня").botAnswer()).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Введите кухню, к которой относится блюдо");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly(StandardUserAnswerOption.CUISINES.getAnswers());
+            assertThat(botAnswer.userAnswerOptions()).containsOnly(StandardUserAnswerOption.CUISINES.getAnswers());
         });
         processingFacade.execute(USER_ID, "международная");
         processingFacade.execute(USER_ID, "Да");
@@ -321,7 +321,7 @@ class ProcessingFacadeTest extends TestBase {
 
         assertThat(processingFacade.execute(USER_ID, "sixth").botAnswer()).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Укажите поле, которое вы хотите отредактировать");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
+            assertThat(botAnswer.userAnswerOptions()).containsOnly("Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
         });
         assertThat(processingFacade.execute(USER_ID, "Список продуктов").botAnswer()).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("""
@@ -349,7 +349,7 @@ class ProcessingFacadeTest extends TestBase {
 
         assertThat(processingFacade.execute(USER_ID, "fifth").botAnswer()).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Укажите поле, которое вы хотите отредактировать");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
+            assertThat(botAnswer.userAnswerOptions()).containsOnly("Название", "Острота", "Тип", "Кухня", "Список продуктов", "Рецепт");
         });
         assertThat(processingFacade.execute(USER_ID, "Рецепт").botAnswer()).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Введите рецепт");
@@ -405,7 +405,7 @@ class ProcessingFacadeTest extends TestBase {
         });
         assertThat(processingFacade.execute(USER_ID, "secondProduct").botAnswer()).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("*second:*\n-secondProduct");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly(StandardUserAnswerOption.MORE_OR_STOP.getAnswers());
+            assertThat(botAnswer.userAnswerOptions()).containsOnly(StandardUserAnswerOption.MORE_OR_STOP.getAnswers());
         });
         assertThat(processingFacade.execute(USER_ID, "Вернуться в главное меню").botAnswer()).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("Вы в главном меню. Выберете следующую команду для выполнения.");
@@ -421,8 +421,11 @@ class ProcessingFacadeTest extends TestBase {
         initDishes();
 
         processingFacade.execute(USER_ID, "Суп"); //select type
+        processingFacade.execute(USER_ID, "По остроте"); //select spic
         processingFacade.execute(USER_ID, "нет"); //select spicy
+        processingFacade.execute(USER_ID, "По виду кухни"); //root filter
         processingFacade.execute(USER_ID, "Ближневосточная"); //select cuisine
+        processingFacade.execute(USER_ID, "Искать"); //root filter
         assertThat(processingFacade.execute(USER_ID, "Все блюда").botAnswer().messageText()).isEqualTo("""
                         *fifth:*
                         -fifthProduct""");

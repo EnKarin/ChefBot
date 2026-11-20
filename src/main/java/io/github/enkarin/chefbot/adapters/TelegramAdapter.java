@@ -129,11 +129,9 @@ public final class TelegramAdapter extends TelegramLongPollingBot {
     private void send(final long chatId, final BotAnswer botAnswer) {
         try {
             final SendMessage sendMessage = defaultConfigurationMessage(chatId, botAnswer.messageText());
-            botAnswer.userAnswerOptions().ifPresentOrElse(userAnswer -> {
-                if (userAnswer.length != 0) {
-                    sendMessage.setReplyMarkup(new FormatedReplyKeyboardMarkup(userAnswer));
-                }
-            }, () -> sendMessage.setReplyMarkup(new ReplyKeyboardRemove(true)));
+            sendMessage.setReplyMarkup(botAnswer.userAnswerOptions().length == 0
+                    ? new ReplyKeyboardRemove(true)
+                    : new FormatedReplyKeyboardMarkup(botAnswer.userAnswerOptions()));
             execute(sendMessage);
         } catch (Exception e) {
             log.error(e.toString());

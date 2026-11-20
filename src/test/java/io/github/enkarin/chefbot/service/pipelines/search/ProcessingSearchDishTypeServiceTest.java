@@ -11,7 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static io.github.enkarin.chefbot.enums.ChatStatus.SELECT_DISH_SPICY;
+import static io.github.enkarin.chefbot.enums.ChatStatus.ROOT_SELECT_DISH;
 import static io.github.enkarin.chefbot.enums.ChatStatus.SELECT_DISH_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,7 +28,7 @@ class ProcessingSearchDishTypeServiceTest extends TestBase {
     @ParameterizedTest
     @EnumSource(DishType.class)
     void executeShouldWork(final DishType dishType) {
-        assertThat(searchDishTypeService.execute(USER_ID, dishType.getLocalisedName()).chatStatus()).isEqualTo(SELECT_DISH_SPICY);
+        assertThat(searchDishTypeService.execute(USER_ID, dishType.getLocalisedName()).chatStatus()).isEqualTo(ROOT_SELECT_DISH);
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
                 .get()
@@ -39,7 +39,7 @@ class ProcessingSearchDishTypeServiceTest extends TestBase {
 
     @Test
     void executeShouldWorkWithUnknownInput() {
-        assertThat(searchDishTypeService.execute(USER_ID, "unknown").chatStatus()).isEqualTo(SELECT_DISH_SPICY);
+        assertThat(searchDishTypeService.execute(USER_ID, "unknown").chatStatus()).isEqualTo(ROOT_SELECT_DISH);
         assertThat(userRepository.findById(USER_ID))
                 .isPresent()
                 .get()

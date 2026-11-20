@@ -25,7 +25,7 @@ public class AddNewDishRecipe implements NonCommandInputHandler {
 
     @Override
     public BotAnswer getMessageForUser(final long userId) {
-        return BotAnswer.createBotAnswerWithoutKeyboard("Введите способ приготовления блюда");
+        return new BotAnswer("Введите способ приготовления блюда");
     }
 
     @Override

@@ -45,7 +45,7 @@ class ShowExcludeProductsInputHandlerTest extends TestBase {
             assertThat(botAnswer.messageText()).startsWith("Список продуктов, блюда с которыми будут исключены из поиска:\n");
             assertThat(botAnswer.messageText()).contains("-thirdProduct", "-secondProduct");
             assertThat(botAnswer.messageText()).endsWith("Желаете его изменить?");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("В главное меню",
+            assertThat(botAnswer.userAnswerOptions()).containsOnly("В главное меню",
                     "Добавить продукты в список",
                     "Удалить продукты из списка по полному названию",
                     "Удалить продукты из списка по частичному названию");
@@ -58,7 +58,7 @@ class ShowExcludeProductsInputHandlerTest extends TestBase {
 
         assertThat(handler.getMessageForUser(USER_ID)).satisfies(botAnswer -> {
             assertThat(botAnswer.messageText()).isEqualTo("У вас нет продуктов, блюда с которыми будут исключены из поиска. Хотите добавить?");
-            assertThat(botAnswer.userAnswerOptions().orElseThrow()).containsOnly("В главное меню", "Добавить продукты в список");
+            assertThat(botAnswer.userAnswerOptions()).containsOnly("В главное меню", "Добавить продукты в список");
         });
     }
 }
